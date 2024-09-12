@@ -1,0 +1,24 @@
+services:
+  db:
+    image: postgres:14.13
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data:consistent
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U echo $POSTGRES_USER -h echo $POSTGRES_HOST -d echo $TEST_DB || echo 'Postgres is not ready' >> /var/log/postgres_health.log"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -b '0.0.0.0'"
+    volumes:
+      - ".:/app"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    env_file:
+      - .env

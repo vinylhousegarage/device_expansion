@@ -1,0 +1,7 @@
+services:
+  web:
+    env_file:
+      - .env.production
+    command: bash -c "bundle exec rails s -b '0.0.0.0'"
+    volumes:
+      - "./shared/public:/app/public"
