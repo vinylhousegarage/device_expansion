@@ -1,5 +1,5 @@
 FROM ruby:3.0.2
-RUN RUN apt-get update -qq && apt-get install -y libpq-dev postgresql-client \
+RUN apt-get update -qq && apt-get install -y libpq-dev postgresql-client \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY Gemfile Gemfile.lock /app/
