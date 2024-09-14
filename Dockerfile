@@ -5,7 +5,8 @@ WORKDIR /app
 COPY Gemfile Gemfile.lock /app/
 RUN bundle config set path 'vendor/bundle'
 RUN bundle install --jobs 4 --retry 3
-ENV PATH /app/vendor/bundle/ruby/3.0.0/bin:$PATH
+ENV PATH ./vendor/bundle/ruby/3.0.0/bin:$PATH
 COPY . /app
+RUN bundle exec rails assets:precompile RAILS_ENV=production
 EXPOSE 3000
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
