@@ -2,21 +2,20 @@ services:
   db:
     image: postgres:14.13
     volumes:
-      - C:\Users\vinyl\device_expansion\postgres_data:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data
     env_file:
       - .env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -h $POSTGRES_HOST -d $TEST_DB || echo 'Postgres is not ready' >> /var/log/postgres_health.log" ]
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -h $POSTGRES_HOST -d $TEST_DB || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
     restart: always
 
   web:
-    image: ghcr.io/vinylhousegarage/device_expansion:latest
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -b '0.0.0.0'"
-    volumes:
-      - ".:/app"
+    image: ghcr.io/vinylhousegarage/device_expansion:production
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec puma -C config/puma.rb"
+    volumes: []
     ports:
       - "3000:3000"
     depends_on:
