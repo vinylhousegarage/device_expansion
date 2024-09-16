@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  pull request:
+  pull_request:
     branches:
       - main
 
@@ -16,14 +16,14 @@ jobs:
       db:
         image: postgres:14.13
         env:
-          POSTGRES_DB: ${{ secrets.CI_POSTGRES_DB }}
+          POSTGRES_DB: ${{ secrets.CI_TEST_DB }}
           POSTGRES_USER: ${{ secrets.CI_POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD }}
         options: >-
           --health-cmd "pg_isready -U ${{ secrets.CI_POSTGRES_USER }}" \
           -h ${{ secrets.CI_POSTGRES_HOST }} \
           --timeout=10 \
-          --dbname=${{ secrets.CI_POSTGRES_DB }} \
+          --dbname=${{ secrets.CI_TEST_DB }} \
           --health-interval 10s \
           --health-timeout 5s \
           --health-retries 10
@@ -37,11 +37,11 @@ jobs:
         with:
           ruby-version: 3.0.2
 
-      - name: Cashe gems
+      - name: Cache gems
         uses: actions/cache@v3
         with:
           path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-${{ matrix.ruby-version }}
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}--gems
 
@@ -70,12 +70,12 @@ jobs:
           fi
 
       - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GITHUB_USERNAME }} --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build and push Docker image
         run: |
-          docker build . -t ghcr.io/${{ secrets.GITHUB_USERNAME }}/${{ secrets.REPOSITORY_NAME }}/${{ secrets.IMAGE_NAME }}:${{ secrets.IMAGE_TAG }}
-          docker push ghcr.io/${{ secrets.GITHUB_USERNAME }}/${{ secrets.REPOSITORY_NAME }}/${{ secrets.IMAGE_NAME }}:${{ secrets.IMAGE_TAG }}
+          docker build . -t ghcr.io/vinylhousegarage/device_expansion:${{ github.sha }}
+          docker push ghcr.io/vinylhousegarage/device_expansion:${{ github.sha }}
 
       - name: Run tests
         run: |
@@ -90,12 +90,12 @@ jobs:
     needs: build
 
     steps:
-      - name: Check out the repossitory
+      - name: Check out the repository
         uses: actions/checkout@v3
 
       - name: Trigger Render Deployment
         run: |
           curl -X POST -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -h "Content-Type: application/json" \
+          -H "Content-Type: application/json" \
           -d '{"clearCache":false}' \
           https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys

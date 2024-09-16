@@ -2,6 +2,7 @@ services:
   web:
     env_file:
       - .env.production
-    command: bash -c "bundle exec rails s -b '0.0.0.0'"
+    command: |
+      bash -c "bundle exec rails db:migrate RAILS_ENV=production && bundle exec puma -C config/puma.rb"
     volumes:
       - "./shared/public:/app/public"
