@@ -6,3 +6,4 @@ services:
       bash -c "RAILS_ENV=production bundle exec rails db:migrate && \
       bundle exec rails db:seed && \
       bundle exec puma -C config/puma.rb"
+    volumes: []
