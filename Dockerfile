@@ -8,4 +8,4 @@ RUN bundle install --jobs 4 --retry 3
 ENV PATH ./vendor/bundle/ruby/3.1.0/bin:$PATH
 COPY . /app
 EXPOSE 3000
-CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
