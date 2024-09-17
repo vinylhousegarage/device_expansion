@@ -13,9 +13,10 @@ services:
     restart: always
 
   web:
-    image: ghcr.io/vinylhousegarage/device_expansion:development
+    build: .
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec puma -C config/puma.rb"
-    volumes: []
+    volumes:
+      - ".:/app"
     ports:
       - "3000:3000"
     depends_on:
