@@ -13,7 +13,7 @@ services:
     restart: always
 
   web:
-    image: ghcr.io/vinylhousegarage/device_expansion:production
+    image: ghcr.io/vinylhousegarage/device_expansion:development
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec puma -C config/puma.rb"
     volumes: []
     ports:
