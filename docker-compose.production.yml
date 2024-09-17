@@ -1,9 +1,9 @@
 services:
   web:
-    image: ghcr.io/vinylhousegarage/device_expansion:production
     env_file:
       - .env.production
     command: |
       bash -c "RAILS_ENV=production bundle exec rails db:migrate && \
       bundle exec rails db:seed && \
       bundle exec puma -C config/puma.rb"
+    volumes: []
