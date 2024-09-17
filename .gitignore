@@ -32,6 +32,8 @@
 
 /postgres_data
 
+/vendor/bundle/
+
 .env
 .env.development
 .env.test

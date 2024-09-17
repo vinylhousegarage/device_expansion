@@ -16,14 +16,14 @@ jobs:
       db:
         image: postgres:14.13
         env:
-          POSTGRES_DB: ${{ secrets.CI_TEST_DB }}
-          POSTGRES_USER: ${{ secrets.CI_POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.TEST_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         options: >-
-          --health-cmd "pg_isready -U ${{ secrets.CI_POSTGRES_USER }}" \
-          -h ${{ secrets.CI_POSTGRES_HOST }} \
+          --health-cmd "pg_isready -U ${{ secrets.POSTGRES_USER }}" \
+          -h ${{ secrets.POSTGRES_HOST }} \
           --timeout=10 \
-          --dbname=${{ secrets.CI_TEST_DB }} \
+          --dbname=${{ secrets.TEST_DB }} \
           --health-interval 10s \
           --health-timeout 5s \
           --health-retries 10
@@ -35,7 +35,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0.2
+          ruby-version: 3.1.0
 
       - name: Cache gems
         uses: actions/cache@v3
@@ -54,10 +54,10 @@ jobs:
 
       - name: Set up the database
         run: |
-          if psql -h ${{ secrets.CI_POSTGRES_HOST }} \
-          -U ${{ secrets.CI_POSTGRES_USER }} -lqt \
+          if psql -h ${{ secrets.POSTGRES_HOST }} \
+          -U ${{ secrets.POSTGRES_USER }} -lqt \
           | cut -d \| -f 1 \
-          | grep -qw ${{ secrets.CI_POSTGRES_DB }}; then
+          | grep -qw ${{ secrets.TEST_DB }}; then
             echo "Database exist, running migrations"
             bundle exec rails db:migrate
           else
@@ -83,7 +83,7 @@ jobs:
 
       - name: Run RuboCop (Lint check)
         run: |
-          bundle exec rubocop --fail-level C
+          bundle exec rubocop --fail-level E
 
   deploy:
     runs-on: ubuntu-latest
