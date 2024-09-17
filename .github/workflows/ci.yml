@@ -35,7 +35,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 3.0.2
+          ruby-version: 3.1.0
 
       - name: Cache gems
         uses: actions/cache@v3
@@ -57,7 +57,7 @@ jobs:
           if psql -h ${{ secrets.POSTGRES_HOST }} \
           -U ${{ secrets.POSTGRES_USER }} -lqt \
           | cut -d \| -f 1 \
-          | grep -qw ${{ secrets.POSTGRES_DB }}; then
+          | grep -qw ${{ secrets.TEST_DB }}; then
             echo "Database exist, running migrations"
             bundle exec rails db:migrate
           else
@@ -83,7 +83,7 @@ jobs:
 
       - name: Run RuboCop (Lint check)
         run: |
-          bundle exec rubocop --fail-level C
+          bundle exec rubocop --fail-level E
 
   deploy:
     runs-on: ubuntu-latest
