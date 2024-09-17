@@ -1,5 +1,6 @@
 services:
   web:
+    image: ghcr.io/vinylhousegarage/device_expansion:production
     env_file:
       - .env.production
     command: |
