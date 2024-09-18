@@ -17,11 +17,11 @@ jobs:
         image: postgres:14.13
         env:
           POSTGRES_DB: ${{ secrets.TEST_DB }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_USER: ${{ secrets.TEST_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          POSTGRES_HOST: ${{ secrets.TEST_HOST }}
         options: >-
-          --health-cmd "pg_isready -U ${{ secrets.POSTGRES_USER }}" \
-          -h ${{ secrets.POSTGRES_HOST }} \
+          --health-cmd "pg_isready -U ${{ secrets.TEST_USER }} -h ${{ secrets.TEST_HOST }} || (echo 'PostgreSQL is not ready' && exit 1)" \
           --timeout=10 \
           --dbname=${{ secrets.TEST_DB }} \
           --health-interval 10s \
@@ -43,6 +43,7 @@ jobs:
           path: vendor/bundle
           key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
+            ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
             ${{ runner.os }}--gems
 
       - name: Install dependencies
@@ -54,36 +55,49 @@ jobs:
 
       - name: Set up the database
         run: |
-          if psql -h ${{ secrets.POSTGRES_HOST }} \
-          -U ${{ secrets.POSTGRES_USER }} -lqt \
+          if psql -h ${{ secrets.TEST_HOST }} \
+          -U ${{ secrets.TEST_USER }} -lqt \
           | cut -d \| -f 1 \
           | grep -qw ${{ secrets.TEST_DB }}; then
             echo "Database exist, running migrations"
-            bundle exec rails db:migrate
+            RAILS_ENV=test bundle exec rails db:migrate
           else
             echo "Database does not exist, creating database"
-            bundle exec rails db:create
+            RAILS_ENV=test bundle exec rails db:create
             echo "Running migrations"
-            bundle exec rails db:migrate
+            RAILS_ENV=test bundle exec rails db:migrate
             echo "Inserting seed data"
-            bundle exec rails db:seed
+            RAILS_ENV=test bundle exec rails db:seed
           fi
 
       - name: Log in to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Build and push Docker image
+      - name: Determine Docker tag
         run: |
-          docker build . -t ghcr.io/vinylhousegarage/device_expansion:${{ github.sha }}
-          docker push ghcr.io/vinylhousegarage/device_expansion:${{ github.sha }}
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            TAG="latest"
+          else
+            TAG="${{ github.sha }}"
+          fi
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+
+      - name: Check if Dockerfile or related files changed
+        run: |
+          if git diff --name-only HEAD~1 | grep -E "Dockerfile|path/to/other/related/files"; then
+            docker build -t ghcr.io/vinylhousegarage/device_expansion:${{ env.TAG }} .
+            docker push ghcr.io/vinylhousegarage/device_expansion:${{ env.TAG }}
+          else
+            echo "No changes in Dockerfile, skipping build and push."
+          fi
 
       - name: Run tests
         run: |
-          bundle exec rails test
+          RAILS_ENV=test bundle exec rails test
 
       - name: Run RuboCop (Lint check)
         run: |
-          bundle exec rubocop --fail-level E
+          bundle exec rubocop --fail-level W
 
   deploy:
     runs-on: ubuntu-latest
