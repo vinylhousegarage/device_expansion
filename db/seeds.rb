@@ -5,9 +5,9 @@
 #
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
-User.find_or_create_by(name: "ゲスト１")
-User.find_or_create_by(name: "ゲスト２")
-User.find_or_create_by(name: "ゲスト３")
-User.find_or_create_by(name: "ゲスト４")
-User.find_or_create_by(name: "ゲスト５")
-User.find_or_create_by(name: "集計担当")
+
+USERS = ["ゲスト１", "ゲスト２", "ゲスト３", "ゲスト４", "ゲスト５", "集計担当"]
+
+USERS.each do |user_name|
+  user = User.find_or_create_by(name: user_name)
+end
