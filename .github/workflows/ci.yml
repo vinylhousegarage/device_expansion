@@ -12,24 +12,19 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      CI_TEST_DB: ${{ secrets.TEST_DB }}
-      CI_TEST_USER: ${{ secrets.TEST_USER }}
-      CI_TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-      CI_TEST_HOST: ${{ secrets.TEST_HOST }}
 
     services:
       db:
         image: postgres:14.13
         env:
-          TEST_DB: ${{ env.CI_TEST_DB }}
-          TEST_USER: ${{ env.CI_TEST_USER }}
-          TEST_PASSWORD: ${{ env.CI_TEST_PASSWORD }}
-          TEST_HOST: ${{ env.CI_TEST_HOST }}
+          POSTGRES_DB: ${{ secrets.TEST_DB }}
+          POSTGRES_USER: ${{ secrets.TEST_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          POSTGRES_HOST: ${{ secrets.TEST_HOST }}
         options: >-
-          --health-cmd "pg_isready -U ${{ env.CI_TEST_USER }} -h ${{ env.CI_TEST_HOST }} || (echo 'PostgreSQL is not ready' && exit 1)" \
+          --health-cmd "pg_isready -U ${{ secrets.TEST_USER }} -h ${{ secrets.TEST_HOST }} || (echo 'PostgreSQL is not ready' && exit 1)" \
           --timeout=10 \
-          --dbname=${{ env.CI_TEST_DB }} \
+          --dbname=${{ secrets.TEST_DB }} \
           --health-interval 10s \
           --health-timeout 5s \
           --health-retries 10
@@ -60,20 +55,22 @@ jobs:
           bundle install --jobs 4 --retry 3
 
       - name: Set up the database
+        env:
+          RAILS_ENV: test
         run: |
-          if psql -h ${{ env.CI_TEST_HOST }} \
-          -U ${{ env.CI_TEST_USER }} -lqt \
+          if psql -h ${{ secrets.TEST_HOST }} \
+          -U ${{ secrets.TEST_USER }} -lqt \
           | cut -d \| -f 1 \
-          | grep -qw ${{ env.CI_TEST_DB }}; then
+          | grep -qw ${{ secrets.TEST_DB }}; then
             echo "Database exist, running migrations"
-            RAILS_ENV=test bundle exec rails db:migrate
+            bundle exec rails db:migrate
           else
             echo "Database does not exist, creating database"
-            RAILS_ENV=test bundle exec rails db:create
+            bundle exec rails db:create
             echo "Running migrations"
-            RAILS_ENV=test bundle exec rails db:migrate
+            bundle exec rails db:migrate
             echo "Inserting seed data"
-            RAILS_ENV=test bundle exec rails db:seed
+            bundle exec rails db:seed
           fi
 
       - name: Log in to GitHub Container Registry
