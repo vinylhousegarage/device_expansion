@@ -17,10 +17,10 @@ jobs:
       db:
         image: postgres:14.13
         env:
-          POSTGRES_DB: ${{ secrets.TEST_DB }}
-          POSTGRES_USER: ${{ secrets.TEST_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-          POSTGRES_HOST: ${{ secrets.TEST_HOST }}
+          TEST_DB: ${{ secrets.TEST_DB }}
+          TEST_USER: ${{ secrets.TEST_USER }}
+          TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+          TEST_HOST: ${{ secrets.TEST_HOST }}
         options: >-
           --health-cmd "pg_isready -U ${{ secrets.TEST_USER }} -h ${{ secrets.TEST_HOST }} || (echo 'PostgreSQL is not ready' && exit 1)" \
           --timeout=10 \
@@ -103,6 +103,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
+    env:
+      RAILS_ENV: production
 
     steps:
       - name: Check out the repository
