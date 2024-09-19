@@ -22,9 +22,9 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.TEST_PASSWORD }}
           POSTGRES_HOST: ${{ secrets.TEST_HOST }}
         options: >-
-          --health-cmd "pg_isready -U ${{ secrets.TEST_USER }} -h ${{ secrets.TEST_HOST }} || (echo 'PostgreSQL is not ready' && exit 1)" \
+          --health-cmd "pg_isready -U ${{ env.POSTGRES_USER }} -h ${{ env.POSTGRES_HOST }} || (echo 'PostgreSQL is not ready' && exit 1)" \
           --timeout=10 \
-          --dbname=${{ secrets.TEST_DB }} \
+          --dbname=${{ env.POSTGRES_DB }} \
           --health-interval 10s \
           --health-timeout 5s \
           --health-retries 10
