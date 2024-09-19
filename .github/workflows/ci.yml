@@ -12,6 +12,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      OPTIONS_TEST_DB: ${{ secrets.TEST_DB }}
+      OPTIONS_TEST_USER: ${{ secrets.TEST_USER }}
+      OPTIONS_TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+      OPTIONS_TEST_HOST: ${{ secrets.TEST_HOST }}
 
     services:
       db:
@@ -22,9 +27,9 @@ jobs:
           TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
           TEST_HOST: ${{ secrets.TEST_HOST }}
         options: >-
-          --health-cmd "pg_isready -U ${{ secrets.TEST_USER }} -h ${{ secrets.TEST_HOST }} || (echo 'PostgreSQL is not ready' && exit 1)" \
+          --health-cmd "pg_isready -U ${{ env.OPTIONS_TEST_USER }} -h ${{ env.OPTIONS_TEST_HOST }} || (echo 'PostgreSQL is not ready' && exit 1)" \
           --timeout=10 \
-          --dbname=${{ secrets.TEST_DB }} \
+          --dbname=${{ env.OPTIONS_TEST_DB }} \
           --health-interval 10s \
           --health-timeout 5s \
           --health-retries 10
