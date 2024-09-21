@@ -20,11 +20,6 @@ jobs:
           POSTGRES_DB: ${{ secrets.TEST_DB }}
           POSTGRES_USER: ${{ secrets.TEST_USER }}
           POSTGRES_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-        healthcheck:
-          test: ["CMD-SHELL", "pg_isready -U ${{ secrets.TEST_USER }} -h ${{ secrets.TEST_HOST }} -d ${{ secrets.TEST_DB }} || exit 1"]
-          interval: 10s
-          timeout: 5s
-          retries: 5
 
     steps:
       - name: Check out the repository
@@ -39,7 +34,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-20240920
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
             ${{ runner.os }}--gems
@@ -52,6 +47,18 @@ jobs:
           sudo apt-get install -y libpq-dev
           bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
+
+      - name: Wait for Postgres to be ready
+        run: |
+          for i in {1..10}; do
+            if pg_isready -h ${{ secrets.TEST_HOST }} -U ${{ secrets.TEST_USER }} -d ${{ secrets.TEST_DB }}; then
+              echo "Postgres is ready"
+              break
+            else
+              echo "Waiting for Postgres..."
+              sleep 5
+            fi
+          done
 
       - name: Set up the database
         env:
@@ -86,6 +93,12 @@ jobs:
           else
             TAG="${{ github.sha }}"
           fi
+
+          if [[ -z "${TAG}" ]]; then
+            echo "Failed to determine Docker tag"
+            exit 1
+          fi
+
           echo "TAG=${TAG}" >> $GITHUB_ENV
           echo "Docker tag set to: ${TAG}"
 
@@ -93,7 +106,7 @@ jobs:
         run: |
           set -e
           if [[ -z ${TAG} ]]; then
-            echo "TAG is not set, exiting." >&2
+            echo "TAG is not set, exiting."
             exit 1
           else
             if git diff --name-only origin/main...HEAD | grep -E "(Dockerfile|compose.yaml)"; then
@@ -128,7 +141,8 @@ jobs:
       - name: Trigger Render Deployment
         run: |
           set -e
-          RESPONSE=$(curl -X POST -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          RESPONSE=$(curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -H "Content-Type: application/json" \
           -d '{"clearCache":false}' \
           https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys --fail --show-error)
@@ -141,7 +155,8 @@ jobs:
       - name: Get latest Render Deploy ID and Status
         run: |
           set -e
-          RESPONSE=$(curl -X GET "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
+          RESPONSE=$(curl -X GET \
+          "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -H "Content-Type: application/json" --fail --show-error)
 
@@ -171,7 +186,8 @@ jobs:
       - name: Run migration on Render
         run: |
           set -e
-          curl -X POST -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -H "Content-Type: application/json" \
           -d '{"command": "rails db:migrate"}' \
           https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/ssh --fail --show-error
@@ -179,7 +195,8 @@ jobs:
       - name: Run seed on Render
         run: |
           set -e
-          curl -X POST -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -H "Content-Type: application/json" \
           -d '{"command": "rails db:seed"}' \
           https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/ssh --fail --show-error
@@ -188,11 +205,12 @@ jobs:
         run: |
           set -e
           if [[ -z "$RENDER_DEPLOY_ID" ]]; then
-            echo "Failed to retrieve Render Deploy ID. Deployment may not have been triggered correctly." >&2
+            echo "Failed to retrieve Render Deploy ID. Deployment may not have been triggered correctly."
             exit 1
           else
             echo "Render Deploy ID: $RENDER_DEPLOY_ID"
-            curl -X GET "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys/$RENDER_DEPLOY_ID/logs" \
+            curl -X GET \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys/$RENDER_DEPLOY_ID/logs" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" --fail --show-error
           fi
