@@ -58,11 +58,12 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
+  url: <%= ENV['TEST_DATABASE_URL'] %>
   database: <%= ENV['TEST_DB'] %>
   username: <%= ENV['TEST_USER'] %>
   password: <%= ENV['TEST_PASSWORD'] %>
   host: <%= ENV['TEST_HOST'] %>
-  port: 5432
+  port: <%= ENV.fetch("TEST_PORT", 5432) %>
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
 # ever seen by anyone, they now have access to your database.
