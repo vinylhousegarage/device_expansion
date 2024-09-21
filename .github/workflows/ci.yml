@@ -30,6 +30,11 @@ jobs:
         with:
           ruby-version: 3.1.0
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
       - name: Cache gems
         uses: actions/cache@v3
         with:
@@ -59,6 +64,11 @@ jobs:
               sleep 5
             fi
           done
+
+          if ! pg_isready -h ${{ secrets.TEST_HOST }} -U ${{ secrets.TEST_USER }} -d ${{ secrets.TEST_DB }}; then
+            echo "Postgres failed to start"
+            exit 1
+          fi
 
       - name: Set up the database
         env:
