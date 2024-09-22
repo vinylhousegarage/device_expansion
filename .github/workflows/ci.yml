@@ -13,14 +13,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      db:
-        image: postgres:14.13
-        env:
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-
     steps:
       - name: Check out the repository
         uses: actions/checkout@v3
@@ -53,44 +45,24 @@ jobs:
           bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
 
-      - name: Wait for Postgres to be ready
-        run: |
-          retries=10
-          interval=10
-          for i in $(seq 1 $retries); do
-            if pg_isready -h db -p 5432 -U ${{ secrets.POSTGRES_USER }} ; then
-              echo "Postgres is ready"
-              break
-            else
-              echo "Waiting for Postgres..."
-              sleep $interval
-            fi
-          done
+      - name: Install PostgreSQL
+        run: sudo apt-get install -y postgresql
 
-          if ! pg_isready -h db -p 5432 -U ${{ secrets.POSTGRES_USER }} ; then
-            echo "Postgres failed to start"
-            exit 1
-          fi
-
-      - name: Set up the database
-        env:
-          RAILS_ENV: test
+      - name: Set up the test database
         run: |
-          set -e
-          if psql -h ${{ secrets.TEST_HOST }} \
-          -U ${{ secrets.TEST_USER }} -lqt \
-          | cut -d \| -f 1 \
-          | grep -qw ${{ secrets.TEST_DB }}; then
-            echo "Database exist, running migrations"
-            bundle exec rails db:migrate
-          else
-            echo "Database does not exist, creating database"
-            bundle exec rails db:create
-            echo "Running migrations"
-            bundle exec rails db:migrate
-            echo "Inserting seed data"
-            bundle exec rails db:seed
-          fi
+          sudo service postgresql start
+          psql -c "CREATE DATABASE ${{ secrets.TEST_DB }};" -U postgres
+          psql -c "CREATE USER test_user WITH PASSWORD '${{ secrets.TEST_PASSWORD }}';" -U postgres
+          psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.TEST_DB }} TO ${{ secrets.TEST_USER }};" -U postgres
+
+      - name: Run database migrations
+        run: bundle exec rails db:migrate RAILS_ENV=test
+
+      - name: Seed the test database
+        run: bundle exec rails db:seed RAILS_ENV=test
+
+      - name: Run tests
+        run: bundle exec rails test RAILS_ENV=test
 
       - name: Log in to GitHub Container Registry
         run: |
@@ -128,13 +100,6 @@ jobs:
               echo "No changes in Dockerfile, skipping build and push."
             fi
           fi
-
-      - name: Run tests
-        env:
-          RAILS_ENV: test
-        run: |
-          set -e
-          bundle exec rails test
 
       - name: Run RuboCop (Lint check)
         run: |
