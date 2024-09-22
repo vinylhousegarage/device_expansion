@@ -13,18 +13,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-
     services:
       db:
         image: postgres:14.13
-        env_file:
-          - .env
-        environment:
-          POSTGRES_DB: $POSTGRES_DB
-          POSTGRES_USER: $POSTGRES_USER
-          POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+        env:
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
     steps:
       - name: Check out the repository
@@ -61,7 +56,7 @@ jobs:
       - name: Wait for Postgres to be ready
         run: |
           for i in {1..10}; do
-            if pg_isready -h db -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} ; then
+            if pg_isready -h db -p 5432 -U ${{ secrets.POSTGRES_USER }} ; then
               echo "Postgres is ready"
               break
             else
@@ -70,7 +65,7 @@ jobs:
             fi
           done
 
-          if ! pg_isready -h db -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} ; then
+          if ! pg_isready -h db -p 5432 -U ${{ secrets.POSTGRES_USER }} ; then
             echo "Postgres failed to start"
             exit 1
           fi
