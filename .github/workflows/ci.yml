@@ -51,9 +51,9 @@ jobs:
       - name: Set up the test database
         run: |
           sudo service postgresql start
-          PGPASSWORD=${{ secrets.TEST_PASSWORD }} psql -c "CREATE DATABASE ${{ secrets.TEST_DB }};" -U postgres
-          PGPASSWORD=${{ secrets.TEST_PASSWORD }} psql -c "CREATE USER ${{ secrets.TEST_USER }} WITH PASSWORD '${{ secrets.TEST_PASSWORD }}';" -U postgres
-          PGPASSWORD=${{ secrets.TEST_PASSWORD }} psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.TEST_DB }} TO ${{ secrets.TEST_USER }};" -U postgres
+          PGPASSWORD=${{ secrets.TEST_PASSWORD }} psql -h localhost -U postgres -c "CREATE DATABASE ${{ secrets.TEST_DB }};"
+          PGPASSWORD=${{ secrets.TEST_PASSWORD }} psql -h localhost -U postgres -c "CREATE USER ${{ secrets.TEST_USER }} WITH PASSWORD '${{ secrets.TEST_PASSWORD }}';"
+          PGPASSWORD=${{ secrets.TEST_PASSWORD }} psql -h localhost -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.TEST_DB }} TO ${{ secrets.TEST_USER }};"
 
       - name: Run database migrations
         run: bundle exec rails db:migrate RAILS_ENV=test
