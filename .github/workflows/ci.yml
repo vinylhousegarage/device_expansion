@@ -53,11 +53,17 @@ jobs:
           sudo service postgresql start
           sleep 10
 
-      - name: Check PostgreSQL service status
-        run: sudo service postgresql status
+      - name: Update pg_hba.conf for md5 authentication
+        run: |
+          sudo sed -i "s/peer/md5/g" /etc/postgresql/14/main/pg_hba.conf
+          sudo sed -i "s/ident/md5/g" /etc/postgresql/14/main/pg_hba.conf
+          sudo service postgresql restart
 
-      - name: Check PostgreSQL logs
-        run: cat /var/log/postgresql/postgresql-14-main.log
+      - name: Set up PostgreSQL user password
+        run: |
+          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql \
+          -h localhost -U postgres \
+          -c "ALTER USER postgres WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';"
 
       - name: Set up the test database
         run: |
