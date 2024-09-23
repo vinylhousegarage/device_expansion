@@ -68,11 +68,45 @@ jobs:
           done
           echo "PostgreSQL is ready"
 
+      - name: Update pg_hba.conf for md5 authentication
+        run: |
+          sudo sed -i "s/peer/md5/g" /etc/postgresql/14/main/pg_hba.conf
+          sudo sed -i "s/ident/md5/g" /etc/postgresql/14/main/pg_hba.conf
+          sudo sed -i "s/scram-sha-256/md5/g" /etc/postgresql/14/main/pg_hba.conf
+          sudo service postgresql restart
+
+      - name: Check postgesql restart
+        run: |
+          until pg_isready -h localhost -p 5432; do
+            echo "Waiting for PostgreSQL..."
+            sleep 1
+          done
+          echo "PostgreSQL is ready"
+
+      - name: Check Update md5 authentication
+        run: sudo cat /etc/postgresql/14/main/pg_hba.conf
+
+      - name: Reload PostgreSQL configuration
+        run: |
+          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql \
+          -h localhost -U postgres \
+          -c "SELECT pg_reload_conf();"
+
+      - name: Set up PostgreSQL user password
+        run: |
+          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql \
+          -h localhost -U postgres \
+          -c "ALTER USER postgres WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';"
+
       - name: Set up the test database
         run: |
-          psql -c "SELECT 'CREATE DATABASE ${{ secrets.POSTGRES_DB }}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${{ secrets.POSTGRES_DB }}');" -U postgres
-          psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" -U postgres
-          psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.POSTGRES_DB }} TO ${{ secrets.POSTGRES_USER }};" -U postgres
+          psql -c "SELECT 'CREATE DATABASE ${{ secrets.POSTGRES_DB }}' \
+          WHERE NOT EXISTS (SELECT FROM pg_database \
+          WHERE datname = '${{ secrets.POSTGRES_DB }}');" -U postgres
+          psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} \
+          WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" -U postgres
+          psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.POSTGRES_DB }} \
+          TO ${{ secrets.POSTGRES_USER }};" -U postgres
 
       - name: Run database migrations
         run: bundle exec rails db:migrate RAILS_ENV=test
