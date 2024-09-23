@@ -54,6 +54,12 @@ jobs:
       - name: Check PostgreSQL status
         run: sudo service postgresql status
 
+      - name: Check PostgreSQL logs
+        run: tail -n 100 /var/log/postgresql/postgresql-14-main.log
+
+      - name: List PostgreSQL log directory
+        run: ls -l /var/log/postgresql
+
       - name: Wait for PostgreSQL to be ready
         run: |
           until pg_isready -h localhost -p 5432; do
