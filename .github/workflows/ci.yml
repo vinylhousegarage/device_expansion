@@ -72,6 +72,7 @@ jobs:
         run: |
           sudo sed -i "s/peer/md5/g" /etc/postgresql/14/main/pg_hba.conf
           sudo sed -i "s/ident/md5/g" /etc/postgresql/14/main/pg_hba.conf
+          sudo sed -i "s/scram-sha-256/md5/g" /etc/postgresql/14/main/pg_hba.conf
           sudo service postgresql restart
 
       - name: Check postgesql restart
@@ -84,6 +85,12 @@ jobs:
 
       - name: Check Update md5 authentication
         run: sudo cat /etc/postgresql/14/main/pg_hba.conf
+
+      - name: Reload PostgreSQL configuration
+        run: |
+          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql \
+          -h localhost -U postgres \
+          -c "SELECT pg_reload_conf();"
 
       - name: Set up PostgreSQL user password
         run: |
