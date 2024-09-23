@@ -55,7 +55,7 @@ jobs:
         run: sudo service postgresql status
 
       - name: Check PostgreSQL logs for errors
-        run: tail -n 100 /var/log/postgresql/postgresql-14-main.log | grep "FATAL"
+        run: tail -n 100 /var/log/postgresql/postgresql-14-main.log | grep "FATAL" || true
 
       - name: List PostgreSQL log directory
         run: ls -l /var/log/postgresql
