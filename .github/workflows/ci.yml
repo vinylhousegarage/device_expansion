@@ -46,14 +46,14 @@ jobs:
           bundle install --jobs 4 --retry 3
 
       - name: Install PostgreSQL
-        run: sudo apt-get install -y postgresql
+        run: sudo apt-get install -y postgresql-14.13
 
-      - name: Set up the test database
+      - name: Set up PostgreSQL
         run: |
           sudo service postgresql start
-          psql -c "CREATE DATABASE ${{ secrets.TEST_DB_NAME }};" -U postgres
-          psql -c "CREATE USER ${{ secrets.TEST_DB_USER }} WITH PASSWORD '${{ secrets.TEST_DB_PASSWORD }}';" -U postgres
-          psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.TEST_DB_NAME }} TO ${{ secrets.TEST_DB_USER }};" -U postgres
+          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql \
+          -h localhost -U postgres -c \
+          "SELECT 'CREATE DATABASE test_db' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'test_db')\gexec"
 
       - name: Run database migrations
         run: bundle exec rails db:migrate RAILS_ENV=test
