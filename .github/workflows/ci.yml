@@ -51,9 +51,15 @@ jobs:
       - name: Set up PostgreSQL
         run: |
           sudo service postgresql start
-          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql \
-          -h localhost -U postgres -c \
+          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql -h localhost -U postgres -c "ALTER USER postgres WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';"
+          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql -h localhost -U postgres -c \
           "SELECT 'CREATE DATABASE test_db' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'test_db')\gexec"
+
+      - name: Update pg_hba.conf for md5 authentication
+        run: |
+          sudo sed -i "s/peer/md5/g" /etc/postgresql/14/main/pg_hba.conf
+          sudo sed -i "s/ident/md5/g" /etc/postgresql/14/main/pg_hba.conf
+          sudo service postgresql restart
 
       - name: Run database migrations
         run: bundle exec rails db:migrate RAILS_ENV=test
