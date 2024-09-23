@@ -48,18 +48,22 @@ jobs:
       - name: Install PostgreSQL
         run: sudo apt-get install -y postgresql-14
 
-      - name: Set up PostgreSQL
+      - name: Start PostgreSQL and wait
         run: |
           sudo service postgresql start
-          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql -h localhost -U postgres -c "ALTER USER postgres WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';"
-          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql -h localhost -U postgres -c \
-          "SELECT 'CREATE DATABASE test_db' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'test_db')\gexec"
+          sleep 10
 
-      - name: Update pg_hba.conf for md5 authentication
+      - name: Check PostgreSQL service status
+        run: sudo service postgresql status
+
+      - name: Check PostgreSQL logs
+        run: cat /var/log/postgresql/postgresql-14-main.log
+
+      - name: Set up the test database
         run: |
-          sudo sed -i "s/peer/md5/g" /etc/postgresql/14/main/pg_hba.conf
-          sudo sed -i "s/ident/md5/g" /etc/postgresql/14/main/pg_hba.conf
-          sudo service postgresql restart
+          psql -c "SELECT 'CREATE DATABASE ${{ secrets.POSTGRES_DB }}' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${{ secrets.POSTGRES_DB }}');" -U postgres
+          psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" -U postgres
+          psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.POSTGRES_DB }} TO ${{ secrets.POSTGRES_USER }};" -U postgres
 
       - name: Run database migrations
         run: bundle exec rails db:migrate RAILS_ENV=test
