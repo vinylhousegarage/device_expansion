@@ -48,10 +48,19 @@ jobs:
       - name: Install PostgreSQL
         run: sudo apt-get install -y postgresql-14
 
-      - name: Start PostgreSQL and wait
+      - name: Start PostgreSQL
+        run: sudo service postgresql start
+
+      - name: Check PostgreSQL status
+        run: sudo service postgresql status
+
+      - name: Wait for PostgreSQL to be ready
         run: |
-          sudo service postgresql start
-          sleep 10
+          until pg_isready -h localhost -p 5432; do
+            echo "Waiting for PostgreSQL..."
+            sleep 1
+          done
+          echo "PostgreSQL is ready"
 
       - name: Update pg_hba.conf for md5 authentication
         run: |
