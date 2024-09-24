@@ -86,11 +86,6 @@ jobs:
       - name: Check Update md5 authentication
         run: sudo cat /etc/postgresql/14/main/pg_hba.conf
 
-      - name: Set up PostgreSQL user password
-        run: |
-          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }} psql \
-          -h localhost -U postgres \
-          -c "ALTER USER postgres WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';"
       - name: Set up PostgreSQL user and database
         run: |
           set -e
