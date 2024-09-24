@@ -71,6 +71,10 @@ jobs:
           done
           echo "PostgreSQL is ready"
 
+      - name: Check Update md5 authentication
+        run: |
+          grep "md5" /etc/postgresql/14/main/pg_hba.conf
+
       - name: Set PostgreSQL superuser password
         run: |
           psql -U postgres -c "ALTER USER postgres WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';"
