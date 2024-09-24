@@ -73,7 +73,7 @@ jobs:
 
       - name: Check Update md5 authentication
         run: |
-          grep "md5" /etc/postgresql/14/main/pg_hba.conf
+          sudo grep "md5" /etc/postgresql/14/main/pg_hba.conf
 
       - name: Set PostgreSQL superuser password
         run: |
