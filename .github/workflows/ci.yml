@@ -81,15 +81,15 @@ jobs:
       - name: Set up PostgreSQL user and database
         run: |
           set -e
-          psql -U postgres -p 5432 -c "ALTER USER postgres PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';"
+          psql -U postgres_user -p 5432 -c "ALTER USER postgres PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';"
 
-          psql -U postgres -p 5432 -tc "SELECT 1 FROM pg_roles WHERE rolname='${{ secrets.POSTGRES_USER }}'" | grep -q 1 || \
-          psql -U postgres -p 5432 -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';"
+          psql -U postgres_user -p 5432 -tc "SELECT 1 FROM pg_roles WHERE rolname='${{ secrets.POSTGRES_USER }}'" | grep -q 1 || \
+          psql -U postgres_user -p 5432 -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';"
 
-          psql -U postgres -p 5432 -tc "SELECT 1 FROM pg_database WHERE datname='${{ secrets.POSTGRES_DB }}'" | grep -q 1 || \
-          psql -U postgres -p 5432 -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} OWNER ${{ secrets.POSTGRES_USER }};"
+          psql -U postgres_user -p 5432 -tc "SELECT 1 FROM pg_database WHERE datname='${{ secrets.POSTGRES_DB }}'" | grep -q 1 || \
+          psql -U postgres_user -p 5432 -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} OWNER ${{ secrets.POSTGRES_USER }};"
 
-          psql -U postgres -p 5432 -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.POSTGRES_DB }} TO ${{ secrets.POSTGRES_USER }};"
+          psql -U postgres_user -p 5432 -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.POSTGRES_DB }} TO ${{ secrets.POSTGRES_USER }};"
         env:
           PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
