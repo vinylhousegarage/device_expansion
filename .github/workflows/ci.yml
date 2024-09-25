@@ -78,7 +78,7 @@ jobs:
         run: |
           sudo grep "md5" /etc/postgresql/14/main/pg_hba.conf
 
-      - name: Set up PostgreSQL user and database
+      - name: Setup PostgreSQL user and database
         run: |
           set -e
           psql -U postgres_user -p 5432 -c "ALTER USER postgres PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';"
