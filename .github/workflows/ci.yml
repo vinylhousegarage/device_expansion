@@ -13,144 +13,132 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      db:
+        image: postgres:14.13
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        ports:
+          - 5432:5432
+
     steps:
+      # リモートリポジトリをチェックアウト
       - name: Check out the repository
         uses: actions/checkout@v3
 
+      # Ruby をセットアップ
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1.0
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
+      # ビルド時間を短縮するため、vendor/bundle に gem をキャッシュしインストール
       - name: Cache gems
         uses: actions/cache@v3
         with:
           path: vendor/bundle
+      # Gemfile.lock を基に gem のキャッシュを利用し、次回のビルドでインストール時間を短縮
           key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-v1
           restore-keys: |
             ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-v1
             ${{ runner.os }}-gems-v1
 
-      - name: Install dependencies
+      # PostgreSQL の応答確認
+      - name: Wait for PostgreSQL to be ready
         run: |
-          set -e
-          sudo apt-get update
-          sudo apt-get install -y libpq-dev
-          bundle config set path 'vendor/bundle'
-          bundle install --jobs 4 --retry 3
-
-      - name: Install PostgreSQL
-        run: sudo apt-get install -y postgresql-14
-
-      - name: Start PostgreSQL
-        run: |
-          sudo service postgresql start
-          until pg_isready -h localhost -p 5432; do
+          until pg_isready -h db -p 5432; do
             echo "Waiting for PostgreSQL..."
             sleep 1
           done
           echo "PostgreSQL is ready"
 
-      - name: Check PostgreSQL status
-        run: sudo service postgresql status || echo "PostgreSQL status check failed"
-
-      - name: Update pg_hba.conf for md5 authentication
+      # libpq-dev のインストール
+      - name: Install dependencies
         run: |
-          sudo sed -i "s/peer/md5/g" /etc/postgresql/14/main/pg_hba.conf
-          sudo sed -i "s/ident/md5/g" /etc/postgresql/14/main/pg_hba.conf
-          sudo sed -i "s/scram-sha-256/md5/g" /etc/postgresql/14/main/pg_hba.conf
-          sudo service postgresql restart
-          until pg_isready -h localhost -p 5432; do
-            echo "Waiting for PostgreSQL after restart..."
-            sleep 1
-          done
-          echo "PostgreSQL is ready"
+          sudo apt-get update
+          sudo apt-get install -y libpq-dev
+          bundle config set path 'vendor/bundle'
+          bundle install --jobs 4 --retry 3
 
-      - name: Check postgresql status
-        run: sudo service postgresql status
+      # リントチェック
+      - name: Run RuboCop (Lint check)
+        run: bundle exec rubocop --fail-level W
 
-      - name: Check Update md5 authentication
-        run: |
-          sudo grep "md5" /etc/postgresql/14/main/pg_hba.conf
+      # dbコンテナ内に POSTGRES_DB を生成
+      - name: Run Create database
+        run: bundle exec rails db:create RAILS_ENV=test
 
-      - name: Setup PostgreSQL user and database
-        run: |
-          set -e
-          psql -U postgres_user -h localhost -p 5432 -c "ALTER USER postgres PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';"
-
-          psql -U postgres_user -h localhost -p 5432 -tc "SELECT 1 FROM pg_roles WHERE rolname='${{ secrets.POSTGRES_USER }}'" | grep -q 1 || \
-          psql -U postgres_user -h localhost -p 5432 -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';"
-
-          psql -U postgres_user -h localhost -p 5432 -tc "SELECT 1 FROM pg_database WHERE datname='${{ secrets.POSTGRES_DB }}'" | grep -q 1 || \
-          psql -U postgres_user -h localhost -p 5432 -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} OWNER ${{ secrets.POSTGRES_USER }};"
-
-          psql -U postgres_user -h localhost -p 5432 -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.POSTGRES_DB }} TO ${{ secrets.POSTGRES_USER }};"
-        env:
-          PGPASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-
+      # dbコンテナ内の POSTGRES_DB をマイグレート
       - name: Run database migrations
         run: bundle exec rails db:migrate RAILS_ENV=test
 
-      - name: Seed the test database
+      # マイグレートした POSTGRES_DB に初期データを挿入
+      - name: Run Seed the test database
         run: bundle exec rails db:seed RAILS_ENV=test
 
+      # テストを実行
       - name: Run tests
         run: bundle exec rails test RAILS_ENV=test
 
+      # GHCR にログイン
       - name: Log in to GitHub Container Registry
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          if [ $? -ne 0 ]; then
-            echo "Retrying Docker login..."
-            sleep 5
-            docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            if [ $? -ne 0 ]; then
-              echo "Docker login failed after retry."
-              exit 1
-            fi
-          fi
 
-      - name: Determine Docker tag
+      # CI 環境での Git インストール確認
+      - name: Ensure Git is installed
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            TAG="latest"
-          else
-            TAG="${{ github.sha }}"
-
-          fi
-
-          if [[ -z "${TAG}" ]]; then
-            echo "Failed to determine Docker tag"
+          if ! command -v git &> /dev/null; then
+            echo "Error: Git is not installed."
             exit 1
           fi
 
-          echo "TAG=${TAG}" >> $GITHUB_ENV
-          echo "Docker tag set to: ${TAG}"
-
-      - name: Check if Dockerfile or related files changed
+      # Git repository の存在確認
+      - name: Ensure the directory is a Git repository
         run: |
-          set -e
-          git fetch origin main
-          if [[ -z "${TAG}" ]]; then
-            echo "TAG is not set, exiting."
+          if [ ! -d ".git" ]; then
+            echo "Error: This is not a Git repository."
             exit 1
-          else
-            if git diff --name-only origin/main...HEAD | grep -E "(Dockerfile|compose.yaml)" --exit-code; then
-              docker build -t ghcr.io/vinylhousegarage/device_expansion:"${TAG}" .
-              docker push ghcr.io/vinylhousegarage/device_expansion:"${TAG}"
+          fi
+
+      # 書き込み権限確認
+      - name: Check write permission for commit_list.txt
+        run: |
+          touch commit_list.txt || { echo "Failed to create commit_list.txt due to insufficient permissions"; exit 1; }
+
+      # Dockerイメージ に差分があったコミットの抽出
+      - name: Get commits with Dockerfile or compose.yaml changes
+        run: |
+          git log --pretty=format:"%H" --name-only | grep -E "(Dockerfile|compose.yaml)" -B 1 | grep -E "^[a-f0-9]{40}$" > commit_list.txt
+          if [ ! -s commit_list.txt ]; then
+            echo "No commits with Dockerfile or compose.yaml changes found."
+            exit 0
+          fi
+
+      # 差分がある Dockerイメージ を GHCR にビルドしてプッシュ
+      - name: Process each commit
+        run: |
+          echo "Commits to process: $(cat commit_list.txt)"
+          while IFS= read -r COMMIT; do
+            echo "Processing commit: $COMMIT"
+            if git diff --name-only $COMMIT^ $COMMIT | grep -E "(Dockerfile|compose.yaml)"; then
+              echo "Changes detected in $COMMIT, proceeding with build and push."
+              docker build -t ghcr.io/vinylhousegarage/device_expansion:$COMMIT .
+              docker push ghcr.io/vinylhousegarage/device_expansion:$COMMIT
             else
-              echo "No changes in Dockerfile, skipping build and push."
+              echo "No changes in $COMMIT, skipping build and push."
             fi
-          fi
+          done < commit_list.txt
 
-      - name: Run RuboCop (Lint check)
+      # コミットに紐づいた Dockerイメージ の最新イメージに latest のタグを付ける
+      - name: Tag the latest commit as "latest"
         run: |
-          bundle exec rubocop --fail-level W
+          LATEST_COMMIT=$(git rev-parse HEAD)
+          echo "Tagging $LATEST_COMMIT as latest"
+          docker tag ghcr.io/vinylhousegarage/device_expansion:$LATEST_COMMIT ghcr.io/vinylhousegarage/device_expansion:latest
+          docker push ghcr.io/vinylhousegarage/device_expansion:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -159,12 +147,15 @@ jobs:
       RAILS_ENV: production
 
     steps:
+      # リモートリポジトリをチェック
       - name: Check out the repository
         uses: actions/checkout@v3
 
+      # mainブランチへのマージをトリガーとして Render API へデプロイ
       - name: Trigger Render Deployment
         run: |
           set -e
+      # デプロイキャッシュはクリアしない設定
           RESPONSE=$(curl -X POST \
           --verbose \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
@@ -172,14 +163,20 @@ jobs:
           -d '{"clearCache":false}' \
           https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys --fail --show-error)
 
+      # レスポンスを確認
+          echo "Response: $RESPONSE"
+
+      # デプロイに失敗した場合のエラーハンドリング
           if [[ -z "$RESPONSE" ]]; then
             echo "Failed to trigger deployment"
             exit 1
           fi
 
+      # jqをインストール
       - name: Install jq
         run: sudo apt-get install -y jq
 
+      # Render API からデプロイ情報のレスポンスを取得
       - name: Get latest Render Deploy ID and Status
         run: |
           set -e
@@ -189,22 +186,27 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -H "Content-Type: application/json" --fail --show-error)
 
+        # 取得したデプロイ情報から最新のデプロイレコードを抽出
           LATEST_DEPLOY=$(echo "$RESPONSE" | jq -r '. | sort_by(.createdAt) | last')
           if [[ -z "$LATEST_DEPLOY" ]]; then
             echo "Failed to retrieve the latest deploy"
             exit 1
           fi
 
+        # 最新のデプロイIDを RENDER_DEPLOY_ID に代入し、ステータスを STATUS に代入
           RENDER_DEPLOY_ID=$(echo "$LATEST_DEPLOY" | jq -r '.id')
           STATUS=$(echo "$LATEST_DEPLOY" | jq -r '.status')
 
+        # RENDER_DEPLOY_ID の空チェック
           if [[ -z "$RENDER_DEPLOY_ID" ]]; then
             echo "Failed to extract deployment details"
             exit 1
           fi
 
+        # RENDER_DEPLOY_ID を GITHUB_ENV で管理
           echo "RENDER_DEPLOY_ID=$RENDER_DEPLOY_ID" >> $GITHUB_ENV
 
+        # STATUS で成否確認
           if [[ "$STATUS" != "succeeded" ]]; then
             echo "Deployment failed with status: $STATUS"
             exit 1
@@ -212,6 +214,7 @@ jobs:
             echo "Deployment succeeded with status: $STATUS"
           fi
 
+      # Render の PostgreSQL をマイグレート
       - name: Run migration on Render
         run: |
           set -e
@@ -222,6 +225,7 @@ jobs:
           -d '{"command": "rails db:migrate"}' \
           https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/ssh --fail --show-error
 
+      # Render の PostgreSQL に初期データを挿入
       - name: Run seed on Render
         run: |
           set -e
@@ -232,6 +236,7 @@ jobs:
           -d '{"command": "rails db:seed"}' \
           https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/ssh --fail --show-error
 
+      # 最新デプロイのログを取得
       - name: Log Render Deploy ID & Get Logs
         run: |
           set -e
