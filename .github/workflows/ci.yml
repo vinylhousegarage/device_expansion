@@ -45,6 +45,15 @@ jobs:
             ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-v1
             ${{ runner.os }}-gems-v1
 
+      # PostgreSQL関連のライブラリと gem（development/test用を含む）をインストール
+      - name: Install dependencies
+        run: |
+          set -e
+          sudo apt-get update
+          sudo apt-get install -y libpq-dev
+          bundle config set path 'vendor/bundle'
+          bundle install --with development test --jobs 4 --retry 3
+
       # RuboCop を実行してコードスタイルを検証
       - name: Run RuboCop (Lint check)
         run: bundle exec rubocop --fail-level W
