@@ -34,25 +34,16 @@ jobs:
         with:
           ruby-version: 3.1.0
 
-      # ビルド時間を短縮するため、vendor/bundle に gem をキャッシュしインストール
+      # ビルド時間を短縮する為、vendor/bundle に gem をキャッシュしインストール
+      # Gemfile.lock を基に gem のキャッシュを利用し、次回のビルドでインストール時間を短縮
       - name: Cache gems
         uses: actions/cache@v3
         with:
           path: vendor/bundle
-      # Gemfile.lock を基に gem のキャッシュを利用し、次回のビルドでインストール時間を短縮
           key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-v1
           restore-keys: |
             ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-v1
             ${{ runner.os }}-gems-v1
-
-      # PostgreSQL の応答を確認
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          until pg_isready -h db -p 5432; do
-            echo "Waiting for PostgreSQL..."
-            sleep 1
-          done
-          echo "PostgreSQL is ready"
 
       # libpq-dev のインストール
       - name: Install dependencies
@@ -61,6 +52,25 @@ jobs:
           sudo apt-get install -y libpq-dev
           bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
+
+      # PostgreSQL の応答を確認（最大で60秒間待機）
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          MAX_WAIT=60
+          SECONDS_WAITED=0
+
+          until pg_isready -h db -p 5432 || [ $SECONDS_WAITED -eq $MAX_WAIT ]; do
+            echo "Waiting for PostgreSQL... ($SECONDS_WAITED/$MAX_WAIT)"
+            sleep 1
+            SECONDS_WAITED=$((SECONDS_WAITED+1))
+          done
+
+          if [ $SECONDS_WAITED -eq $MAX_WAIT ]; then
+            echo "PostgreSQL is not ready after $MAX_WAIT seconds."
+            exit 1
+          else
+            echo "PostgreSQL is ready."
+          fi
 
       # RuboCop を実行してコードスタイルを検証
       - name: Run RuboCop (Lint check)
