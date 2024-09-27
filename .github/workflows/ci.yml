@@ -45,7 +45,7 @@ jobs:
             ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-v1
             ${{ runner.os }}-gems-v1
 
-      # PostgreSQL の応答確認
+      # PostgreSQL の応答を確認
       - name: Wait for PostgreSQL to be ready
         run: |
           until pg_isready -h db -p 5432; do
@@ -62,7 +62,7 @@ jobs:
           bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
 
-      # リントチェック
+      # RuboCop を実行してコードスタイルを検証
       - name: Run RuboCop (Lint check)
         run: bundle exec rubocop --fail-level W
 
@@ -87,7 +87,7 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      # CI 環境での Git インストール確認
+      # CI 環境での Git のインストール確認
       - name: Ensure Git is installed
         run: |
           if ! command -v git &> /dev/null; then
@@ -95,7 +95,7 @@ jobs:
             exit 1
           fi
 
-      # Git repository の存在確認
+      # Git repository が存在するか確認
       - name: Ensure the directory is a Git repository
         run: |
           if [ ! -d ".git" ]; then
@@ -103,12 +103,12 @@ jobs:
             exit 1
           fi
 
-      # 書き込み権限確認
+      # 書き込み権限の確認
       - name: Check write permission for commit_list.txt
         run: |
           touch commit_list.txt || { echo "Failed to create commit_list.txt due to insufficient permissions"; exit 1; }
 
-      # Dockerイメージ に差分があったコミットの抽出
+      # Dockerイメージ に差分があるコミットの抽出
       - name: Get commits with Dockerfile or compose.yaml changes
         run: |
           git log --pretty=format:"%H" --name-only | grep -E "(Dockerfile|compose.yaml)" -B 1 | grep -E "^[a-f0-9]{40}$" > commit_list.txt
@@ -147,15 +147,17 @@ jobs:
       RAILS_ENV: production
 
     steps:
-      # リモートリポジトリをチェック
+      # リモートリポジトリをチェックアウト
       - name: Check out the repository
         uses: actions/checkout@v3
 
       # mainブランチへのマージをトリガーとして Render API へデプロイ
+      # デプロイキャッシュはクリアしない設定
+      # Render API からのレスポンスを出力して確認
+      # RESPONSE が空でないかを確認（エラーなら終了）
       - name: Trigger Render Deployment
         run: |
           set -e
-      # デプロイキャッシュはクリアしない設定
           RESPONSE=$(curl -X POST \
           --verbose \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
@@ -163,10 +165,8 @@ jobs:
           -d '{"clearCache":false}' \
           https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys --fail --show-error)
 
-      # レスポンスを確認
           echo "Response: $RESPONSE"
 
-      # デプロイに失敗した場合のエラーハンドリング
           if [[ -z "$RESPONSE" ]]; then
             echo "Failed to trigger deployment"
             exit 1
@@ -176,8 +176,8 @@ jobs:
       - name: Install jq
         run: sudo apt-get install -y jq
 
-      # Render API からデプロイ情報のレスポンスを取得
-      - name: Get latest Render Deploy ID and Status
+      # Render API からデプロイ情報を取得
+      - name: Get Render Deployment Data
         run: |
           set -e
           RESPONSE=$(curl -X GET \
@@ -186,27 +186,41 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -H "Content-Type: application/json" --fail --show-error)
 
-        # 取得したデプロイ情報から最新のデプロイレコードを抽出
+          echo "API Response: $RESPONSE"
+
+      # デプロイ情報を確認し、RENDER_DEPLOY_ID と STATUS に格納
+      - name: Extract Deployment ID and Status
+        run: |
           LATEST_DEPLOY=$(echo "$RESPONSE" | jq -r '. | sort_by(.createdAt) | last')
           if [[ -z "$LATEST_DEPLOY" ]]; then
             echo "Failed to retrieve the latest deploy"
             exit 1
           fi
 
-        # 最新のデプロイIDを RENDER_DEPLOY_ID に代入し、ステータスを STATUS に代入
           RENDER_DEPLOY_ID=$(echo "$LATEST_DEPLOY" | jq -r '.id')
           STATUS=$(echo "$LATEST_DEPLOY" | jq -r '.status')
 
-        # RENDER_DEPLOY_ID の空チェック
           if [[ -z "$RENDER_DEPLOY_ID" ]]; then
             echo "Failed to extract deployment details"
             exit 1
           fi
 
-        # RENDER_DEPLOY_ID を GITHUB_ENV で管理
+          echo "Deployment ID: $RENDER_DEPLOY_ID"
+          echo "Deployment Status: $STATUS"
+
+      # デプロイIDを環境変数に設定
+      - name: Set Deployment ID to Environment
+        run: |
           echo "RENDER_DEPLOY_ID=$RENDER_DEPLOY_ID" >> $GITHUB_ENV
 
-        # STATUS で成否確認
+      # デプロイステータスが "succeeded" かどうか確認
+      - name: Check Deployment Status
+        run: |
+          if [[ -z "$STATUS" ]]; then
+            echo "Failed to retrieve deployment status"
+            exit 1
+          fi
+
           if [[ "$STATUS" != "succeeded" ]]; then
             echo "Deployment failed with status: $STATUS"
             exit 1
