@@ -15,7 +15,7 @@ jobs:
 
     services:
       db:
-        image: postgres:14
+        image: postgres:14.13
         env:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
@@ -52,11 +52,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libpq-dev
           bundle config set path 'vendor/bundle'
-          bundle install --with development test --jobs 4 --retry 3
+          bundle install --jobs 4 --retry 3
+
+      # PostgreSQL の応答を確認
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h db -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL to be ready..."
+            sleep 5
+          done
 
       # RuboCop を実行してコードスタイルを検証
       - name: Run RuboCop (Lint check)
-        run: bundle exec rubocop -A --fail-level W
+        run: bundle exec rubocop --fail-level W
 
       # dbコンテナ内に POSTGRES_DB を生成
       - name: Run Create database
