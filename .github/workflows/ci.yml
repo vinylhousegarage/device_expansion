@@ -45,33 +45,6 @@ jobs:
             ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-v1
             ${{ runner.os }}-gems-v1
 
-      # libpq-dev のインストール
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libpq-dev
-          bundle config set path 'vendor/bundle'
-          bundle install --jobs 4 --retry 3
-
-      # PostgreSQL の応答を確認（最大で60秒間待機）
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          MAX_WAIT=60
-          SECONDS_WAITED=0
-
-          until pg_isready -h db -p 5432 || [ $SECONDS_WAITED -eq $MAX_WAIT ]; do
-            echo "Waiting for PostgreSQL... ($SECONDS_WAITED/$MAX_WAIT)"
-            sleep 1
-            SECONDS_WAITED=$((SECONDS_WAITED+1))
-          done
-
-          if [ $SECONDS_WAITED -eq $MAX_WAIT ]; then
-            echo "PostgreSQL is not ready after $MAX_WAIT seconds."
-            exit 1
-          else
-            echo "PostgreSQL is ready."
-          fi
-
       # RuboCop を実行してコードスタイルを検証
       - name: Run RuboCop (Lint check)
         run: bundle exec rubocop --fail-level W
