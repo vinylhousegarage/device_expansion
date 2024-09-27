@@ -20,7 +20,8 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 6 } %>
-  host: <%= ENV['POSTGRES_HOST']
+  host: <%= ENV.fetch("POSTGRES_HOST", "db") %>
+  port: <%= ENV.fetch("POSTGRES_PORT", 5432) %>
 
 development:
   <<: *default
@@ -38,7 +39,7 @@ development:
   # Connect on a TCP socket. Omitted by default since the client uses a
   # domain socket that doesn't need configuration. Windows does not have
   # domain sockets, so uncomment these lines.
-  host: <%= ENV['POSTGRES_HOST'] %>
+  # host:
 
   # The TCP port the server listens on. Defaults to 5432.
   # If your server runs on a different port number, change accordingly.
@@ -61,7 +62,6 @@ test:
   database: <%= ENV['TEST_DB'] %>
   username: <%= ENV['TEST_USER'] %>
   password: <%= ENV['TEST_PASSWORD'] %>
-  port: <%= ENV.fetch("TEST_PORT", 5432) %>
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
 # ever seen by anyone, they now have access to your database.
