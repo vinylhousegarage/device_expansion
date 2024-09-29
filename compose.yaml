@@ -7,18 +7,23 @@ services:
       - "${POSTGRES_DATA_DIR:-./postgres_data}:/var/lib/postgresql/data"
     env_file:
       - .env
-    restart: no
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -h db -d $POSTGRES_DB || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
 
   web:
     build: .
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -b 0.0.0.0"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec puma -C config/puma.rb"
     volumes:
       - ".:/app"
     ports:
       - "3000:3000"
     depends_on:
       db:
-        condition: service_started
+        condition: service_healthy
     env_file:
       - .env
-    restart: no
+    restart: always
