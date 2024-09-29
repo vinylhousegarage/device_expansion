@@ -1,11 +1,11 @@
-require "test_helper"
+require 'test_helper'
 
 class UserTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
 
-  USERS = ["ゲスト１", "ゲスト２", "ゲスト３", "ゲスト４", "ゲスト５", "集計担当"]
+  USERS = %w[ゲスト１ ゲスト２ ゲスト３ ゲスト４ ゲスト５ 集計担当]
 
   def test_users_exist
     USERS.each do |user_name|
