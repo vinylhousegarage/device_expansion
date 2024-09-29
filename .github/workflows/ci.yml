@@ -18,6 +18,8 @@ jobs:
       # リモートリポジトリをチェックアウト
       - name: Check out the repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       # GHCR にログイン
       - name: Log in to GitHub Container Registry
@@ -31,8 +33,7 @@ jobs:
       # Dockerイメージ に差分があるコミットを commit_list.txt に抽出
       - name: Get commits with Dockerfile or compose.yaml changes
         run: |
-          BRANCH_NAME=${{ github.head_ref }}
-          git log --reverse --pretty=format:"%H" $BRANCH_NAME -- Dockerfile compose.yaml .github/workflows/ci.yml > commit_list.txt
+          git log --reverse --pretty=format:"%H" $HEAD -- Dockerfile compose.yaml .github/workflows/ci.yml > commit_list.txt
           if [ ! -s commit_list.txt ]; then
             echo "No commits with Dockerfile or compose.yaml changes found."
             exit 0
