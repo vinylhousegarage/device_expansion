@@ -31,7 +31,8 @@ jobs:
       # Dockerイメージ に差分があるコミットを commit_list.txt に抽出
       - name: Get commits with Dockerfile or compose.yaml changes
         run: |
-          git log --reverse --pretty=format:"%H" main -- Dockerfile compose.yaml .github/workflows/ci.yml > commit_list.txt
+          BRANCH_NAME=${{ github.head_ref }}
+          git log --reverse --pretty=format:"%H" $BRANCH_NAME -- Dockerfile compose.yaml .github/workflows/ci.yml > commit_list.txt
           if [ ! -s commit_list.txt ]; then
             echo "No commits with Dockerfile or compose.yaml changes found."
             exit 0
