@@ -118,7 +118,7 @@ jobs:
 
       # RuboCop を実行してコードスタイルを検証
       - name: Run RuboCop (Lint check)
-        run: bundle exec rubocop --fail-level W
+        run: bundle exec rubocop --config .rubocop.yml --fail-level W
 
       # POSTGRES_DB を生成
       - name: Run Create database
