@@ -27,10 +27,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      # RuboCop を実行してコードスタイルを検証
-      - name: Run RuboCop (Lint check)
-        run: bundle exec rubocop --config .rubocop.yml --fail-level W
-
       # GHCR にログイン
       - name: Log in to GitHub Container Registry
         run: |
@@ -94,6 +90,10 @@ jobs:
           sudo apt-get install -y libpq-dev || echo "Failed to install libpq-dev"
           bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
+
+      # RuboCop を実行してコードスタイルを検証
+      - name: Run RuboCop (Lint check)
+        run: bundle exec rubocop --config .rubocop.yml --fail-level W
 
       # PostgreSQL と postgresql-client を 14 でインストール
       - name: Install PostgreSQL 14 and client tools
