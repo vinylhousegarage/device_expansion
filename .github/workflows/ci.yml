@@ -120,6 +120,7 @@ jobs:
           sudo -u postgres psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" || exit 1
           sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} WITH OWNER ${{ secrets.POSTGRES_USER }};" || exit 1
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.POSTGRES_DB }} TO ${{ secrets.POSTGRES_USER }};" || exit 1
+          sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH CREATEDB;" || exit 1
 
       # POSTGRES_DB を生成
       - name: Run Create database
