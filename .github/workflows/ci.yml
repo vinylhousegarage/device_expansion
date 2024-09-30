@@ -13,12 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      TEST_DB: ${{ secrets.TEST_DB }}
-      TEST_USER: ${{ secrets.TEST_USER }}
-      TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
-
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       # リモートリポジトリをチェックアウト
@@ -122,31 +117,40 @@ jobs:
       - name: Set up database
         run: |
           set -e
-          sudo -u postgres psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" || echo "Failed to create user ${{ secrets.POSTGRES_USER }}"
-          sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} WITH OWNER ${{ secrets.POSTGRES_USER }};" || echo "Failed to create database ${{ secrets.POSTGRES_DB }} owned by ${{ secrets.POSTGRES_USER }}"
-          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.POSTGRES_DB }} TO ${{ secrets.POSTGRES_USER }};" || echo "Failed to grant privileges on database ${{ secrets.POSTGRES_DB }} to ${{ secrets.POSTGRES_USER }}"
-
-      # 環境変数の格納確認
-      - name: Check environment variables
-        run: |
-          echo "TEST_DB: $TEST_DB"
-          echo "TEST_USER: $TEST_USER"
-          echo "TEST_PASSWORD: $TEST_PASSWORD"
+          sudo -u postgres psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" || exit 1
+          sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} WITH OWNER ${{ secrets.POSTGRES_USER }};" || exit 1
+          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.POSTGRES_DB }} TO ${{ secrets.POSTGRES_USER }};" || exit 1
 
       # POSTGRES_DB を生成
       - name: Run Create database
+        env:
+          TEST_DB: ${{ secrets.POSTGRES_DB }}
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: bundle exec rails db:create RAILS_ENV=test
 
       # POSTGRES_DB をマイグレート
       - name: Run database migrations
+        env:
+          TEST_DB: ${{ secrets.POSTGRES_DB }}
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: bundle exec rails db:migrate RAILS_ENV=test
 
       # マイグレートした POSTGRES_DB に初期データを挿入
       - name: Run Seed the test database
+        env:
+          TEST_DB: ${{ secrets.POSTGRES_DB }}
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: bundle exec rails db:seed RAILS_ENV=test
 
       # テストを実行
       - name: Run tests
+        env:
+          TEST_DB: ${{ secrets.POSTGRES_DB }}
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: bundle exec rails test RAILS_ENV=test
 
   deploy:
@@ -279,3 +283,4 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" --fail --show-error
           fi
+        timeout-minutes: 10
