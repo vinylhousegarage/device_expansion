@@ -5,7 +5,7 @@ class UserTest < ActiveSupport::TestCase
   #   assert true
   # end
 
-  USERS = %w[ゲスト１ ゲスト２ ゲスト３ ゲスト４ ゲスト５ 集計担当]
+  USERS = %w[ゲスト１ ゲスト２ ゲスト３ ゲスト４ ゲスト５ 集計担当].freeze
 
   def test_users_exist
     USERS.each do |user_name|
