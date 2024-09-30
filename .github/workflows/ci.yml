@@ -12,6 +12,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      TEST_DB: ${{ secrets.TEST_DB }}
+      TEST_USER: ${{ secrets.TEST_USER }}
+      TEST_PASSWORD: ${{ secrets.TEST_PASSWORD }}
+
     timeout-minutes: 30
 
     steps:
@@ -20,6 +26,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      # RuboCop を実行してコードスタイルを検証
+      - name: Run RuboCop (Lint check)
+        run: bundle exec rubocop --config .rubocop.yml --fail-level W
 
       # GHCR にログイン
       - name: Log in to GitHub Container Registry
@@ -81,7 +91,7 @@ jobs:
         run: |
           set -e
           sudo apt-get update
-          sudo apt-get install -y libpq-dev
+          sudo apt-get install -y libpq-dev || echo "Failed to install libpq-dev"
           bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
 
@@ -112,13 +122,9 @@ jobs:
       - name: Set up database
         run: |
           set -e
-          sudo -u postgres psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" || echo "Failed to create user"
-          sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} WITH OWNER ${{ secrets.POSTGRES_USER }};" || echo "Failed to create database"
-          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.POSTGRES_DB }} TO ${{ secrets.POSTGRES_USER }};" || echo "Failed to grant privileges"
-
-      # RuboCop を実行してコードスタイルを検証
-      - name: Run RuboCop (Lint check)
-        run: bundle exec rubocop --config .rubocop.yml --fail-level W
+          sudo -u postgres psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" || echo "Failed to create user ${{ secrets.POSTGRES_USER }}"
+          sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} WITH OWNER ${{ secrets.POSTGRES_USER }};" || echo "Failed to create database ${{ secrets.POSTGRES_DB }} owned by ${{ secrets.POSTGRES_USER }}"
+          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.POSTGRES_DB }} TO ${{ secrets.POSTGRES_USER }};" || echo "Failed to grant privileges on database ${{ secrets.POSTGRES_DB }} to ${{ secrets.POSTGRES_USER }}"
 
       # POSTGRES_DB を生成
       - name: Run Create database
@@ -161,10 +167,10 @@ jobs:
           https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys --fail --show-error)
 
           if [[ -z "$POST_RESPONSE" ]]; then
-            echo "Failed to trigger deployment"
+            echo "Failed to trigger deployment for service ID: ${{ secrets.RENDER_SERVICE_ID }}"
             exit 1
           else
-            echo "Deployment POST resposne:$POST_RESPONSE"
+            echo "Deployment POST response:$POST_RESPONSE"
           fi
 
       # jqをインストール
@@ -206,6 +212,7 @@ jobs:
             echo "Failed to extract deployment details"
             exit 1
           else
+            echo "Render Deploy ID: $RENDER_DEPLOY_ID"
             echo "RENDER_DEPLOY_ID=$RENDER_DEPLOY_ID" >> $GITHUB_ENV
           fi
 
@@ -214,6 +221,7 @@ jobs:
             echo "Failed to retrieve deployment status"
             exit 1
           else
+            echo "Render Deploy Status: $RENDER_DEPLOY_STATUS"
             echo "RENDER_DEPLOY_STATUS=$RENDER_DEPLOY_STATUS" >> $GITHUB_ENV
           fi
 
