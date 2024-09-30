@@ -126,6 +126,13 @@ jobs:
           sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} WITH OWNER ${{ secrets.POSTGRES_USER }};" || echo "Failed to create database ${{ secrets.POSTGRES_DB }} owned by ${{ secrets.POSTGRES_USER }}"
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.POSTGRES_DB }} TO ${{ secrets.POSTGRES_USER }};" || echo "Failed to grant privileges on database ${{ secrets.POSTGRES_DB }} to ${{ secrets.POSTGRES_USER }}"
 
+      # 環境変数の格納確認
+      - name: Check environment variables
+        run: |
+          echo "TEST_DB: $TEST_DB"
+          echo "TEST_USER: $TEST_USER"
+          echo "TEST_PASSWORD: $TEST_PASSWORD"
+
       # POSTGRES_DB を生成
       - name: Run Create database
         run: bundle exec rails db:create RAILS_ENV=test
