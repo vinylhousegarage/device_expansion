@@ -124,7 +124,7 @@ jobs:
         env:
           TEST_DB: ${{ secrets.POSTGRES_DB }}
           TEST_USER: ${{ secrets.POSTGRES }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES }}
         run: bundle exec rails db:create RAILS_ENV=test
 
       # POSTGRES_DB をマイグレート
@@ -132,7 +132,7 @@ jobs:
         env:
           TEST_DB: ${{ secrets.POSTGRES_DB }}
           TEST_USER: ${{ secrets.POSTGRES }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES }}
         run: bundle exec rails db:migrate RAILS_ENV=test
 
       # マイグレートした POSTGRES_DB に初期データを挿入
@@ -140,7 +140,7 @@ jobs:
         env:
           TEST_DB: ${{ secrets.POSTGRES_DB }}
           TEST_USER: ${{ secrets.POSTGRES }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES }}
         run: bundle exec rails db:seed RAILS_ENV=test
 
       # テストを実行
@@ -148,7 +148,7 @@ jobs:
         env:
           TEST_DB: ${{ secrets.POSTGRES_DB }}
           TEST_USER: ${{ secrets.POSTGRES }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES }}
         run: bundle exec rails test RAILS_ENV=test
 
   deploy:
