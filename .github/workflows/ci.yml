@@ -125,6 +125,7 @@ jobs:
 
       # POSTGRES_DB を生成
       - name: Run Create database
+        run: |
         sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} WITH OWNER ${{ secrets.POSTGRES }};" || exit 1
 
       # POSTGRES_DB をマイグレート
