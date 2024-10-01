@@ -126,6 +126,7 @@ jobs:
       # POSTGRES_DB を生成
       - name: Run Create database
         run: |
+          PGPASSWORD="${{ secrets.POSTGRES_PASSWORD }}" psql -U ${{ secrets.POSTGRES }} -h localhost -p 5432 -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} OWNER ${{ secrets.POSTGRES }};" || exit 1
           psql -U postgres -h localhost -p 5432 -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} OWNER ${{ secrets.POSTGRES }};" || exit 1
 
       # POSTGRES_DB をマイグレート
