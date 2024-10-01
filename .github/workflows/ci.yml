@@ -113,16 +113,6 @@ jobs:
           echo "PostgreSQL did not become ready in time."
           exit 1
 
-      # データベースをセットアップ
-      - name: Set up database
-        run: |
-          if ! sudo -u postgres psql -tc "SELECT 1 FROM pg_database WHERE datname='${{ secrets.POSTGRES_DB }}'" | grep -q 1; then
-            echo "Database not found, creating it..."
-            sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} WITH OWNER ${{ secrets.POSTGRES }};"
-          else
-            echo "Database already exists."
-          fi
-
       # POSTGRES_DB を生成
       - name: Run Create database
         env:
