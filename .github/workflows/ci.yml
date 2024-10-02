@@ -144,6 +144,12 @@ jobs:
           echo "Listing all databases in expanded mode:"
           sudo -u postgres psql -c "\l"
 
+      # デーベースの名前を確認
+      - name: List all database names
+        run: |
+          echo "Listing all database names in PostgreSQL:"
+          sudo -u postgres psql -c "SELECT datname FROM pg_database;"
+
       # データベースが存在していた場合は削除
       - name: Drop existing database
         run: |
