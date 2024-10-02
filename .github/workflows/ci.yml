@@ -138,34 +138,6 @@ jobs:
           sudo -u postgres psql -c "GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES ON ALL TABLES IN SCHEMA public TO ${{ secrets.POSTGRES_USER }};" || exit 1
           sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH CREATEDB;" || exit 1
 
-      # データベースの有無を確認
-      - name: List all databases with expanded output
-        run: |
-          echo "Listing all databases in expanded mode:"
-          sudo -u postgres psql -c "\l"
-
-      # デーベースの名前を確認
-      - name: List all database names
-        run: |
-          echo "Listing all database names in PostgreSQL:"
-          sudo -u postgres psql -c "SELECT datname FROM pg_database;"
-
-      # データベースが存在していた場合は削除
-      - name: Drop existing database
-        run: |
-          sudo -u postgres psql -c "DROP DATABASE IF EXISTS ${{ secrets.POSTGRES_DB }};" || exit 1
-
-      # データベースの削除を確認
-      - name: Confirm database deletion
-        run: |
-          echo "Confirming that the database has been deleted:"
-          sudo -u postgres psql -c "\l"
-          echo "If the database name is not listed above, the deletion was successful."
-
-      # ジョブの強制終了
-      - name: Stop the job
-        run: exit 1
-
       # POSTGRES_DB を生成
       - name: Run database create
         env:
