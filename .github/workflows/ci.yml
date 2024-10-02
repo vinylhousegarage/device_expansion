@@ -30,6 +30,10 @@ jobs:
       - name: Check directory permissions and ownership
         run: ls -ld /home/runner/work/device_expansion/device_expansion
 
+      # ディレクトリ内のパーミッションの確認
+      - name: Check permissions of all files
+        run: ls -lR /home/runner/work/device_expansion/device_expansion
+
       # ジョブの強制終了
       - name: Stop the job
         run: exit 1
