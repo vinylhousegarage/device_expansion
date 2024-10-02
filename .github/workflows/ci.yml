@@ -126,10 +126,10 @@ jobs:
           exit 1
 
       # 既に存在するデータベースの名前を確認
-      - name: List existing databases
+      - name: List all databases with expanded output
         run: |
-          echo "Listing all databases in PostgreSQL:"
-          sudo -u postgres psql -c "\l"
+          echo "Listing all databases in expanded mode:"
+          sudo -u postgres psql -c "\x \l+"
 
       # ジョブの強制終了
       - name: Stop the job
