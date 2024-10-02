@@ -125,17 +125,6 @@ jobs:
           echo "PostgreSQL did not become ready in time."
           exit 1
 
-      # データベースの有無を確認し、残っている場合は削除
-      - name: Drop existing test database if exists
-        run: |
-          if sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw "$(echo $TEST_DB | xargs)"; then
-            echo "Dropping existing database"
-            sudo -u postgres psql -c "DROP DATABASE $TEST_DB;"
-            bundle exec rails db:drop RAILS_ENV=test
-          else
-            echo "No existing database found"
-          fi
-
       # データベースをセットアップ
       - name: Set up PostgreSQL user and database
         run: |
