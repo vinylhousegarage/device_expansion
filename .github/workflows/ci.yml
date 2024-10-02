@@ -142,7 +142,7 @@ jobs:
       - name: List all databases with expanded output
         run: |
           echo "Listing all databases in expanded mode:"
-          sudo -u postgres psql -c "\x \l+"
+          sudo -u postgres psql -c "\l"
 
       # ジョブの強制終了
       - name: Stop the job
