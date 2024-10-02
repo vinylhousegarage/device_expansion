@@ -170,6 +170,12 @@ jobs:
           TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: bundle exec rails db:create RAILS_ENV=test
 
+      # POSTGRES_DB の生成を確認
+      - name: List all databases with expanded output
+        run: |
+          echo "Listing all databases in expanded mode:"
+          sudo -u postgres psql -c "\l"
+
       # POSTGRES_DB をマイグレート
       - name: Run database migrations
         env:
@@ -178,6 +184,12 @@ jobs:
           TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: bundle exec rails db:migrate RAILS_ENV=test
 
+      # マイグレーション履歴を確認
+      - name: Check applied migrations
+        run: |
+          echo "Checking applied migrations..."
+          sudo -u postgres psql -d ${{ secrets.POSTGRES_DB }} -c "SELECT * FROM schema_migrations;"
+
       # マイグレートした POSTGRES_DB に初期データを挿入
       - name: Run Seed the test database
         env:
@@ -185,6 +197,12 @@ jobs:
           TEST_USER: ${{ secrets.POSTGRES_USER }}
           TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: bundle exec rails db:seed RAILS_ENV=test
+
+      # # 初期データ挿入の成否を確認
+      - name: Check if seed data was inserted
+        run: |
+          echo "Checking if users are inserted into the test database..."
+          sudo -u postgres psql -d ${{ secrets.POSTGRES_USER }} -c "SELECT * FROM users;"
 
       # テストを実行
       - name: Run tests
