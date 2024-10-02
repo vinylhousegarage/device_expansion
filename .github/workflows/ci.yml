@@ -128,8 +128,9 @@ jobs:
       # データベースの有無を確認し、残っている場合は削除
       - name: Drop existing test database if exists
         run: |
-          if sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw "$(echo ${{ secrets.POSTGRES_DB }} | xargs)"; then
+          if sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw "$(echo $TEST_DB | xargs)"; then
             echo "Dropping existing database"
+            sudo -u postgres psql -c "DROP DATABASE $TEST_DB;"
             bundle exec rails db:drop RAILS_ENV=test
           else
             echo "No existing database found"
@@ -143,7 +144,6 @@ jobs:
             sudo -u postgres psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" || exit 1
           fi
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.POSTGRES_DB }} TO ${{ secrets.POSTGRES_USER }};" || exit 1
-          sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH CREATEDB;" || exit 1
 
       # POSTGRES_DB を生成
       - name: Run database create
