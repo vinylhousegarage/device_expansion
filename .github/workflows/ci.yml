@@ -34,10 +34,6 @@ jobs:
       - name: Check permissions of all files
         run: ls -lR /home/runner/work/device_expansion/device_expansion
 
-      # ジョブの強制終了
-      - name: Stop the job
-        run: exit 1
-
       # GHCR にログイン
       - name: Log in to GitHub Container Registry
         run: |
