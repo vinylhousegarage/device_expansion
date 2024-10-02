@@ -22,6 +22,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      # 既に存在するデータベースの名前を確認
+      - name: List existing databases
+        run: |
+          echo "Listing all databases in PostgreSQL:"
+          sudo -u postgres psql -c "\l"
+
+      # ジョブの強制終了
+      - name: Stop the job
+        run: exit 1
+
       # 実行中のユーザーを確認
       - name: Check current user
         run: whoami
@@ -125,14 +135,25 @@ jobs:
           echo "PostgreSQL did not become ready in time."
           exit 1
 
-      # データベースをセットアップ
-      - name: Set up PostgreSQL user and database
+      # ユーザーロールをセットアップ
+      - name: Set up pg_role
         run: |
-          set -e
           if ! sudo -u postgres psql -tc "SELECT 1 FROM pg_roles WHERE rolname='${{ secrets.POSTGRES_USER }}'" | grep -q 1; then
             sudo -u postgres psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" || exit 1
           fi
-          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${{ secrets.POSTGRES_DB }} TO ${{ secrets.POSTGRES_USER }};" || exit 1
+
+      # データベースへの権限を付与
+      - name: Set up db privileges
+        run: |
+          sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH SELECTDB;" || exit 1
+          sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH INSERTDB;" || exit 1
+          sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH UPDATEDB;" || exit 1
+          sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH DELETEDB;" || exit 1
+          sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH CREATEDB;" || exit 1
+          sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH DROPDB;" || exit 1
+          sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH TRUNCATEDB;" || exit 1
+          sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH REFERENCESDB;" || exit 1
+          sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH TRIGGERDB;" || exit 1
 
       # POSTGRES_DB を生成
       - name: Run database create
