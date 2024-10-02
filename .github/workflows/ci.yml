@@ -138,6 +138,28 @@ jobs:
           sudo -u postgres psql -c "GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES ON ALL TABLES IN SCHEMA public TO ${{ secrets.POSTGRES_USER }};" || exit 1
           sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH CREATEDB;" || exit 1
 
+      # スーパーユーザー権限の確認
+      - name: Check if PostgreSQL user is superuser
+        run: |
+          echo "Checking if the user is a superuser:"
+          sudo -u postgres psql -c "SELECT rolname, rolsuper FROM pg_roles WHERE rolname = '${{ secrets.POSTGRES_USER }}';"
+
+      # データベースの有無を確認
+      - name: List all databases with expanded output
+        run: |
+          echo "Listing all databases in expanded mode:"
+          sudo -u postgres psql -c "\l"
+
+      # デーベースの名前を確認
+      - name: List all database names
+        run: |
+          echo "Listing all database names in PostgreSQL:"
+          sudo -u postgres psql -c "SELECT datname FROM pg_database;"
+
+      # ジョブの強制終了
+      - name: Stop the job
+        run: exit 1
+
       # POSTGRES_DB を生成
       - name: Run database create
         env:
