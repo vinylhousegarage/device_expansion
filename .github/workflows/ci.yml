@@ -22,6 +22,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      # 実行中のユーザーを確認
+      - name: Check current user
+        run: whoami
+
+      # ジョブの強制終了
+      - name: Stop the job
+        run: exit 1
+
       # GHCR にログイン
       - name: Log in to GitHub Container Registry
         run: |
