@@ -163,12 +163,15 @@ jobs:
           sudo -u postgres psql -c "SELECT datname FROM pg_database;"
 
       # POSTGRES_DB を生成
-      - name: Run database create
-        env:
-          TEST_DB: ${{ secrets.POSTGRES_DB }}
-          TEST_USER: ${{ secrets.POSTGRES_USER }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        run: bundle exec rails db:create RAILS_ENV=test
+      - name: Check if database exists and create if not
+        run: |
+          result=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname = '${{ secrets.POSTGRES_DB }}';")
+          if [ -z "$result" ]; then
+            echo "Database ${{ secrets.POSTGRES_DB }} does not exist. Creating database..."
+            sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} OWNER ${{ secrets.POSTGRES_USER }};"
+          else
+            echo "Database ${{ secrets.POSTGRES_DB }} already exists. Skipping creation."
+          fi
 
       # POSTGRES_DB の生成を確認
       - name: List all databases with expanded output
