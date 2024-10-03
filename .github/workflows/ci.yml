@@ -201,7 +201,7 @@ jobs:
 
       # データベースの接続環境を確認
       - name: List current database tables
-        run: sudo -u postgres psql -d postgres_db -c "\dt" RAILS_ENV=test
+        run: sudo -u postgres psql -d postgres_db -c "\dt"
 
       # テストを実行
       - name: Run tests
