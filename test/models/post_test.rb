@@ -5,11 +5,6 @@ class PostTest < ActiveSupport::TestCase
   #   assert true
   # end
 
-  # 初期データを設定
-  setup do
-    @user = User.find_or_create_by(name: "ゲスト１")
-  end
-
   # name属性のバリデーションをテスト
   test "invalid post with empty or space name" do
     invalid_names = ["", " "]
