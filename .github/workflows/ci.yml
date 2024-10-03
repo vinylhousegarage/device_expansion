@@ -202,7 +202,7 @@ jobs:
       # シードデータの挿入を確認
       - name: Check if seed data is included in postgres_db
         run: |
-          sudo -u postgres psql -d postgres_db -c "SELECT COUNT(*) FROM users;"
+          sudo -u postgres psql -d postgres_db -c "SELECT * FROM users WHERE name = 'ゲスト１';"
 
       # テストを実行
       - name: Run tests
