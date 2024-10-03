@@ -204,7 +204,7 @@ jobs:
 
       # データベースの接続環境を確認
       - name: List current database tables
-        run: psql -U ${{ secrets.POSTGRES_USER }} -d postgred_db -c "\dt"
+        run: sudo -u postgres psql -d postgres_db -c "\dt"
 
       # ジョブを強制終了
       - name: Stop the job
