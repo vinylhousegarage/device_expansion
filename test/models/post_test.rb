@@ -8,6 +8,7 @@ class PostTest < ActiveSupport::TestCase
   # 初期データを設定
   setup do
     @user = User.find_by(name: "ゲスト１")
+    assert_not_nil @user, "User with name 'ゲスト１' not found in the test setup."
   end
 
   # name属性のバリデーションをテスト
