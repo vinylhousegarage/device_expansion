@@ -202,6 +202,14 @@ jobs:
             echo "Seed data successfully inserted: $user_count users found."
           fi
 
+      # データベースの接続環境を確認
+      - name: List current database tables
+        run: psql -U ${{ secrets.POSTGRES_USER }} -d postgred_db -c "\dt"
+
+      # ジョブを強制終了
+      - name: Stop the job
+        run: exit 1
+
       # テストを実行
       - name: Run tests
         env:
