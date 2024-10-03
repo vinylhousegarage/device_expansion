@@ -132,57 +132,46 @@ jobs:
             sudo -u postgres psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" || exit 1
           fi
 
-      # データベースへの権限を付与
-      - name: Set up db privileges
-        run: |
-          sudo -u postgres psql -c "GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES ON ALL TABLES IN SCHEMA public TO ${{ secrets.POSTGRES_USER }};" || exit 1
-          sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH CREATEDB;" || exit 1
-
-      # スーパーユーザー権限の付与
+      # スーパーユーザー権限を付与
       - name: Grant superuser privileges to the PostgreSQL user
         run: |
-          echo "Granting superuser privileges to ${{ secrets.POSTGRES_USER }}:"
-          sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH SUPERUSER;"
-
-      # スーパーユーザー権限の確認
-      - name: Check if PostgreSQL user is superuser
-        run: |
-          echo "Checking if the user is a superuser:"
-          sudo -u postgres psql -c "SELECT rolname, rolsuper FROM pg_roles WHERE rolname = '${{ secrets.POSTGRES_USER }}';"
+          if ! sudo -u postgres psql -tc "SELECT rolsuper FROM pg_roles WHERE rolname = '${{ secrets.POSTGRES_USER }}' AND rolsuper = 't'" | grep -q 1; then
+            sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH SUPERUSER;" || exit 1
+          fi
 
       # データベースの有無を確認
       - name: List all databases with expanded output
         run: |
           echo "Listing all databases in expanded mode:"
-          sudo -u postgres psql -c "\l"
+          psql -U ${{ secrets.POSTGRES_USER }} -c "\l"
 
       # デーベースの名前を確認
       - name: List all database names
         run: |
           echo "Listing all database names in PostgreSQL:"
-          sudo -u postgres psql -c "SELECT datname FROM pg_database;"
+          psql -U ${{ secrets.POSTGRES_USER }} -c "SELECT datname FROM pg_database;"
 
       # POSTGRES_DB を生成
       - name: Check if database exists and create if not
         run: |
-          result=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname = '${{ secrets.POSTGRES_DB }}';")
+          result=$(psql -U ${{ secrets.POSTGRES_USER }} -tAc "SELECT 1 FROM pg_database WHERE datname = 'postgres_db';")
           if [ -z "$result" ]; then
-            echo "Database ${{ secrets.POSTGRES_DB }} does not exist. Creating database..."
-            sudo -u postgres psql -c "CREATE DATABASE ${{ secrets.POSTGRES_DB }} OWNER ${{ secrets.POSTGRES_USER }};"
+            echo "Database postgres_db does not exist. Creating database..."
+            psql -U ${{ secrets.POSTGRES_USER }} -c "CREATE DATABASE postgres_db OWNER ${{ secrets.POSTGRES_USER }};"
           else
-            echo "Database ${{ secrets.POSTGRES_DB }} already exists. Skipping creation."
+            echo "Database postgres_db already exists. Skipping creation."
           fi
 
       # POSTGRES_DB の生成を確認
       - name: List all databases with expanded output
         run: |
           echo "Listing all databases in expanded mode:"
-          sudo -u postgres psql -c "\l"
+          psql -U ${{ secrets.POSTGRES_USER }} -c "\l"
 
       # POSTGRES_DB をマイグレート
       - name: Run database migrations
         env:
-          TEST_DB: ${{ secrets.POSTGRES_DB }}
+          TEST_DB: postgres_db
           TEST_USER: ${{ secrets.POSTGRES_USER }}
           TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: bundle exec rails db:migrate RAILS_ENV=test
@@ -191,26 +180,32 @@ jobs:
       - name: Check applied migrations
         run: |
           echo "Checking applied migrations..."
-          sudo -u postgres psql -d ${{ secrets.POSTGRES_DB }} -c "SELECT * FROM schema_migrations;"
+          psql -U ${{ secrets.POSTGRES_USER }} -d postgres_db -c "SELECT * FROM schema_migrations;"
 
       # マイグレートした POSTGRES_DB に初期データを挿入
       - name: Run Seed the test database
         env:
-          TEST_DB: ${{ secrets.POSTGRES_DB }}
+          TEST_DB: postgres_db
           TEST_USER: ${{ secrets.POSTGRES_USER }}
           TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: bundle exec rails db:seed RAILS_ENV=test
 
-      # # 初期データ挿入の成否を確認
+      # 初期データ挿入の成否を確認
       - name: Check if seed data was inserted
         run: |
           echo "Checking if users are inserted into the test database..."
-          sudo -u postgres psql -d ${{ secrets.POSTGRES_USER }} -c "SELECT * FROM users;"
+          user_count=$(psql -U ${{ secrets.POSTGRES_USER }} -d postgres_db -tAc "SELECT COUNT(*) FROM users;")
+          if [ "$user_count" -eq 0 ]; then
+            echo "Error: No users found in the test database. Seed data was not inserted correctly."
+            exit 1
+          else
+            echo "Seed data successfully inserted: $user_count users found."
+          fi
 
       # テストを実行
       - name: Run tests
         env:
-          TEST_DB: ${{ secrets.POSTGRES_DB }}
+          TEST_DB: postgres_db
           TEST_USER: ${{ secrets.POSTGRES_USER }}
           TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         run: bundle exec rails test RAILS_ENV=test
