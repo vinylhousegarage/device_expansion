@@ -20,12 +20,11 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 6 } %>
-  host: db
   port: 5432
 
 development:
   <<: *default
-  database: <%= ENV['POSTGRES_DB'] %>
+  database: development_db
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.
@@ -39,7 +38,7 @@ development:
   # Connect on a TCP socket. Omitted by default since the client uses a
   # domain socket that doesn't need configuration. Windows does not have
   # domain sockets, so uncomment these lines.
-  # host:
+  host: db
 
   # The TCP port the server listens on. Defaults to 5432.
   # If your server runs on a different port number, change accordingly.
@@ -59,7 +58,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: <%= ENV['TEST_DB'] %>
+  database: postgres_db
   username: <%= ENV['TEST_USER'] %>
   password: <%= ENV['TEST_PASSWORD'] %>
   host: localhost
