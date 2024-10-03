@@ -200,7 +200,7 @@ jobs:
           fi
 
       # シードデータの挿入を確認
-      - name: Check if seed data is included in postgres_db
+      - name: Check if the user 'ゲスト１' exists in postgres_db
         run: |
           sudo -u postgres psql -d postgres_db -c "SELECT * FROM users WHERE name = 'ゲスト１';"
 
