@@ -199,19 +199,10 @@ jobs:
             echo "Seed data successfully inserted: $user_count users found."
           fi
 
-      # postgres_db でシードデータの挿入を確認
+      # シードデータの挿入を確認
       - name: Check if seed data is included in postgres_db
         run: |
           sudo -u postgres psql -d postgres_db -c "SELECT COUNT(*) FROM users;"
-
-      # postgres でシードデータの挿入を確認
-      - name: Check if seed data is included in postgres
-        run: |
-          sudo -u postgres psql -d postgres -c "SELECT COUNT(*) FROM users;"
-
-      # ジョブを強制終了
-      - name: Stop the job
-        run: exit 1
 
       # テストを実行
       - name: Run tests
