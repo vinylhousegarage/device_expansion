@@ -210,7 +210,7 @@ jobs:
           TEST_DB: postgres_db
           TEST_USER: ${{ secrets.POSTGRES_USER }}
           TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        run: bundle exec rails test RAILS_ENV=test
+        run: bundle exec rails test
 
   deploy:
     runs-on: ubuntu-latest
