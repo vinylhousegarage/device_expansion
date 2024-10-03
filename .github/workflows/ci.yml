@@ -143,21 +143,21 @@ jobs:
       - name: List all databases with expanded output
         run: |
           echo "Listing all databases in expanded mode:"
-          psql -U ${{ secrets.POSTGRES_USER }} -c "\l"
+          sudo -u postgres psql -c "\l"
 
       # デーベースの名前を確認
       - name: List all database names
         run: |
           echo "Listing all database names in PostgreSQL:"
-          psql -U ${{ secrets.POSTGRES_USER }} -c "SELECT datname FROM pg_database;"
+          sudo -u postgres psql -c "SELECT datname FROM pg_database;"
 
       # POSTGRES_DB を生成
       - name: Check if database exists and create if not
         run: |
-          result=$(psql -U ${{ secrets.POSTGRES_USER }} -tAc "SELECT 1 FROM pg_database WHERE datname = 'postgres_db';")
+          result=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname = 'postgres_db';")
           if [ -z "$result" ]; then
             echo "Database postgres_db does not exist. Creating database..."
-            psql -U ${{ secrets.POSTGRES_USER }} -c "CREATE DATABASE postgres_db OWNER ${{ secrets.POSTGRES_USER }};"
+            sudo -u postgres psql -c "CREATE DATABASE postgres_db OWNER ${{ secrets.POSTGRES_USER }};"
           else
             echo "Database postgres_db already exists. Skipping creation."
           fi
@@ -166,7 +166,7 @@ jobs:
       - name: List all databases with expanded output
         run: |
           echo "Listing all databases in expanded mode:"
-          psql -U ${{ secrets.POSTGRES_USER }} -c "\l"
+          sudo -u postgres psql -c "\l"
 
       # POSTGRES_DB をマイグレート
       - name: Run database migrations
@@ -180,7 +180,7 @@ jobs:
       - name: Check applied migrations
         run: |
           echo "Checking applied migrations..."
-          psql -U ${{ secrets.POSTGRES_USER }} -d postgres_db -c "SELECT * FROM schema_migrations;"
+          sudo -u postgres psql -d postgres_db -c "SELECT * FROM schema_migrations;"
 
       # マイグレートした POSTGRES_DB に初期データを挿入
       - name: Run Seed the test database
@@ -194,7 +194,7 @@ jobs:
       - name: Check if seed data was inserted
         run: |
           echo "Checking if users are inserted into the test database..."
-          user_count=$(psql -U ${{ secrets.POSTGRES_USER }} -d postgres_db -tAc "SELECT COUNT(*) FROM users;")
+          user_count=$(sudo -u postgres psql -d postgres_db -tAc "SELECT COUNT(*) FROM users;")
           if [ "$user_count" -eq 0 ]; then
             echo "Error: No users found in the test database. Seed data was not inserted correctly."
             exit 1
