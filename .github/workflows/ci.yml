@@ -321,26 +321,26 @@ jobs:
           exit 1
 
       # Render の PostgreSQL をマイグレート
-      - name: Run migration on Render
+      - name: Run migrate on Render
         run: |
-          set -e
           curl -X POST \
-          --verbose \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -H "Content-Type: application/json" \
-          -d '{"command": "rails db:migrate"}' \
-          https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/ssh --fail --show-error
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "startCommand": "bundle exec rails db:migrate"
+            }'
 
       # Render の PostgreSQL に初期データを挿入
       - name: Run seed on Render
         run: |
-          set -e
           curl -X POST \
-          --verbose \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -H "Content-Type: application/json" \
-          -d '{"command": "rails db:seed"}' \
-          https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/ssh --fail --show-error
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "startCommand": "bundle exec rails db:seed"
+            }'
 
       # 最新デプロイのログを取得
       - name: Log Render Deploy ID & Get Logs
