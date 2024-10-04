@@ -48,12 +48,10 @@
 
   - **初期データ**
     ```ruby
-    User.find_or_create_by(name: "ゲスト１")  # 投稿者1
-    User.find_or_create_by(name: "ゲスト２")  # 投稿者2
-    User.find_or_create_by(name: "ゲスト３")  # 投稿者3
-    User.find_or_create_by(name: "ゲスト４")  # 投稿者4
-    User.find_or_create_by(name: "ゲスト５")  # 投稿者5
-    User.find_or_create_by(name: "集計担当")  # 管理者
+    USERS = %w[ゲスト１ ゲスト２ ゲスト３ ゲスト４ ゲスト５ 集計担当].freeze
+    USERS.each do |user_name|
+      User.find_or_create_by(name: user_name)
+    end
     ```
 
 ### 4. システム要件
