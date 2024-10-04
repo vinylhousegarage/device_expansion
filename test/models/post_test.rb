@@ -5,10 +5,10 @@ class PostTest < ActiveSupport::TestCase
   #   assert true
   # end
 
-  # 初期データを設定
+  # 初期データを挿入しユーザーを取得
   setup do
+    Rails.application.load_seed
     @user = User.find_by(name: "ゲスト１")
-    assert_not_nil @user, "User with name 'ゲスト１' not found in the test setup."
   end
 
   # name属性のバリデーションをテスト
