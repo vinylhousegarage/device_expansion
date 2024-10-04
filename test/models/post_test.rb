@@ -7,7 +7,8 @@ class PostTest < ActiveSupport::TestCase
 
   # 初期データを挿入しユーザーを取得
   setup do
-    @user = User.find_or_create_by(name: "ゲスト１")
+    Rails.application.load_seed
+    @user = User.find_by(name: "ゲスト１")
   end
 
   # name属性のバリデーションをテスト
