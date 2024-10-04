@@ -247,10 +247,10 @@ jobs:
       - name: Install jq
         run: sudo apt-get install -y jq
 
-
+      # デプロイが成功するまでループで状態を確認
       # Render APIからデプロイ情報を取得
       # 変数GET_RESPONSE が空ではないか確認
-      # デプロイが成功するまでループで状態を確認
+      # レスポンス全体を表示してデバッグ情報を確認
       # 最新のデプロイ情報を取得
       # 変数LATEST_DEPLOY が空ではないか確認
       # デプロイID を取得
@@ -277,6 +277,8 @@ jobs:
               exit 1
             fi
 
+            echo "$GET_RESPONSE" | jq '.'
+
             LATEST_DEPLOY=$(echo "$GET_RESPONSE" | jq -r 'map(.deploy) | sort_by(.createdAt) | last')
 
             if [[ -z "$LATEST_DEPLOY" ]]; then
@@ -297,11 +299,17 @@ jobs:
             if [[ -z "$RENDER_DEPLOY_STATUS" ]]; then
               echo "Failed to retrieve deployment status"
               exit 1
-            elif [[ "$RENDER_DEPLOY_STATUS" == "failed" ]]; then
-              echo "Deployment failed!"
+            elif [[ "$RENDER_DEPLOY_STATUS" == "build_failed" ]]; then
+              echo "Deployment build_failed!"
               exit 1
-            elif [[ "$RENDER_DEPLOY_STATUS" == "succeeded" ]]; then
-              echo "Deployment succeeded!"
+            elif [[ "$RENDER_DEPLOY_STATUS" == "update_failed" ]]; then
+              echo "Deployment update_failed!"
+              exit 1
+            elif [[ "$RENDER_DEPLOY_STATUS" == "canceled" ]]; then
+              echo "Deployment canceled!"
+              exit 1
+            elif [[ "$RENDER_DEPLOY_STATUS" == "live" ]]; then
+              echo "Deployment live!"
               exit 0
             fi
 
@@ -309,6 +317,7 @@ jobs:
           done
 
           echo "Deployment is still in progress after 30 minutes. Exiting."
+          echo "Final Deployment Status: $RENDER_DEPLOY_STATUS"
           exit 1
 
       # Render の PostgreSQL をマイグレート
