@@ -36,11 +36,14 @@ class PostTest < ActiveSupport::TestCase
   # amount属性のバリデーションをテスト
   test "invalid post with empty, space or negative amount" do
     invalid_amounts = ["", " ", -1000]
-
     invalid_amounts.each do |invalid_amount|
       post = new_post(amount: invalid_amount)
       assert_not post.valid?, "Post with amount '#{invalid_amount}' should be invalid"
-      assert_includes post.errors[:amount], "must be greater than or equal to 0"
+      if invalid_amount.to_s.strip.empty?
+        assert_includes post.errors[:amount], "can't be blank", "Amount should be invalid when blank"
+      else
+        assert_includes post.errors[:amount], "must be greater than or equal to 0", "Amount should be greater than or equal to 0"
+      end
     end
   end
 
