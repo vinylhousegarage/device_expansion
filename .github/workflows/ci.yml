@@ -264,17 +264,18 @@ jobs:
       - name: Check Render Deployment Status
         run: |
           set -e
-          GET_RESPONSE=$(curl -X GET \
-          "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -H "Content-Type: application/json" --fail --show-error)
-
-          if [[ -z "$GET_RESPONSE" ]]; then
-            echo "Failed to retrieve deployment information"
-            exit 1
-          fi
 
           for i in {1..180}; do
+
+            GET_RESPONSE=$(curl -X GET \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$GET_RESPONSE" ]]; then
+              echo "Failed to retrieve deployment information"
+              exit 1
+            fi
 
             LATEST_DEPLOY=$(echo "$GET_RESPONSE" | jq -r 'map(.deploy) | sort_by(.createdAt) | last')
 
