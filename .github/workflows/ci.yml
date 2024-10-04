@@ -207,11 +207,9 @@ jobs:
       # テストを実行
       - name: Run tests
         env:
-          RAILS_ENV: test
           POSTGRES_DB: postgres_db
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_HOST: localhost
         run: bundle exec rails test
 
   deploy:
