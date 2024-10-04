@@ -247,63 +247,68 @@ jobs:
       - name: Install jq
         run: sudo apt-get install -y jq
 
-      # Render API からデプロイ情報を取得
-      # Render API からのレスポンスを確認
-      # 変数 GET_RESPONSE が空ではないかを確認し、GITHUB_ENV に格納
-      - name: Get latest Render Deploy records
+
+      # Render APIからデプロイ情報を取得
+      # 変数GET_RESPONSE が空ではないか確認
+      # デプロイが成功するまでループで状態を確認
+      # 最新のデプロイ情報を取得
+      # 変数LATEST_DEPLOY が空ではないか確認
+      # デプロイID を取得
+      # 変数RENDER_DEPLOY_ID が空ではないか確認
+      # 変数RENDER_DEPLOY_ID を GITHUB_ENV に格納
+      # デプロイステータスを取得
+      # 変数RENDER_DEPLOY_STATUS が空でないか確認
+      # ステータスを判定
+      # 10秒待機し再度ステータスを確認
+      # 最大30分間の待機
+      - name: Check Render Deployment Status
         run: |
           set -e
           GET_RESPONSE=$(curl -X GET \
-          --verbose \
           "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -H "Content-Type: application/json" --fail --show-error)
 
           if [[ -z "$GET_RESPONSE" ]]; then
-            echo "Failed to trigger deployment"
-            exit 1
-          else
-            echo "Deployment GET response:$GET_RESPONSE"
-            echo "GET_RESPONSE=$GET_RESPONSE" >> $GITHUB_ENV
-          fi
-
-      # デプロイ情報を確認し、変数RENDER_DEPLOY_ID と 変数RENDER_DEPLOY_STATUS に格納
-      # 変数が空ではないかを確認し、GITHUB_ENV に格納
-      - name: Extract Deployment ID and Status
-        run: |
-          LATEST_DEPLOY=$(echo "$GET_RESPONSE" | jq -r 'map(.deploy) | sort_by(.createdAt) | last')
-          if [[ -z "$LATEST_DEPLOY" ]]; then
-            echo "Failed to retrieve the latest deploy"
+            echo "Failed to retrieve deployment information"
             exit 1
           fi
 
-          RENDER_DEPLOY_ID=$(echo "$LATEST_DEPLOY" | jq -r '.id')
-          if [[ -z "$RENDER_DEPLOY_ID" ]]; then
-            echo "Failed to extract deployment details"
-            exit 1
-          else
-            echo "Render Deploy ID: $RENDER_DEPLOY_ID"
-            echo "RENDER_DEPLOY_ID=$RENDER_DEPLOY_ID" >> $GITHUB_ENV
-          fi
+          for i in {1..180}; do
 
-          RENDER_DEPLOY_STATUS=$(echo "$LATEST_DEPLOY" | jq -r '.status')
-          if [[ -z "$RENDER_DEPLOY_STATUS" ]]; then
-            echo "Failed to retrieve deployment status"
-            exit 1
-          else
-            echo "Render Deploy Status: $RENDER_DEPLOY_STATUS"
-            echo "RENDER_DEPLOY_STATUS=$RENDER_DEPLOY_STATUS" >> $GITHUB_ENV
-          fi
+            LATEST_DEPLOY=$(echo "$GET_RESPONSE" | jq -r 'map(.deploy) | sort_by(.createdAt) | last')
 
-      # デプロイステータスが "succeeded" かどうか確認
-      - name: Check Deployment Status
-        run: |
-          if [[ "$RENDER_DEPLOY_STATUS" != "succeeded" ]]; then
-            echo "Deployment failed with status: $RENDER_DEPLOY_STATUS"
-            exit 1
-          else
-            echo "Deployment succeeded with status: $RENDER_DEPLOY_STATUS"
-          fi
+            if [[ -z "$LATEST_DEPLOY" ]]; then
+              echo "Failed to retrieve the latest deploy"
+              exit 1
+            fi
+
+            RENDER_DEPLOY_ID=$(echo "$LATEST_DEPLOY" | jq -r '.id')
+            if [[ -z "$RENDER_DEPLOY_ID" ]]; then
+              echo "Failed to extract deployment details"
+              exit 1
+            else
+              echo "Render Deploy ID: $RENDER_DEPLOY_ID"
+              echo "RENDER_DEPLOY_ID=$RENDER_DEPLOY_ID" >> $GITHUB_ENV
+            fi
+
+            RENDER_DEPLOY_STATUS=$(echo "$LATEST_DEPLOY" | jq -r '.status')
+            if [[ -z "$RENDER_DEPLOY_STATUS" ]]; then
+              echo "Failed to retrieve deployment status"
+              exit 1
+            elif [[ "$RENDER_DEPLOY_STATUS" == "failed" ]]; then
+              echo "Deployment failed!"
+              exit 1
+            elif [[ "$RENDER_DEPLOY_STATUS" == "succeeded" ]]; then
+              echo "Deployment succeeded!"
+              exit 0
+            fi
+
+            sleep 10
+          done
+
+          echo "Deployment is still in progress after 30 minutes. Exiting."
+          exit 1
 
       # Render の PostgreSQL をマイグレート
       - name: Run migration on Render
