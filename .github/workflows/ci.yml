@@ -125,6 +125,20 @@ jobs:
           echo "PostgreSQL did not become ready in time."
           exit 1
 
+      # ユーザーロールをセットアップ
+      - name: Set up pg_role
+        run: |
+          if ! sudo -u postgres psql -tc "SELECT 1 FROM pg_roles WHERE rolname='${{ secrets.POSTGRES_USER }}'" | grep -q 1; then
+            sudo -u postgres psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" || exit 1
+          fi
+
+      # スーパーユーザー権限を付与
+      - name: Grant superuser privileges to the PostgreSQL user
+        run: |
+          if ! sudo -u postgres psql -tc "SELECT rolsuper FROM pg_roles WHERE rolname = '${{ secrets.POSTGRES_USER }}' AND rolsuper = 't'" | grep -q 1; then
+            sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH SUPERUSER;" || exit 1
+          fi
+
       # テストを実行
       - name: Run tests
         env:
