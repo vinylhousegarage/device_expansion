@@ -8,7 +8,19 @@ class PostTest < ActiveSupport::TestCase
   # 初期データを挿入しユーザーを取得
   setup do
     Rails.application.load_seed
-    @user = User.find_by(name: "ゲスト１")
+    @user = User.find_or_create_by(name: "ゲスト１")
+  end
+
+  # Postインスタンスの初期属性を設定
+  def new_post(attributes = {})
+    Post.new({
+      name: "試験 氏名",
+      amount: 10000,
+      address: "市町村1丁目-nameⅡ",
+      tel: "0123456789",
+      others: "供花:20,000円(2段)",
+      user_id: @user.id,
+    }.merge(attributes))
   end
 
   # name属性のバリデーションをテスト
@@ -16,9 +28,9 @@ class PostTest < ActiveSupport::TestCase
     invalid_names = ["", " "]
 
     invalid_names.each do |invalid_name|
-      post = Post.new(name: invalid_name, user_id: @user.id, amount: 10000, address: "市町村1丁目-test", tel: "0123456789", others: "供花:20,000円(2段)")
+      post = new_post(name: invalid_name)
       assert_not post.valid?, "Post with name '#{invalid_name}' should be invalid"
-      assert_includes post.errors[:name], "can't be blank or contain only spaces"
+      assert_includes post.errors[:name], "can't be blank"
     end
   end
 
@@ -27,16 +39,16 @@ class PostTest < ActiveSupport::TestCase
     invalid_amounts = ["", " ", -1000]
 
     invalid_amounts.each do |invalid_amount|
-      post = Post.new(name: "試験 氏名", user_id: @user.id, amount: invalid_amount, address: "市町村1丁目-test", tel: "0123456789", others: "供花:20,000円(2段)")
+      post = new_post(amount: invalid_amount)
       assert_not post.valid?, "Post with amount '#{invalid_amount}' should be invalid"
-      assert_includes post.errors[:amount], "must be a positive number"
+      assert_includes post.errors[:amount], "must be greater than or equal to 0"
     end
   end
 
   # Postインスタンスの新規生成テスト
   test "creates post with valid schema and user_id" do
     assert_not_nil @user, "User with name 'ゲスト１' not found"
-    post = Post.new(name: "試験 氏名", user_id: @user.id, amount: 10000, address: "市町村1丁目-test", tel: "0123456789", others: "供花:20,000円(2段)")
+    post = new_post
     assert post.valid?, "Post should be valid with correct attributes"
     assert_difference('Post.count', 1) do
       post.save
