@@ -125,9 +125,92 @@ jobs:
           echo "PostgreSQL did not become ready in time."
           exit 1
 
+      # ユーザーロールをセットアップ
+      - name: Set up pg_role
+        run: |
+          if ! sudo -u postgres psql -tc "SELECT 1 FROM pg_roles WHERE rolname='${{ secrets.POSTGRES_USER }}'" | grep -q 1; then
+            sudo -u postgres psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" || exit 1
+          fi
+
+      # スーパーユーザー権限を付与
+      - name: Grant superuser privileges to the PostgreSQL user
+        run: |
+          if ! sudo -u postgres psql -tc "SELECT rolsuper FROM pg_roles WHERE rolname = '${{ secrets.POSTGRES_USER }}' AND rolsuper = 't'" | grep -q 1; then
+            sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH SUPERUSER;" || exit 1
+          fi
+
+      # データベースの有無を確認
+      - name: List all databases with expanded output
+        run: |
+          echo "Listing all databases in expanded mode:"
+          sudo -u postgres psql -c "\l"
+
+      # デーベースの名前を確認
+      - name: List all database names
+        run: |
+          echo "Listing all database names in PostgreSQL:"
+          sudo -u postgres psql -c "SELECT datname FROM pg_database;"
+
+      # POSTGRES_DB を生成
+      - name: Run database create
+        env:
+          TEST_DB: postgres_db
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: bundle exec rails db:create RAILS_ENV=test
+
+      # POSTGRES_DB の生成を確認
+      - name: List all databases with expanded output
+        run: |
+          echo "Listing all databases in expanded mode:"
+          sudo -u postgres psql -c "\l"
+
+      # POSTGRES_DB をマイグレート
+      - name: Run database migrations
+        env:
+          TEST_DB: postgres_db
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: bundle exec rails db:migrate RAILS_ENV=test
+
+      # マイグレーション履歴を確認
+      - name: Check applied migrations
+        run: |
+          echo "Checking applied migrations..."
+          sudo -u postgres psql -d postgres_db -c "SELECT * FROM schema_migrations;"
+
+      # マイグレートした POSTGRES_DB に初期データを挿入
+      - name: Run Seed the test database
+        env:
+          TEST_DB: postgres_db
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: bundle exec rails db:seed RAILS_ENV=test
+
+      # 初期データ挿入の成否を確認
+      - name: Check if seed data was inserted
+        run: |
+          echo "Checking if users are inserted into the test database..."
+          user_count=$(sudo -u postgres psql -d postgres_db -tAc "SELECT COUNT(*) FROM users;")
+          if [ "$user_count" -eq 0 ]; then
+            echo "Error: No users found in the test database. Seed data was not inserted correctly."
+            exit 1
+          else
+            echo "Seed data successfully inserted: $user_count users found."
+          fi
+
+      # テスト用データを確認
+      - name: Check if the user 'ゲスト１' exists in postgres_db
+        run: |
+          sudo -u postgres psql -d postgres_db -c "SELECT * FROM users WHERE name = 'ゲスト１';"
+
       # テストを実行
       - name: Run tests
-        run: bundle exec rails test
+        env:
+          TEST_DB: postgres_db
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: bundle exec rails test RAILS_ENV=test
 
   deploy:
     runs-on: ubuntu-latest
