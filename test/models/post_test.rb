@@ -7,7 +7,7 @@ class PostTest < ActiveSupport::TestCase
 
   # 初期データを挿入しユーザーを取得
   setup do
-    @user = User.find_by(name: "ゲスト１")
+    @user = User.find_or_create_by(name: "ゲスト１")
   end
 
   # Postインスタンスの初期属性を設定
