@@ -7,6 +7,7 @@ class PostTest < ActiveSupport::TestCase
 
   # 初期データを挿入しユーザーを取得
   setup do
+    Rails.application.load_seed
     @user = User.find_by(name: "ゲスト１")
   end
 
