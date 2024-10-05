@@ -367,33 +367,33 @@ jobs:
             exit 1
           fi
 
-          while true; do
-            MIGRATE_ID_RESPONSE=$(curl -X GET \
-              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$MIGRATE_ID" \
-              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-              -H "Content-Type: application/json")
 
-            if [[ -z "$MIGRATE_ID_RESPONSE" ]]; then
-              echo "MIGRATE_ID_RESPONSE : empty"
-              exit 1
-            fi
+          MIGRATE_ID_RESPONSE=$(curl -X GET \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$MIGRATE_ID" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json")
 
-            echo $MIGRATE_ID_RESPONSE | jq '.'
-            exit 0
+          if [[ -z "$MIGRATE_ID_RESPONSE" ]]; then
+            echo "MIGRATE_ID_RESPONSE : empty"
+            exit 1
+          fi
 
-            MIGRATE_STATUS=$(echo "$MIGRATE_ID_RESPONSE" | jq -r '.status')
+          echo $MIGRATE_ID_RESPONSE | jq '.'
+          exit 0
 
-            if [[ "$MIGRATE_STATUS" == "succeeded" ]]; then
-              echo "Migrate succeeded"
-              break
-            elif [[ "$MIGRATE_STATUS" == "failed" ]]; then
-              echo "Migrate failed with status: $MIGRATE_STATUS"
-              exit 1
-            else
-              echo "Migrate in progress: $MIGRATE_STATUS"
-              sleep 5
-            fi
-          done
+          MIGRATE_STATUS=$(echo "$MIGRATE_ID_RESPONSE" | jq -r '.status')
+
+          if [[ "$MIGRATE_STATUS" == "succeeded" ]]; then
+            echo "Migrate succeeded"
+            break
+          elif [[ "$MIGRATE_STATUS" == "failed" ]]; then
+            echo "Migrate failed with status: $MIGRATE_STATUS"
+            exit 1
+          else
+            echo "Migrate in progress: $MIGRATE_STATUS"
+            sleep 5
+          fi
+
         timeout-minutes: 5
 
       # マイグレートした Render の PostgreSQL に初期データを挿入
