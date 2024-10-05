@@ -248,7 +248,7 @@ jobs:
         run: sudo apt-get install -y jq
 
       # デプロイが成功するまでループで状態を確認
-      # Render APIからデプロイ情報を取得
+      # Render API からデプロイ情報を取得
       # 変数GET_RESPONSE が空ではないか確認
       # レスポンス全体を表示してデバッグ情報を確認
       # 最新のデプロイ情報を取得
@@ -320,11 +320,37 @@ jobs:
           echo "Final Deployment Status: $RENDER_DEPLOY_STATUS"
           exit 1
 
-      # Render の PostgreSQL をマイグレート
-      # マイグレートステータスを取得
-      # 変数MIGRATE_STATUS が空ではないか確認
+
+
+      
+      # 変数GET_RESPONSE が空ではないか確認
+      # レスポンス全体を表示してデバッグ情報を確認
+      # 最新のデプロイ情報を取得
+
+      # デプロイID を取得
+      # 変数RENDER_DEPLOY_ID が空ではないか確認
+      # 変数RENDER_DEPLOY_ID を GITHUB_ENV に格納
+      # デプロイステータスを取得
+      # 変数RENDER_DEPLOY_STATUS が空でないか確認
       # ステータスを判定
-      - name: Run migrate on Render
+      # 10秒待機し再度ステータスを確認
+      # 最大30分間の待機
+
+
+
+
+
+      # Render の PostgreSQL をマイグレート
+      # Render APIからデプロイ情報を取得
+      # デプロイID を取得
+      # 変数MIGRATE_ID が空ではないか確認
+      # デプロイが成功するまでループで状態を確認
+      # Render API からデプロイID情報を取得
+      # 変数MIGRATE_ID_RESPONSE が空ではないか確認
+      # マイグレートステータスを取得
+      # マイグレートステータスを判定
+      # 最大5分間 5秒待機して再び判定
+      - name: Run Database Migrations on Render
         run: |
           MIGRATE_JOB_RESPONSE=$(curl -X POST \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
@@ -334,20 +360,41 @@ jobs:
               "startCommand": "bundle exec rails db:migrate"
             }')
 
-          echo "$MIGRATE_JOB_RESPONSE" | jq '.'
-          exit 1
+          MIGRATE_ID=$(echo "$MIGRATE_JOB_RESPONSE" | jq -r '.id')
 
-          MIGRATE_STATUS=$(echo "$MIGRATE_JOB_RESPONSE" | jq -r '.status')
-
-          if [[ -z "$MIGRATE_STATUS" ]]; then
-            echo "Failed to retrieve migrate status"
+          if [[ -z "$MIGRATE_ID" ]]; then
+            echo "MIGRATE_ID : empty"
             exit 1
-          elif [[ "$MIGRATE_STATUS" != "succeeded" ]]; then
-            echo "Migrate failed with status: $MIGRATE_STATUS"
-            exit 1
-          elif
-            echo "Migrate succeeded"
           fi
+
+          while true; do
+            MIGRATE_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$MIGRATE_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json")
+
+            if [[ -z "$MIGRATE_ID_RESPONSE" ]]; then
+              echo "MIGRATE_ID_RESPONSE : empty"
+              exit 1
+            fi
+
+            echo $MIGRATE_ID_RESPONSE | jq '.'
+            exit 0
+
+            MIGRATE_STATUS=$(echo "$MIGRATE_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$MIGRATE_STATUS" == "succeeded" ]]; then
+              echo "Migrate succeeded"
+              break
+            elif [[ "$MIGRATE_STATUS" == "failed" ]]; then
+              echo "Migrate failed with status: $MIGRATE_STATUS"
+              exit 1
+            else
+              echo "Migrate in progress: $MIGRATE_STATUS"
+              sleep 5
+            fi
+          done
+        timeout-minutes: 5
 
       # マイグレートした Render の PostgreSQL に初期データを挿入
       # シードステータスを取得
