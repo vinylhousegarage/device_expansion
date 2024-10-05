@@ -371,30 +371,10 @@ jobs:
           MIGRATE_ID_RESPONSE=$(curl -X GET \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$MIGRATE_ID" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            -H "Content-Type: application/json")
+            -H "Content-Type: application/json" | jq '.')
 
-          if [[ -z "$MIGRATE_ID_RESPONSE" ]]; then
-            echo "MIGRATE_ID_RESPONSE : empty"
-            exit 1
-          fi
-
-          echo $MIGRATE_ID_RESPONSE | jq '.'
           exit 1
 
-          MIGRATE_STATUS=$(echo "$MIGRATE_ID_RESPONSE" | jq -r '.status')
-
-          if [[ "$MIGRATE_STATUS" == "succeeded" ]]; then
-            echo "Migrate succeeded"
-            break
-          elif [[ "$MIGRATE_STATUS" == "failed" ]]; then
-            echo "Migrate failed with status: $MIGRATE_STATUS"
-            exit 1
-          else
-            echo "Migrate in progress: $MIGRATE_STATUS"
-            sleep 5
-          fi
-
-        timeout-minutes: 5
 
       # マイグレートした Render の PostgreSQL に初期データを挿入
       # シードステータスを取得
