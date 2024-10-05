@@ -342,7 +342,7 @@ jobs:
           elif [[ "$MIGRATE_STATUS" != "succeeded" ]]; then
             echo "Migrate failed with status: $MIGRATE_STATUS"
             exit 1
-          elif
+          else
             echo "Migrate succeeded"
           fi
 
@@ -368,6 +368,6 @@ jobs:
           elif [[ "$SEED_STATUS" != "succeeded" ]]; then
             echo "Seed failed with status: $SEED_STATUS"
             exit 1
-          elif
+          else
             echo "Seed succeeded"
           fi
