@@ -360,13 +360,15 @@ jobs:
               "startCommand": "bundle exec rails db:migrate"
             }')
 
+          echo "MIGRATE_JOB_RESPONSE: $MIGRATE_JOB_RESPONSE"
+
           MIGRATE_ID=$(echo "$MIGRATE_JOB_RESPONSE" | jq -r '.id')
+          echo "MIGRATE_ID: $MIGRATE_ID"
 
           if [[ -z "$MIGRATE_ID" ]]; then
             echo "MIGRATE_ID : empty"
             exit 1
           fi
-
 
           curl -X GET \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$MIGRATE_ID" \
