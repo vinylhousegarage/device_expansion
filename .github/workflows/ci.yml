@@ -321,40 +321,53 @@ jobs:
           exit 1
 
       # Render の PostgreSQL をマイグレート
+      # マイグレートステータスを取得
+      # 変数MIGRATE_STATUS が空ではないか確認
+      # ステータスを判定
       - name: Run migrate on Render
         run: |
-          curl -X POST \
+          MIGRATE_JOB_RESPONSE=$(curl -X POST \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
               "startCommand": "bundle exec rails db:migrate"
-            }'
+            }')
 
-      # Render の PostgreSQL に初期データを挿入
+          MIGRATE_STATUS=$(echo "$MIGRATE_JOB_RESPONSE" | jq -r '.status')
+
+          if [[ -z "$MIGRATE_STATUS" ]]; then
+            echo "Failed to retrieve migrate status"
+            exit 1
+          elif [[ "$MIGRATE_STATUS" != "succeeded" ]]; then
+            echo "Migrate failed with status: $MIGRATE_STATUS"
+            exit 1
+          elif
+            echo "Migrate succeeded"
+          fi
+
+      # マイグレートした Render の PostgreSQL に初期データを挿入
+      # シードステータスを取得
+      # 変数SEED_STATUS が空ではないか確認
+      # ステータスを判定
       - name: Run seed on Render
         run: |
-          curl -X POST \
+          SEED_JOB_RESPONSE=$(curl -X POST \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
               "startCommand": "bundle exec rails db:seed"
-            }'
+            }')
 
-      # 最新デプロイのログを取得
-      - name: Log Render Deploy ID & Get Logs
-        run: |
-          set -e
-          if [[ -z "$RENDER_DEPLOY_ID" ]]; then
-            echo "Failed to retrieve Render Deploy ID. Deployment may not have been triggered correctly."
+          SEED_STATUS=$(echo "$SEED_JOB_RESPONSE" | jq -r '.status')
+
+          if [[ -z "$SEED_STATUS" ]]; then
+            echo "Failed to retrieve seed status"
             exit 1
-          else
-            echo "Render Deploy ID: $RENDER_DEPLOY_ID"
-            curl -X GET \
-            --verbose \
-            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys/$RENDER_DEPLOY_ID/logs" \
-            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            -H "Content-Type: application/json" --fail --show-error
+          elif [[ "$SEED_STATUS" != "succeeded" ]]; then
+            echo "Seed failed with status: $SEED_STATUS"
+            exit 1
+          elif
+            echo "Seed succeeded"
           fi
-        timeout-minutes: 10
