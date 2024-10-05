@@ -352,32 +352,18 @@ jobs:
       # 最大5分間 5秒待機して再び判定
       - name: Run Database Migrations on Render
         run: |
-          MIGRATE_JOB_RESPONSE=$(curl -X POST \
+          curl -v -X POST \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
               "startCommand": "bundle exec rails db:migrate"
-            }')
+            }' | jq '.'
 
-          echo "MIGRATE_JOB_RESPONSE: $MIGRATE_JOB_RESPONSE"
-
-          MIGRATE_ID=$(echo "$MIGRATE_JOB_RESPONSE" | jq -r '.id')
-          echo "MIGRATE_ID: $MIGRATE_ID"
-
-          if [[ -z "$MIGRATE_ID" ]]; then
-            echo "MIGRATE_ID : empty"
-            exit 1
-          fi
-
-          curl -v -X GET \
-            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$MIGRATE_ID" \
-            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            -H "Content-Type: application/json" | jq '.'
 
       # ジョブを強制終了
       - name: Stop the job
-        run: exit 0
+        run: exit 1
 
 
       # マイグレートした Render の PostgreSQL に初期データを挿入
