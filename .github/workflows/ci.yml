@@ -379,7 +379,7 @@ jobs:
           fi
 
           echo $MIGRATE_ID_RESPONSE | jq '.'
-          exit 0
+          exit 1
 
           MIGRATE_STATUS=$(echo "$MIGRATE_ID_RESPONSE" | jq -r '.status')
 
