@@ -334,6 +334,9 @@ jobs:
               "startCommand": "bundle exec rails db:migrate"
             }')
 
+          echo "$MIGRATE_JOB_RESPONSE" | jq '.'
+          exit 1
+
           MIGRATE_STATUS=$(echo "$MIGRATE_JOB_RESPONSE" | jq -r '.status')
 
           if [[ -z "$MIGRATE_STATUS" ]]; then
