@@ -368,12 +368,12 @@ jobs:
           fi
 
 
-          MIGRATE_ID_RESPONSE=$(curl -X GET \
+          curl -X GET \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$MIGRATE_ID" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            -H "Content-Type: application/json" | jq '.')
+            -H "Content-Type: application/json" | jq '.'
 
-          exit 1
+          exit 0
 
 
       # マイグレートした Render の PostgreSQL に初期データを挿入
