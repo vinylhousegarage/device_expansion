@@ -345,7 +345,7 @@ jobs:
           elif [[ "$MIGRATE_STATUS" != "succeeded" ]]; then
             echo "Migrate failed with status: $MIGRATE_STATUS"
             exit 1
-          elif
+          else
             echo "Migrate succeeded"
           fi
 
