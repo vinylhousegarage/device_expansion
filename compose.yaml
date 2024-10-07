@@ -4,11 +4,11 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - "${POSTGRES_DATA_DIR:-./postgres_data}:/var/lib/postgresql/data"
     env_file:
       - .env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -h $POSTGRES_HOST -d $POSTGRES_DB || exit 1"]
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -h localhost -d development_db || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
