@@ -18,7 +18,7 @@ class PostTest < ActiveSupport::TestCase
       address: "市町村1丁目-nameⅡ",
       tel: "0123456789",
       others: "供花:20,000円(2段)",
-      user_id: @user.id,
+      user: @user,
     }.merge(attributes))
   end
 
@@ -56,4 +56,13 @@ class PostTest < ActiveSupport::TestCase
       post.save
     end
   end
+
+  # Postインスタンスのアソシエーションテスト
+  test "post belongs to author" do
+    post = new_post
+    assert_equal @user, post.user, "Post's user should be the user with name 'ゲスト１'"
+    assert post.save, "Post should be saved successfully"
+  end
 end
+
+
