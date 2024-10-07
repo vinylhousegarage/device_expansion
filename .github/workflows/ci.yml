@@ -247,9 +247,9 @@ jobs:
       - name: Install jq
         run: sudo apt-get install -y jq
 
-      # デプロイが成功するまでループで状態を確認
+      # 最大180回の反復を設定
       # Render API からデプロイ情報を取得
-      # 変数GET_RESPONSE が空ではないか確認
+      # 変数GET_DEPROY_RESPONSE が空ではないか確認
       # レスポンス全体を表示してデバッグ情報を確認
       # 最新のデプロイ情報を取得
       # 変数LATEST_DEPLOY が空ではないか確認
@@ -259,27 +259,26 @@ jobs:
       # デプロイステータスを取得
       # 変数RENDER_DEPLOY_STATUS が空でないか確認
       # ステータスを判定
-      # 10秒待機し再度ステータスを確認
-      # 最大30分間の待機
+      # 10秒待機しステータスの判定を反復
       - name: Check Render Deployment Status
         run: |
           set -e
 
           for i in {1..180}; do
 
-            GET_RESPONSE=$(curl -X GET \
+            GET_DEPROY_RESPONSE=$(curl -X GET \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" --fail --show-error)
 
-            if [[ -z "$GET_RESPONSE" ]]; then
+            if [[ -z "$GET_DEPROY_RESPONSE" ]]; then
               echo "Failed to retrieve deployment information"
               exit 1
             fi
 
-            echo "$GET_RESPONSE" | jq '.'
+            echo "$GET_DEPROY_RESPONSE" | jq '.'
 
-            LATEST_DEPLOY=$(echo "$GET_RESPONSE" | jq -r 'map(.deploy) | sort_by(.createdAt) | last')
+            LATEST_DEPLOY=$(echo "$GET_DEPROY_RESPONSE" | jq -r 'map(.deploy) | sort_by(.createdAt) | last')
 
             if [[ -z "$LATEST_DEPLOY" ]]; then
               echo "Failed to retrieve the latest deploy"
@@ -320,74 +319,138 @@ jobs:
           echo "Final Deployment Status: $RENDER_DEPLOY_STATUS"
           exit 1
 
-
-
-      
-      # 変数GET_RESPONSE が空ではないか確認
-      # レスポンス全体を表示してデバッグ情報を確認
-      # 最新のデプロイ情報を取得
-
-      # デプロイID を取得
-      # 変数RENDER_DEPLOY_ID が空ではないか確認
-      # 変数RENDER_DEPLOY_ID を GITHUB_ENV に格納
-      # デプロイステータスを取得
-      # 変数RENDER_DEPLOY_STATUS が空でないか確認
-      # ステータスを判定
-      # 10秒待機し再度ステータスを確認
-      # 最大30分間の待機
-
-
-
-
-
-      # Render の PostgreSQL をマイグレート
-      # Render APIからデプロイ情報を取得
-      # デプロイID を取得
-      # 変数MIGRATE_ID が空ではないか確認
-      # デプロイが成功するまでループで状態を確認
-      # Render API からデプロイID情報を取得
-      # 変数MIGRATE_ID_RESPONSE が空ではないか確認
-      # マイグレートステータスを取得
-      # マイグレートステータスを判定
-      # 最大5分間 5秒待機して再び判定
-      - name: Run Database Migrations on Render
+      # Render の PostgreSQL に初期データを挿入
+      # Render APIからマイグレーションデータを取得
+      # 変数MIGRATION_JOB_RESPONSE が空ではないか確認
+      # マイグレーションID を取得
+      # 変数MIGRATION_ID が空ではないか確認
+      # 最大180回をマイグレーションID情報の取得を反復
+      # Render API からマイグレーションID情報を取得
+      # 変数MIGRATION_ID_RESPONSE が空ではないか確認
+      # マイグレーションステータスを取得
+      # マイグレーションステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run Database Migration on Render
         run: |
-          curl -v -X POST \
+          MIGRATION_JOB_RESPONSE=$(curl -X POST \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            -H "Content-Type: application/json" \
+            -H "Content-Type: application/json" --fail --show-error\
             -d '{
               "startCommand": "bundle exec rails db:migrate"
-            }' | jq '.'
+            }')
 
+          if [[ -z "$MIGRATION_JOB_RESPONSE" ]]; then
+            echo "Failed to retrieve creating migration job information"
+            exit 1
+          fi
 
-      # ジョブを強制終了
-      - name: Stop the job
-        run: exit 1
+          echo "$MIGRATION_JOB_RESPONSE" | jq '.'
 
+          MIGRATION_ID=$(echo "$MIGRATION_JOB_RESPONSE" | jq -r '.id')
 
-      # マイグレートした Render の PostgreSQL に初期データを挿入
+          if [[ -z "$MIGRATION_ID" ]]; then
+            echo "Failed to retrieve migration-id information"
+            exit 1
+          fi
+
+          echo "$MIGRATION_ID"
+
+          for i in {1..180}; do
+            MIGRATION_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$MIGRATION_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$MIGRATION_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve running migration information"
+              exit 1
+            fi
+
+            echo "$MIGRATION_ID_RESPONSE" | jq '.'
+
+            MIGRATION_STATUS=$(echo "$MIGRATION_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$MIGRATION_STATUS" == "succeeded" ]]; then
+              echo "Migration succeeded"
+              exit 0
+            elif [[ "$MIGRATION_STATUS" == "failed" ]]; then
+              echo "Migration failed"
+              exit 1
+            else
+              echo "Waiting for migration to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "Migration is still in progress after 30 minutes. Exiting."
+          echo "Final migration Status: $MIGRATION_STATUS"
+          exit 1
+
+      # Render の PostgreSQL に初期データを挿入
+      # Render APIからシードデータを取得
+      # 変数SEED_JOB_RESPONSE が空ではないか確認
+      # シードID を取得
+      # 変数SEED_ID が空ではないか確認
+      # 最大180回をシードID情報の取得を反復
+      # Render API からシードID情報を取得
+      # 変数SEED_ID_RESPONSE が空ではないか確認
       # シードステータスを取得
-      # 変数SEED_STATUS が空ではないか確認
-      # ステータスを判定
-      - name: Run seed on Render
+      # シードステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run Database Seed on Render
         run: |
           SEED_JOB_RESPONSE=$(curl -X POST \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            -H "Content-Type: application/json" \
+            -H "Content-Type: application/json" --fail --show-error\
             -d '{
               "startCommand": "bundle exec rails db:seed"
             }')
 
-          SEED_STATUS=$(echo "$SEED_JOB_RESPONSE" | jq -r '.status')
+            if [[ -z "$SEED_JOB_RESPONSE" ]]; then
+              echo "Failed to retrieve creating seed job information"
+              exit 1
+            fi
 
-          if [[ -z "$SEED_STATUS" ]]; then
-            echo "Failed to retrieve seed status"
+            echo "$SEED_JOB_RESPONSE" | jq '.'
+
+          SEED_ID=$(echo "$SEED_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$SEED_ID" ]]; then
+            echo "Failed to retrieve seed-id information"
             exit 1
-          elif [[ "$SEED_STATUS" != "succeeded" ]]; then
-            echo "Seed failed with status: $SEED_STATUS"
-            exit 1
-          else
-            echo "Seed succeeded"
           fi
+
+          echo "$SEED_ID"
+
+          for i in {1..180}; do
+            SEED_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$SEED_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$SEED_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve running seed information"
+              exit 1
+            fi
+
+            echo "$SEED_ID_RESPONSE" | jq '.'
+
+            SEED_STATUS=$(echo "$SEED_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$SEED_STATUS" == "succeeded" ]]; then
+              echo "Seed succeeded"
+              exit 0
+            elif [[ "$SEED_STATUS" == "failed" ]]; then
+              echo "Seed failed"
+              exit 1
+            else
+              echo "Waiting for seed to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "Seed is still in progress after 30 minutes. Exiting."
+          echo "Final Seed Status: $SEED_STATUS"
+          exit 1
