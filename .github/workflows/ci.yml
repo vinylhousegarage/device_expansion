@@ -13,135 +13,204 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-
-    services:
-      db:
-        image: postgres:14.13
-        env_file:
-          - .env
-        environment:
-          POSTGRES_DB: $POSTGRES_DB
-          POSTGRES_USER: $POSTGRES_USER
-          POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    timeout-minutes: 60
 
     steps:
+      # リモートリポジトリをチェックアウト
       - name: Check out the repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
+      # 実行中のユーザーを確認
+      - name: Check current user
+        run: whoami
+
+      # ls -ld コマンドを実行して、ディレクトリの所有者とパーミッションを確認
+      - name: Check directory permissions and ownership
+        run: ls -ld /home/runner/work/device_expansion/device_expansion
+
+      # ディレクトリ内のパーミッションの確認
+      - name: Check permissions of all files
+        run: ls -lR /home/runner/work/device_expansion/device_expansion
+
+      # GHCR にログイン
+      - name: Log in to GitHub Container Registry
+        run: |
+          echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      # GHCRから既存のDockerイメージをプルしてキャッシュとして使用
+      - name: Pull Docker image from GHCR
+        run: docker pull ghcr.io/vinylhousegarage/device_expansion:latest || echo "No cached image found, continuing with fresh build"
+
+      # Dockerイメージ に差分があるコミットを commit_list.txt に抽出
+      - name: Get commits with Dockerfile or compose.yaml changes
+        run: |
+          git log --reverse --pretty=format:"%H" $HEAD -- Dockerfile compose.yaml .github/workflows/ci.yml > commit_list.txt
+          if [ ! -s commit_list.txt ]; then
+            echo "No commits with Dockerfile or compose.yaml changes found."
+            exit 0
+          fi
+
+      # commit_list.txt のコミットIDを1行ずつ読み取り GHCR にビルドしプッシュ
+      # 最新のコミットを変数LATEST_COMMIT に格納
+      # 変数LATEST_COMMIT が空ではないか確認
+      # 最新のDockerイメージに latest のタグを付けGHCRにビルドしプッシュ
+      - name: Process each commit
+        run: |
+          set -e
+          echo "Commits to process: $(cat commit_list.txt)"
+          while IFS= read -r COMMIT; do
+            echo "Processing commit: $COMMIT with message: $(git log -1 --pretty=%B $COMMIT)"
+            docker build --cache-from ghcr.io/vinylhousegarage/device_expansion:latest \
+            -t ghcr.io/vinylhousegarage/device_expansion:$COMMIT .
+            docker push ghcr.io/vinylhousegarage/device_expansion:$COMMIT
+            LATEST_COMMIT=$COMMIT
+          done < commit_list.txt
+
+          if [[ -n "$LATEST_COMMIT" ]]; then
+            docker tag ghcr.io/vinylhousegarage/device_expansion:$LATEST_COMMIT ghcr.io/vinylhousegarage/device_expansion:latest
+            docker push ghcr.io/vinylhousegarage/device_expansion:latest
+          fi
+
+      # Ruby をセットアップ
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1.0
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
+      # Gem のキャッシュを利用してビルドを高速化
       - name: Cache gems
         uses: actions/cache@v3
         with:
           path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-v1
           restore-keys: |
-            ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-            ${{ runner.os }}--gems
-            ${{ runner.os }}-
+            ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-v1
+            ${{ runner.os }}-gems-v1
 
+      # PostgreSQL 関連のライブラリと gem をインストール
       - name: Install dependencies
         run: |
           set -e
           sudo apt-get update
-          sudo apt-get install -y libpq-dev
+          sudo apt-get install -y libpq-dev || echo "Failed to install libpq-dev"
           bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
 
-      - name: Wait for Postgres to be ready
+      # RuboCop を実行してコードスタイルを検証
+      - name: Run RuboCop (Lint check)
+        run: bundle exec rubocop --config .rubocop.yml --fail-level W
+
+      # PostgreSQL と postgresql-client を 14 でインストール
+      - name: Install PostgreSQL 14 and client tools
         run: |
-          for i in {1..10}; do
-            if pg_isready -h db -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} ; then
-              echo "Postgres is ready"
-              break
-            else
-              echo "Waiting for Postgres..."
-              sleep 5
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install -y postgresql-14 postgresql-client-14
+          sudo service postgresql start
+
+      # 最大60秒間 PostgreSQL の応答を確認
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..12}; do
+            if pg_isready -h localhost -p 5432; then
+              echo "PostgreSQL is ready!"
+              exit 0
             fi
+            echo "Waiting for PostgreSQL to be ready... Attempt $i at $(date)"
+            sleep 5
           done
+          echo "PostgreSQL did not become ready in time."
+          exit 1
 
-          if ! pg_isready -h db -p 5432 -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }} ; then
-            echo "Postgres failed to start"
-            exit 1
+      # ユーザーロールをセットアップ
+      - name: Set up pg_role
+        run: |
+          if ! sudo -u postgres psql -tc "SELECT 1 FROM pg_roles WHERE rolname='${{ secrets.POSTGRES_USER }}'" | grep -q 1; then
+            sudo -u postgres psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" || exit 1
           fi
 
-      - name: Set up the database
+      # スーパーユーザー権限を付与
+      - name: Grant superuser privileges to the PostgreSQL user
+        run: |
+          if ! sudo -u postgres psql -tc "SELECT rolsuper FROM pg_roles WHERE rolname = '${{ secrets.POSTGRES_USER }}' AND rolsuper = 't'" | grep -q 1; then
+            sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH SUPERUSER;" || exit 1
+          fi
+
+      # データベースの有無を確認
+      - name: List all databases with expanded output
+        run: |
+          echo "Listing all databases in expanded mode:"
+          sudo -u postgres psql -c "\l"
+
+      # デーベースの名前を確認
+      - name: List all database names
+        run: |
+          echo "Listing all database names in PostgreSQL:"
+          sudo -u postgres psql -c "SELECT datname FROM pg_database;"
+
+      # POSTGRES_DB を生成
+      - name: Run database create
         env:
-          RAILS_ENV: test
+          TEST_DB: postgres_db
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: bundle exec rails db:create RAILS_ENV=test
+
+      # POSTGRES_DB の生成を確認
+      - name: List all databases with expanded output
         run: |
-          set -e
-          if psql -h ${{ secrets.TEST_HOST }} \
-          -U ${{ secrets.TEST_USER }} -lqt \
-          | cut -d \| -f 1 \
-          | grep -qw ${{ secrets.TEST_DB }}; then
-            echo "Database exist, running migrations"
-            bundle exec rails db:migrate
-          else
-            echo "Database does not exist, creating database"
-            bundle exec rails db:create
-            echo "Running migrations"
-            bundle exec rails db:migrate
-            echo "Inserting seed data"
-            bundle exec rails db:seed
-          fi
+          echo "Listing all databases in expanded mode:"
+          sudo -u postgres psql -c "\l"
 
-      - name: Log in to GitHub Container Registry
+      # POSTGRES_DB をマイグレート
+      - name: Run database migrations
+        env:
+          TEST_DB: postgres_db
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: bundle exec rails db:migrate RAILS_ENV=test
+
+      # マイグレーション履歴を確認
+      - name: Check applied migrations
         run: |
-          set -e
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          echo "Docker login successful"
+          echo "Checking applied migrations..."
+          sudo -u postgres psql -d postgres_db -c "SELECT * FROM schema_migrations;"
 
-      - name: Determine Docker tag
+      # マイグレートした POSTGRES_DB に初期データを挿入
+      - name: Run Seed the test database
+        env:
+          TEST_DB: postgres_db
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: bundle exec rails db:seed RAILS_ENV=test
+
+      # 初期データ挿入の成否を確認
+      - name: Check if seed data was inserted
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            TAG="latest"
-          else
-            TAG="${{ github.sha }}"
-          fi
-
-          if [[ -z "${TAG}" ]]; then
-            echo "Failed to determine Docker tag"
-            exit 1
-          fi
-
-          echo "TAG=${TAG}" >> $GITHUB_ENV
-          echo "Docker tag set to: ${TAG}"
-
-      - name: Check if Dockerfile or related files changed
-        run: |
-          set -e
-          if [[ -z ${TAG} ]]; then
-            echo "TAG is not set, exiting."
+          echo "Checking if users are inserted into the test database..."
+          user_count=$(sudo -u postgres psql -d postgres_db -tAc "SELECT COUNT(*) FROM users;")
+          if [ "$user_count" -eq 0 ]; then
+            echo "Error: No users found in the test database. Seed data was not inserted correctly."
             exit 1
           else
-            if git diff --name-only origin/main...HEAD | grep -E "(Dockerfile|compose.yaml)"; then
-              docker build -t ghcr.io/vinylhousegarage/device_expansion:$TAG .
-              docker push ghcr.io/vinylhousegarage/device_expansion:$TAG
-            else
-              echo "No changes in Dockerfile, skipping build and push."
-            fi
+            echo "Seed data successfully inserted: $user_count users found."
           fi
 
+      # テスト用データを確認
+      - name: Check if the user 'ゲスト１' exists in postgres_db
+        run: |
+          sudo -u postgres psql -d postgres_db -c "SELECT * FROM users WHERE name = 'ゲスト１';"
+
+      # テストを実行
       - name: Run tests
         env:
-          RAILS_ENV: test
-        run: |
-          set -e
-          bundle exec rails test
-
-      - name: Run RuboCop (Lint check)
-        run: |
-          bundle exec rubocop --fail-level W
+          TEST_DB: postgres_db
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: bundle exec rails test RAILS_ENV=test
 
   deploy:
     runs-on: ubuntu-latest
@@ -150,82 +219,238 @@ jobs:
       RAILS_ENV: production
 
     steps:
+      # リモートリポジトリをチェックアウト
       - name: Check out the repository
         uses: actions/checkout@v3
 
+      # mainブランチへのマージをトリガーとして Render API へデプロイ
+      # デプロイキャッシュはクリアしない設定
+      # Render API からのレスポンスを確認
       - name: Trigger Render Deployment
         run: |
           set -e
-          RESPONSE=$(curl -X POST \
+          POST_RESPONSE=$(curl -X POST \
+          --verbose \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -H "Content-Type: application/json" \
-          -d '{"clearCache":false}' \
+          -d '{"clearCache":"clear"}' \
           https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys --fail --show-error)
 
-          if [[ -z "$RESPONSE" ]]; then
-            echo "Failed to trigger deployment"
-            exit 1
-          fi
-
-      - name: Get latest Render Deploy ID and Status
-        run: |
-          set -e
-          RESPONSE=$(curl -X GET \
-          "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -H "Content-Type: application/json" --fail --show-error)
-
-          LATEST_DEPLOY=$(echo $RESPONSE | jq -r '. | sort_by(.createdAt) | last')
-          if [[ -z "LATEST_DEPLOY" ]]; then
-            echo "Failed to retrieve the latest deploy"
-            exit 1
-          fi
-
-          RENDER_DEPLOY_ID=$(echo $LATEST_DEPLOY | jq -r '.id')
-          STATUS=$(echo $LATEST_DEPLOY | jq -r '.status')
-
-          if [[ -z "RENDER_DEPLOY_ID" ]]; then
-            echo "Failed to extract deployment details"
-            exit 1
-          fi
-
-          echo "RENDER_DEPLOY_ID=$RENDER_DEPLOY_ID" >> $GITHUB_ENV
-
-          if [[ "$STATUS" != "succeeded" ]]; then
-            echo "Deployment failed with status: $STATUS"
+          if [[ -z "$POST_RESPONSE" ]]; then
+            echo "Failed to trigger deployment for service ID: ${{ secrets.RENDER_SERVICE_ID }}"
             exit 1
           else
-            echo "Deployment succeeded"
+            echo "Deployment POST response:$POST_RESPONSE"
           fi
 
-      - name: Run migration on Render
-        run: |
-          set -e
-          curl -X POST \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -H "Content-Type: application/json" \
-          -d '{"command": "rails db:migrate"}' \
-          https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/ssh --fail --show-error
+      # jqをインストール
+      - name: Install jq
+        run: sudo apt-get install -y jq
 
-      - name: Run seed on Render
+      # 最大180回の反復を設定
+      # Render API からデプロイ情報を取得
+      # 変数GET_DEPROY_RESPONSE が空ではないか確認
+      # レスポンス全体を表示してデバッグ情報を確認
+      # 最新のデプロイ情報を取得
+      # 変数LATEST_DEPLOY が空ではないか確認
+      # デプロイID を取得
+      # 変数RENDER_DEPLOY_ID が空ではないか確認
+      # 変数RENDER_DEPLOY_ID を GITHUB_ENV に格納
+      # デプロイステータスを取得
+      # 変数RENDER_DEPLOY_STATUS が空でないか確認
+      # ステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Check Render Deployment Status
         run: |
           set -e
-          curl -X POST \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -H "Content-Type: application/json" \
-          -d '{"command": "rails db:seed"}' \
-          https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/ssh --fail --show-error
 
-      - name: Log Render Deploy ID & Get Logs
-        run: |
-          set -e
-          if [[ -z "$RENDER_DEPLOY_ID" ]]; then
-            echo "Failed to retrieve Render Deploy ID. Deployment may not have been triggered correctly."
-            exit 1
-          else
-            echo "Render Deploy ID: $RENDER_DEPLOY_ID"
-            curl -X GET \
-            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys/$RENDER_DEPLOY_ID/logs" \
+          for i in {1..180}; do
+
+            GET_DEPROY_RESPONSE=$(curl -X GET \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            -H "Content-Type: application/json" --fail --show-error
+            -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$GET_DEPROY_RESPONSE" ]]; then
+              echo "Failed to retrieve deployment information"
+              exit 1
+            fi
+
+            echo "$GET_DEPROY_RESPONSE" | jq '.'
+
+            LATEST_DEPLOY=$(echo "$GET_DEPROY_RESPONSE" | jq -r 'map(.deploy) | sort_by(.createdAt) | last')
+
+            if [[ -z "$LATEST_DEPLOY" ]]; then
+              echo "Failed to retrieve the latest deploy"
+              exit 1
+            fi
+
+            RENDER_DEPLOY_ID=$(echo "$LATEST_DEPLOY" | jq -r '.id')
+            if [[ -z "$RENDER_DEPLOY_ID" ]]; then
+              echo "Failed to extract deployment details"
+              exit 1
+            else
+              echo "Render Deploy ID: $RENDER_DEPLOY_ID"
+              echo "RENDER_DEPLOY_ID=$RENDER_DEPLOY_ID" >> $GITHUB_ENV
+            fi
+
+            RENDER_DEPLOY_STATUS=$(echo "$LATEST_DEPLOY" | jq -r '.status')
+            if [[ -z "$RENDER_DEPLOY_STATUS" ]]; then
+              echo "Failed to retrieve deployment status"
+              exit 1
+            elif [[ "$RENDER_DEPLOY_STATUS" == "build_failed" ]]; then
+              echo "Deployment build_failed!"
+              exit 1
+            elif [[ "$RENDER_DEPLOY_STATUS" == "update_failed" ]]; then
+              echo "Deployment update_failed!"
+              exit 1
+            elif [[ "$RENDER_DEPLOY_STATUS" == "canceled" ]]; then
+              echo "Deployment canceled!"
+              exit 1
+            elif [[ "$RENDER_DEPLOY_STATUS" == "live" ]]; then
+              echo "Deployment live!"
+              exit 0
+            fi
+
+            sleep 10
+          done
+
+          echo "Deployment is still in progress after 30 minutes. Exiting."
+          echo "Final Deployment Status: $RENDER_DEPLOY_STATUS"
+          exit 1
+
+      # Render の PostgreSQL に初期データを挿入
+      # Render APIからマイグレーションデータを取得
+      # 変数MIGRATION_JOB_RESPONSE が空ではないか確認
+      # マイグレーションID を取得
+      # 変数MIGRATION_ID が空ではないか確認
+      # 最大180回をマイグレーションID情報の取得を反復
+      # Render API からマイグレーションID情報を取得
+      # 変数MIGRATION_ID_RESPONSE が空ではないか確認
+      # マイグレーションステータスを取得
+      # マイグレーションステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run Database Migration on Render
+        run: |
+          MIGRATION_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error\
+            -d '{
+              "startCommand": "bundle exec rails db:migrate"
+            }')
+
+          if [[ -z "$MIGRATION_JOB_RESPONSE" ]]; then
+            echo "Failed to retrieve creating migration job information"
+            exit 1
           fi
+
+          echo "$MIGRATION_JOB_RESPONSE" | jq '.'
+
+          MIGRATION_ID=$(echo "$MIGRATION_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$MIGRATION_ID" ]]; then
+            echo "Failed to retrieve migration-id information"
+            exit 1
+          fi
+
+          echo "$MIGRATION_ID"
+
+          for i in {1..180}; do
+            MIGRATION_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$MIGRATION_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$MIGRATION_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve running migration information"
+              exit 1
+            fi
+
+            echo "$MIGRATION_ID_RESPONSE" | jq '.'
+
+            MIGRATION_STATUS=$(echo "$MIGRATION_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$MIGRATION_STATUS" == "succeeded" ]]; then
+              echo "Migration succeeded"
+              exit 0
+            elif [[ "$MIGRATION_STATUS" == "failed" ]]; then
+              echo "Migration failed"
+              exit 1
+            else
+              echo "Waiting for migration to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "Migration is still in progress after 30 minutes. Exiting."
+          echo "Final migration Status: $MIGRATION_STATUS"
+          exit 1
+
+      # Render の PostgreSQL に初期データを挿入
+      # Render APIからシードデータを取得
+      # 変数SEED_JOB_RESPONSE が空ではないか確認
+      # シードID を取得
+      # 変数SEED_ID が空ではないか確認
+      # 最大180回をシードID情報の取得を反復
+      # Render API からシードID情報を取得
+      # 変数SEED_ID_RESPONSE が空ではないか確認
+      # シードステータスを取得
+      # シードステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run Database Seed on Render
+        run: |
+          SEED_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error\
+            -d '{
+              "startCommand": "bundle exec rails db:seed"
+            }')
+
+            if [[ -z "$SEED_JOB_RESPONSE" ]]; then
+              echo "Failed to retrieve creating seed job information"
+              exit 1
+            fi
+
+            echo "$SEED_JOB_RESPONSE" | jq '.'
+
+          SEED_ID=$(echo "$SEED_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$SEED_ID" ]]; then
+            echo "Failed to retrieve seed-id information"
+            exit 1
+          fi
+
+          echo "$SEED_ID"
+
+          for i in {1..180}; do
+            SEED_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$SEED_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$SEED_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve running seed information"
+              exit 1
+            fi
+
+            echo "$SEED_ID_RESPONSE" | jq '.'
+
+            SEED_STATUS=$(echo "$SEED_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$SEED_STATUS" == "succeeded" ]]; then
+              echo "Seed succeeded"
+              exit 0
+            elif [[ "$SEED_STATUS" == "failed" ]]; then
+              echo "Seed failed"
+              exit 1
+            else
+              echo "Waiting for seed to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "Seed is still in progress after 30 minutes. Exiting."
+          echo "Final Seed Status: $SEED_STATUS"
+          exit 1
