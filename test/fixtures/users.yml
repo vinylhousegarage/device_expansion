@@ -1,7 +1,21 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
+# 初期データの設定
 
-two:
-  name: MyString
+guest_1:
+  name: "ゲスト１"
+
+guest_2:
+  name: "ゲスト２"
+
+guest_3:
+  name: "ゲスト３"
+
+guest_4:
+  name: "ゲスト４"
+
+guest_5:
+  name: "ゲスト５"
+
+admin:
+  name: "集計担当"
