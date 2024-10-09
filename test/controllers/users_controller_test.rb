@@ -23,7 +23,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test "should get new and compare user ids with GUEST_USERS" do
     get new_user_path
     assert_response :success
-    expected_users = User.where(name: User::GUEST_NAMES.values)
+    expected_users = User.where(name: User::GUEST_USERS.values)
     expected_user_ids = expected_users.pluck(:id)
     guest_user_ids = User::GUEST_USERS.keys
     assert_equal expected_user_ids.sort, guest_user_ids.sort
