@@ -1,0 +1,11 @@
+<h2>みんなで香典集計</h2>
+
+<p></p>
+
+<% @users.each do |user| %>
+  <%= button_to user.name + "さんを招待する", login_form_user_path(user), method: :post, data: { turbo: false }, id: "invite-button-#[user.id]" %>
+
+  <br>
+<% end %>
+
+<%= button_to "集計の状況を確認する　", login_users_path, method: :get %>

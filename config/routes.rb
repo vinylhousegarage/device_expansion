@@ -5,6 +5,9 @@ Rails.application.routes.draw do
   # root "articles#index"
 
   resources :users do
+    member do
+      post 'login_form'
+    end
     collection do
       post 'login'
     end
