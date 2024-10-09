@@ -7,7 +7,7 @@ class UserTest < ActiveSupport::TestCase
 
   # 初期データを挿入しユーザーを取得
   setup do
-    @user = User.find_or_create_by(name: "ゲスト１")
+    @user = users(:guest_1)
   end
 
   # Postインスタンスの初期属性を設定
@@ -24,14 +24,17 @@ class UserTest < ActiveSupport::TestCase
 
   # UserがPostを複数持てるかのテスト
   test "should have many posts" do
-    post1 = new_post
-    post2 = new_post(amount: 20000)
-
-    @user.posts << post1
-    @user.posts << post2
+    post1 = posts(:post_1)
+    post2 = posts(:post_2)
 
     assert_equal 2, @user.posts.size
     assert_includes @user.posts, post1
     assert_includes @user.posts, post2
+  end
+
+  # 集計担当ユーザーが正しく取得できるかテスト
+  test "should get admin user from fixture" do
+    admin_user = users(:admin)
+    assert_equal "集計担当", admin_user.name
   end
 end
