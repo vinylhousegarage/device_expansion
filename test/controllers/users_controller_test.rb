@@ -23,7 +23,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test "should get new and reset session and assign users" do
     get new_user_path
     assert_response :success
-    expected_users = User.where(name: GUEST_NAMES)
+    expected_users = User.where(name: User::GUEST_NAMES)
     assert_equal expected_users.pluck(:id), assigns(:users).pluck(:id)
   end
 end
