@@ -9,5 +9,6 @@ class UsersController < ApplicationController
 
   def new
     session[:user_id] = nil
+    redirect_to users_path
   end
 end
