@@ -37,3 +37,4 @@ class UserTest < ActiveSupport::TestCase
     admin_user = users(:admin)
     assert_equal "集計担当", admin_user.name
   end
+end
