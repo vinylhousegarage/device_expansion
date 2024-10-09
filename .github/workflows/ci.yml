@@ -199,6 +199,10 @@ jobs:
             echo "Seed data successfully inserted: $user_count users found."
           fi
 
+      # bin/rails への実行権限を付与
+      - name: Grant execute permission to bin/rails
+        run: chmod +x bin/rails
+
       # ルーティングを確認
       - name: Run Rails routes to check routing
         env:
