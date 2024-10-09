@@ -6,4 +6,8 @@ class UsersController < ApplicationController
     session[:user_id] = admin_user.id
     redirect_to users_path
   end
+
+  def new
+    session[:user_id] = nil
+  end
 end
