@@ -18,4 +18,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get new_user_path
     assert_nil session[:user_id]
   end
+
+  # newアクションのテスト
+  test "should get new and reset session and assign users" do
+    get new_user_path
+    assert_response :success
+    expected_users = User.where(name: GUEST_NAMES)
+    assert_equal expected_users.pluck(:id), assigns(:users).pluck(:id)
+  end
 end
