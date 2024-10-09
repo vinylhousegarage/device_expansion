@@ -12,4 +12,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal admin_user.id, session[:user_id]
     assert_redirected_to users_path
   end
+
+  # newアクション実行時のセッションID の空チェック
+  test "should reset session in new" do
+    get new_user_path
+    assert_nil session[:user_id]
+  end
 end
