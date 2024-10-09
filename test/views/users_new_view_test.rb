@@ -8,10 +8,10 @@ class UsersNewViewTest < ActionView::TestCase
     render template: 'users/new'
     assert_select 'h2', 'みんなで香典集計'
     assert_select "form[action=?][method=?]", login_form_user_path(users(:guest_1)), "post" do
-      assert_select "button", "ゲスト1さんを招待する"
+      assert_select "button", "ゲスト１さんを招待する"
     end
     assert_select "form[action=?][method=?]", login_form_user_path(users(:guest_2)), "post" do
-      assert_select "button", "ゲスト2さんを招待する"
+      assert_select "button", "ゲスト２さんを招待する"
     end
   end
 end
