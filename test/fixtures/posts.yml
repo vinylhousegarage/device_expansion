@@ -6,7 +6,7 @@ post_1:
   address: "市町村1丁目-nameⅡ"
   tel: "0123456789"
   others: "供花:20,000円(2段)"
-  user: guest_1
+  user: poster_1
 
 post_2:
   name: "Test Name"
@@ -14,4 +14,4 @@ post_2:
   address: "市町村1丁目-nameⅡ"
   tel: "0123456789"
   others: "供物:10,000円"
-  user: guest_1
+  user: poster_1
