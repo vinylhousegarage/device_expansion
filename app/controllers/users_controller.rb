@@ -1,12 +1,13 @@
 class UsersController < ApplicationController
 
-  # 仮に、管理者ユーザーをフィクスチャまたはデータベースから取得
+  # 管理者のセッションを取得
   def login
-    admin_user = User.find_by(name: "集計担当")
-    session[:user_id] = admin_user.id
+    admin_users = User.admin_users
+    session[:user_id] = admin_users.first.id if admin_users.any?
     redirect_to users_path
   end
 
+  # ルートのページでセッションを空にする
   def new
     session[:user_id] = nil
     @users = User.poster_users
