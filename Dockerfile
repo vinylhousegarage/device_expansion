@@ -4,7 +4,7 @@ RUN apt-get update -qq && apt-get install -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
     apt-get install -y nodejs
-RUN npm install -g yarn@1.22.19
+RUN npm install -g yarn@1.22.22
 WORKDIR /app
 COPY Gemfile Gemfile.lock /app/
 RUN bundle config set path 'vendor/bundle' \
