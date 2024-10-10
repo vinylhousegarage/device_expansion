@@ -468,6 +468,16 @@ jobs:
           echo "Final Seed Status: $SEED_STATUS"
           exit 1
 
+      # Node.js と Yarn の環境を構築
+      - name: Install Node.js and Yarn
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      # Yarn をインストール
+      - name: Install Yarn dependencies
+        run: yarn install
+
       # Render でアセットのプリコンパイルを実行
       # Render APIからプリコンパイルデータを取得
       # 変数PRECOMPILE_JOB_RESPONSE が空ではないか確認
@@ -480,6 +490,9 @@ jobs:
       # プリコンパイルステータスを判定
       # 10秒待機しステータスの判定を反復
       - name: Run assets precompile
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         run: |
           PRECOMPILE_JOB_RESPONSE=$(curl -X POST \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
@@ -527,7 +540,7 @@ jobs:
               echo "assets precompile failed"
               exit 1
             else
-              echo "Waiting for seed to complete... (attempt $i/180)"
+              echo "Waiting for assets precompile to complete... (attempt $i/180)"
               sleep 10
             fi
           done
