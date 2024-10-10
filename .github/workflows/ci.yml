@@ -222,6 +222,7 @@ jobs:
       - name: Precompile assets for production
         env:
           RAILS_ENV: production
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         run: bundle exec rails assets:precompile
 
   deploy:
