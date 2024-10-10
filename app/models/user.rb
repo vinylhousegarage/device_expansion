@@ -1,12 +1,6 @@
 class User < ApplicationRecord
   has_many :posts
 
-  # 投稿者をIDと名前で定義
-  GUEST_USERS = {
-    1 => 'ゲスト１',
-    2 => 'ゲスト２',
-    3 => 'ゲスト３',
-    4 => 'ゲスト４',
-    5 => 'ゲスト５'
-  }.freeze
+  # 投稿者を定義
+  POSTER_USERS = ['投稿者１', '投稿者２', '投稿者３', '投稿者４', '投稿者５'].freeze
 end
