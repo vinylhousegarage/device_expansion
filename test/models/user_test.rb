@@ -7,7 +7,7 @@ class UserTest < ActiveSupport::TestCase
 
   # 初期データを挿入しユーザーを取得
   setup do
-    @user = users(:guest_1)
+    @user = users(:poster_1)
   end
 
   # Postインスタンスの初期属性を設定
