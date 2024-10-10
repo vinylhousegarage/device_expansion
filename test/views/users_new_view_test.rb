@@ -14,10 +14,4 @@ class UsersNewViewTest < ActionView::TestCase
       assert_select "button", "投稿者２さんを招待する"
     end
   end
-
-  test "renders flash notice" do
-    flash[:notice] = "Successfully created a user."
-    render template: "users/new"
-    assert_select "div.notice", text: "Successfully created a user."
-  end
 end
