@@ -9,6 +9,6 @@ class UsersController < ApplicationController
 
   def new
     session[:user_id] = nil
-    @users = User.where(name: User::GUEST_USERS.values)
+    @users = User.where(name: User::POSTER_USERS.values)
   end
 end
