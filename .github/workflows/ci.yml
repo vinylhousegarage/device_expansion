@@ -467,3 +467,71 @@ jobs:
           echo "Seed is still in progress after 30 minutes. Exiting."
           echo "Final Seed Status: $SEED_STATUS"
           exit 1
+
+      # Render でアセットのプリコンパイルを実行
+      # Render APIからプリコンパイルデータを取得
+      # 変数PRECOMPILE_JOB_RESPONSE が空ではないか確認
+      # プリコンパイルID を取得
+      # 変数PRECOMPILE_ID が空ではないか確認
+      # 最大180回をプリコンパイルID情報の取得を反復
+      # Render API からプリコンパイルID情報を取得
+      # 変数PRECOMPILE_ID_RESPONSE が空ではないか確認
+      # プリコンパイルステータスを取得
+      # プリコンパイルステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run assets precompile
+        run: |
+          PRECOMPILE_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error \
+            -d '{
+              "startCommand": "bundle install && bundle exec rails assets:precompile"
+            }')
+
+            if [[ -z "$PRECOMPILE_JOB_RESPONSE" ]]; then
+              echo "Failed to retrieve creating assets precompile job information"
+              exit 1
+            fi
+
+            echo "$PRECOMPILE_JOB_RESPONSE" | jq '.'
+
+            PRECOMPILE_ID=$(echo "$PRECOMPILE_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$PRECOMPILE_ID" ]]; then
+            echo "Failed to retrieve assets-precompile-id information"
+            exit 1
+          fi
+
+          echo "$PRECOMPILE_ID"
+
+          for i in {1..180}; do
+            PRECOMPILE_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$PRECOMPILE_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$PRECOMPILE_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve running assets precompile information"
+              exit 1
+            fi
+
+            echo "$PRECOMPILE_ID_RESPONSE" | jq '.'
+
+            PRECOMPILE_STATUS=$(echo "$PRECOMPILE_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$PRECOMPILE_STATUS" == "succeeded" ]]; then
+              echo "assets precompile succeeded"
+              exit 0
+            elif [[ "$PRECOMPILE_STATUS" == "failed" ]]; then
+              echo "assets precompile failed"
+              exit 1
+            else
+              echo "Waiting for seed to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "Assets precompile is still in progress after 30 minutes. Exiting."
+          echo "Final Assets precompile Status: $PRECOMPILE_STATUS"
+          exit 1
