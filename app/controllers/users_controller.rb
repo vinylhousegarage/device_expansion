@@ -9,6 +9,6 @@ class UsersController < ApplicationController
 
   def new
     session[:user_id] = nil
-    redirect_to users_path
+    @users = User.where(name: User::GUEST_USERS.values)
   end
 end

@@ -18,4 +18,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get new_user_path
     assert_nil session[:user_id]
   end
+
+  # ページの表示をテスト
+  test "should get new user page" do
+    get new_user_path
+    assert_response :success
+  end
 end
