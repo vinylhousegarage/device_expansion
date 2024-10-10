@@ -2,8 +2,8 @@ class UsersController < ApplicationController
 
   # 管理者のセッションを取得
   def login
-    @users = User.admin_users
-    session[:user_id] = admin_users.id
+    admin_users = User.admin_users
+    session[:user_id] = admin_users.first.id if admin_users.any?
     redirect_to users_path
   end
 
