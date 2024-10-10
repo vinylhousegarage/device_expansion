@@ -1,5 +1,9 @@
 <h2>みんなで香典集計</h2>
 
+<% if flash[:error] %>
+  <b><%= flash[:error] %></b>
+<% end %>
+
 <p></p>
 
 <% @users.each do |user| %>
