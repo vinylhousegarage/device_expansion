@@ -10,6 +10,10 @@ COPY Gemfile Gemfile.lock /app/
 RUN bundle config set path 'vendor/bundle' \
     && bundle install --jobs 4 --retry 3
 ENV PATH ./vendor/bundle/ruby/3.1.0/bin:$PATH
+COPY package.json yarn.lock /app/
+RUN yarn install
+RUN yarn add esbuild
 COPY . /app
+RUN bundle exec rails assets:precompile
 EXPOSE 3000
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
