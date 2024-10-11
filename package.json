@@ -1,0 +1,9 @@
+{
+  "name": "app",
+  "version": "0.1.0",
+  "description": "DEVICE_EXPANSION",
+  "main": "index.js",
+  "repository": "https://vinylhousegarage:REDACTEDkxUjnUgp2DPemflnIVVpPc5QB6KION3oqhsI@github.com/vinylhousegarage/device_expansion.git",
+  "author": "Satoshi Kamazawa",
+  "license": "MIT"
+}
