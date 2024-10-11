@@ -9,8 +9,5 @@
   "dependencies": {
     "esbuild": "^0.24.0",
     "esbuild-rails": "^1.0.7"
-  },
-  "scripts": {
-    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds"
   }
 }
