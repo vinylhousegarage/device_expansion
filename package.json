@@ -5,5 +5,9 @@
   "main": "index.js",
   "repository": "https://vinylhousegarage:REDACTED@github.com/vinylhousegarage/device_expansion.git",
   "author": "Satoshi Kamazawa",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "esbuild": "^0.24.0",
+    "esbuild-rails": "^1.0.7"
+  }
 }
