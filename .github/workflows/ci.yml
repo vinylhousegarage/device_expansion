@@ -250,7 +250,7 @@ jobs:
         run: bundle exec rails assets:precompile
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     needs: build
     env:
