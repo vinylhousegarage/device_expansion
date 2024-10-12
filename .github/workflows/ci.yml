@@ -11,8 +11,8 @@ on:
 
 jobs:
   build:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-
     timeout-minutes: 60
 
     steps:
@@ -250,6 +250,7 @@ jobs:
         run: bundle exec rails assets:precompile
 
   deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: build
     env:
