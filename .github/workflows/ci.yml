@@ -218,13 +218,6 @@ jobs:
           RAILS_ENV: test
         run: bundle exec rails test
 
-      # アセットのプリコンパイルを実行
-      - name: Precompile assets for production
-        env:
-          RAILS_ENV: production
-          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
-        run: bundle exec rails assets:precompile
-
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -481,6 +474,16 @@ jobs:
       # Yarn の依存関係をインストール
       - name: Install Yarn dependencies
         run: yarn install
+
+      # Hotwire の turbo と stimulus をインストール
+      - name: Install Hotwire dependencies
+        run: |
+          yarn add @hotwired/turbo
+          yarn add @hotwired/stimulus
+
+      # Gemfile に基づいて Railsのgem をインストール）
+      - name: Install Rails gems
+        run: bundle install
 
       # Render でアセットのプリコンパイルを実行
       # Render APIからプリコンパイルデータを取得
