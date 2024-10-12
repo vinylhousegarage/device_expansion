@@ -481,7 +481,7 @@ jobs:
           yarn add @hotwired/turbo
           yarn add @hotwired/stimulus
 
-      # Gemfile に基づいて Railsのgem をインストール）
+      # Gemfile に基づいて Railsのgem をインストール
       - name: Install Rails gems
         run: bundle install
 
