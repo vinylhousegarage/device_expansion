@@ -96,11 +96,13 @@ GEM
       dotenv (= 3.1.4)
       railties (>= 6.1)
     erubi (1.13.0)
+    esbuild-rails (0.1.4)
+      rails (>= 6.0.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
     i18n (1.14.6)
       concurrent-ruby (~> 1.0)
-    importmap-rails (2.0.1)
+    importmap-rails (2.0.3)
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
       railties (>= 6.0.0)
@@ -127,7 +129,7 @@ GEM
     method_source (1.1.0)
     mini_mime (1.1.5)
     minitest (5.25.1)
-    msgpack (1.7.2)
+    msgpack (1.7.3)
     net-imap (0.4.16)
       date
       net-protocol
@@ -260,6 +262,7 @@ DEPENDENCIES
   chunky_png (~> 1.4)
   debug
   dotenv-rails
+  esbuild-rails
   importmap-rails
   jbuilder
   pg (~> 1.1)

@@ -1,0 +1,18 @@
+{
+  "name": "app",
+  "version": "0.1.0",
+  "description": "DEVICE_EXPANSION",
+  "main": "index.js",
+  "repository": "https://vinylhousegarage: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@github.com/vinylhousegarage/device_expansion.git",
+  "author": "Satoshi Kamazawa",
+  "license": "MIT",
+  "dependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "@hotwired/turbo-rails": "^8.0.10",
+    "esbuild": "^0.24.0",
+    "esbuild-rails": "^1.0.7"
+  },
+  "scripts": {
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --external:@hotwired/stimulus"
+  }
+}
