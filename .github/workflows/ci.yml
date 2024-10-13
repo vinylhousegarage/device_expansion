@@ -10,6 +10,26 @@ on:
   workflow_dispatch:
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      # RuboCop を実行してコードスタイルを検証
+      - name: Run RuboCop (Lint check)
+        run: bundle exec rubocop --config .rubocop.yml --fail-level W
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      # テストを実行
+      - name: Run tests
+        env:
+          TEST_DB: postgres_db
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          RAILS_ENV: test
+        run: bundle exec rails test
+
   build:
     runs-on: ubuntu-latest
     services:
@@ -104,10 +124,6 @@ jobs:
           bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
 
-      # RuboCop を実行してコードスタイルを検証
-      - name: Run RuboCop (Lint check)
-        run: bundle exec rubocop --config .rubocop.yml --fail-level W
-
       # ユーザーロールをセットアップ
       - name: Set up pg_role
         run: |
@@ -191,15 +207,6 @@ jobs:
         env:
           RAILS_ENV: test
         run: bin/rails routes
-
-      # テストを実行
-      - name: Run tests
-        env:
-          TEST_DB: postgres_db
-          TEST_USER: ${{ secrets.POSTGRES_USER }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          RAILS_ENV: test
-        run: bundle exec rails test
 
       # Node.js と Yarn の環境を構築
       - name: Install Node.js and Yarn
