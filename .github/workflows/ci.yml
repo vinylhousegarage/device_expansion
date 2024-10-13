@@ -652,7 +652,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" --fail --show-error \
             -d '{
-              "startCommand": "bundle install && yarn install && bundle exec rails assets:precompile"
+              "startCommand": "bundle exec rails assets:precompile"
             }')
 
             if [[ -z "$PRECOMPILE_JOB_RESPONSE" ]]; then
