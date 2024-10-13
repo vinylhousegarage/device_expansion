@@ -52,7 +52,11 @@ jobs:
         run: docker pull ghcr.io/vinylhousegarage/device_expansion:latest || echo "No cached image found, continuing with fresh build"
 
       # Dockerイメージ に差分があるコミットを commit_list.txt に抽出
-      - name: Get commits with Dockerfile or compose.yaml changes
+      # commit_list.txt のコミットIDを1行ずつ読み取り GHCR にビルドしプッシュ
+      # 最新のコミットを変数LATEST_COMMIT に格納
+      # 変数LATEST_COMMIT が空ではないか確認
+      # 最新のDockerイメージに latest のタグを付けGHCRにビルドしプッシュ
+      - name: Get commits with Dockerfile or compose.yaml changes and process each commit
         run: |
           git log --reverse --pretty=format:"%H" $HEAD -- Dockerfile compose.yaml > commit_list.txt
           if [ ! -s commit_list.txt ]; then
@@ -60,12 +64,6 @@ jobs:
             exit 0
           fi
 
-      # commit_list.txt のコミットIDを1行ずつ読み取り GHCR にビルドしプッシュ
-      # 最新のコミットを変数LATEST_COMMIT に格納
-      # 変数LATEST_COMMIT が空ではないか確認
-      # 最新のDockerイメージに latest のタグを付けGHCRにビルドしプッシュ
-      - name: Process each commit
-        run: |
           set -e
           echo "Commits to process: $(cat commit_list.txt)"
           while IFS= read -r COMMIT; do
