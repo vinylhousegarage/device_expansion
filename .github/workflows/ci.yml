@@ -299,19 +299,19 @@ jobs:
 
           for i in {1..180}; do
 
-            GET_DEPROY_RESPONSE=$(curl -X GET \
+            GET_DEPLOY_RESPONSE=$(curl -X GET \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" --fail --show-error)
 
-            if [[ -z "$GET_DEPROY_RESPONSE" ]]; then
+            if [[ -z "$GET_DEPLOY_RESPONSE" ]]; then
               echo "Failed to retrieve deployment information"
               exit 1
             fi
 
-            echo "$GET_DEPROY_RESPONSE" | jq '.'
+            echo "$GET_DEPLOY_RESPONSE" | jq '.'
 
-            LATEST_DEPLOY=$(echo "$GET_DEPROY_RESPONSE" | jq -r 'map(.deploy) | sort_by(.createdAt) | last')
+            LATEST_DEPLOY=$(echo "$GET_DEPLOY_RESPONSE" | jq -r 'map(.deploy) | sort_by(.createdAt) | last')
 
             if [[ -z "$LATEST_DEPLOY" ]]; then
               echo "Failed to retrieve the latest deploy"
