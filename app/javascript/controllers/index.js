@@ -1,7 +1,9 @@
 // Import and register all your controllers from the controllers directory
-import { application } from "./application";
-import { definitionsFromContext } from "@hotwired/stimulus";
+import { Application } from "@hotwired/stimulus";
+
+// Initialize Stimulus Application
+const application = Application.start();
 
 // コントローラを自動で読み込む
-const context = require.context("controllers", true, /\.js$/);
-application.load(definitionsFromContext(context));
+const context = require.context("./controllers", true, /\.js$/);
+application.load(context);
