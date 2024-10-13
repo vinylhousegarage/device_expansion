@@ -12,6 +12,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: postgres_db
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
     timeout-minutes: 60
 
     steps:
@@ -100,29 +109,6 @@ jobs:
       # RuboCop を実行してコードスタイルを検証
       - name: Run RuboCop (Lint check)
         run: bundle exec rubocop --config .rubocop.yml --fail-level W
-
-      # PostgreSQL と postgresql-client を 14 でインストール
-      - name: Install PostgreSQL 14 and client tools
-        run: |
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-          sudo apt-get update
-          sudo apt-get install -y postgresql-14 postgresql-client-14
-          sudo service postgresql start
-
-      # 最大60秒間 PostgreSQL の応答を確認
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          for i in {1..12}; do
-            if pg_isready -h localhost -p 5432; then
-              echo "PostgreSQL is ready!"
-              exit 0
-            fi
-            echo "Waiting for PostgreSQL to be ready... Attempt $i at $(date)"
-            sleep 5
-          done
-          echo "PostgreSQL did not become ready in time."
-          exit 1
 
       # ユーザーロールをセットアップ
       - name: Set up pg_role
