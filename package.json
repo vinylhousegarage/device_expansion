@@ -13,6 +13,6 @@
     "esbuild-rails": "^1.0.7"
   },
   "scripts": {
-    "build": "esbuild app/javascript/*.* app/assets/stylesheets/*.css --bundle --sourcemap --outdir=app/assets/builds --external:@hotwired/stimulus"
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds && esbuild app/assets/stylesheets/application.css --bundle --outdir=app/assets/builds"
   }
 }
