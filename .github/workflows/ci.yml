@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -12,6 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     timeout-minutes: 60
 
     steps:
@@ -43,20 +44,18 @@ jobs:
         run: docker pull ghcr.io/vinylhousegarage/device_expansion:latest || echo "No cached image found, continuing with fresh build"
 
       # Dockerイメージ に差分があるコミットを commit_list.txt に抽出
-      - name: Get commits with Dockerfile or compose.yaml changes
+      # commit_list.txt のコミットIDを1行ずつ読み取り GHCR にビルドしプッシュ
+      # 最新のコミットを変数LATEST_COMMIT に格納
+      # 変数LATEST_COMMIT が空ではないか確認
+      # 最新のDockerイメージに latest のタグを付けGHCRにビルドしプッシュ
+      - name: Get commits with Dockerfile or compose.yaml changes and process each commit
         run: |
-          git log --reverse --pretty=format:"%H" $HEAD -- Dockerfile compose.yaml .github/workflows/ci.yml > commit_list.txt
+          git log --reverse --pretty=format:"%H" $HEAD -- Dockerfile compose.yaml > commit_list.txt
           if [ ! -s commit_list.txt ]; then
             echo "No commits with Dockerfile or compose.yaml changes found."
             exit 0
           fi
 
-      # commit_list.txt のコミットIDを1行ずつ読み取り GHCR にビルドしプッシュ
-      # 最新のコミットを変数LATEST_COMMIT に格納
-      # 変数LATEST_COMMIT が空ではないか確認
-      # 最新のDockerイメージに latest のタグを付けGHCRにビルドしプッシュ
-      - name: Process each commit
-        run: |
           set -e
           echo "Commits to process: $(cat commit_list.txt)"
           while IFS= read -r COMMIT; do
@@ -244,7 +243,7 @@ jobs:
       # アセットのプリコンパイルを実行
       - name: Precompile assets for production
         env:
-          RAILS_ENV: production
+          RAILS_ENV: test
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         run: bundle exec rails assets:precompile
 
@@ -302,19 +301,19 @@ jobs:
 
           for i in {1..180}; do
 
-            GET_DEPROY_RESPONSE=$(curl -X GET \
+            GET_DEPLOY_RESPONSE=$(curl -X GET \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" --fail --show-error)
 
-            if [[ -z "$GET_DEPROY_RESPONSE" ]]; then
+            if [[ -z "$GET_DEPLOY_RESPONSE" ]]; then
               echo "Failed to retrieve deployment information"
               exit 1
             fi
 
-            echo "$GET_DEPROY_RESPONSE" | jq '.'
+            echo "$GET_DEPLOY_RESPONSE" | jq '.'
 
-            LATEST_DEPLOY=$(echo "$GET_DEPROY_RESPONSE" | jq -r 'map(.deploy) | sort_by(.createdAt) | last')
+            LATEST_DEPLOY=$(echo "$GET_DEPLOY_RESPONSE" | jq -r 'map(.deploy) | sort_by(.createdAt) | last')
 
             if [[ -z "$LATEST_DEPLOY" ]]; then
               echo "Failed to retrieve the latest deploy"
@@ -489,4 +488,216 @@ jobs:
 
           echo "Seed is still in progress after 30 minutes. Exiting."
           echo "Final Seed Status: $SEED_STATUS"
+          exit 1
+
+      # Render で bundle install を実行
+      # Render APIから bundle install のデータを取得
+      # 変数BUNDLE_JOB_RESPONSE が空ではないか確認
+      # bundle install ID を取得
+      # 変数BUNDLE_ID が空ではないか確認
+      # 最大180回を bundle install ID情報の取得を反復
+      # Render API から bundle install ID情報を取得
+      # 変数BUNDLE_ID_RESPONSE が空ではないか確認
+      # bundle install のステータスを取得
+      # bundle install のステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run bundle install
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+        run: |
+          BUNDLE_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error \
+            -d '{
+              "startCommand": "bundle install"
+            }')
+
+            if [[ -z "$BUNDLE_JOB_RESPONSE" ]]; then
+              echo "Failed to retrieve creating bundle install job information"
+              exit 1
+            fi
+
+            echo "$BUNDLE_JOB_RESPONSE" | jq '.'
+
+            BUNDLE_ID=$(echo "$BUNDLE_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$BUNDLE_ID" ]]; then
+            echo "Failed to retrieve bundle-install-id information"
+            exit 1
+          fi
+
+          echo "$BUNDLE_ID"
+
+          for i in {1..180}; do
+            BUNDLE_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$BUNDLE_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$BUNDLE_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve running bundle install information"
+              exit 1
+            fi
+
+            echo "$BUNDLE_ID_RESPONSE" | jq '.'
+
+            BUNDLE_STATUS=$(echo "$BUNDLE_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$BUNDLE_STATUS" == "succeeded" ]]; then
+              echo "bundle install succeeded"
+              exit 0
+            elif [[ "$BUNDLE_STATUS" == "failed" ]]; then
+              echo "bundle install failed"
+              exit 1
+            else
+              echo "Waiting for bundle install to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "bundle install is still in progress after 30 minutes. Exiting."
+          echo "Final bundle install Status: $BUNDLE_STATUS"
+          exit 1
+
+      # Render で Yarn のインストールを実行
+      # Render APIから yarn-installデータを取得
+      # 変数YARN_JOB_RESPONSE が空ではないか確認
+      # yarn-install ID を取得
+      # 変数YARN_ID が空ではないか確認
+      # 最大180回を yarn-install ID情報の取得を反復
+      # Render API から yarn-install ID情報を取得
+      # 変数YARN_ID_RESPONSE が空ではないか確認
+      # yarn-install のステータスを取得
+      # yarn-install のステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run yarn install
+        env:
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+        run: |
+          YARN_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error \
+            -d '{
+              "startCommand": "yarn install"
+            }')
+
+            if [[ -z "$YARN_JOB_RESPONSE" ]]; then
+              echo "Failed to retrieve yarn install job information"
+              exit 1
+            fi
+
+            echo "$YARN_JOB_RESPONSE" | jq '.'
+
+            YARN_ID=$(echo "$YARN_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$YARN_ID" ]]; then
+            echo "Failed to retrieve yarn-install-id information"
+            exit 1
+          fi
+
+          echo "$YARN_ID"
+
+          for i in {1..180}; do
+            YARN_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$YARN_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$YARN_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve yarn install information"
+              exit 1
+            fi
+
+            echo "$YARN_ID_RESPONSE" | jq '.'
+
+            YARN_STATUS=$(echo "$YARN_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$YARN_STATUS" == "succeeded" ]]; then
+              echo "yarn install succeeded"
+              exit 0
+            elif [[ "$YARN_STATUS" == "failed" ]]; then
+              echo "yarn install failed"
+              exit 1
+            else
+              echo "Waiting for yarn install to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "yarn install is still in progress after 30 minutes. Exiting."
+          echo "Final yarn install Status: $YARN_STATUS"
+          exit 1
+
+      # Render でアセットのプリコンパイルを実行
+      # Render APIからプリコンパイルデータを取得
+      # 変数PRECOMPILE_JOB_RESPONSE が空ではないか確認
+      # プリコンパイルID を取得
+      # 変数PRECOMPILE_ID が空ではないか確認
+      # 最大180回をプリコンパイルID情報の取得を反復
+      # Render API からプリコンパイルID情報を取得
+      # 変数PRECOMPILE_ID_RESPONSE が空ではないか確認
+      # プリコンパイルステータスを取得
+      # プリコンパイルステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run assets precompile
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+        run: |
+          PRECOMPILE_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error \
+            -d '{
+              "startCommand": "bundle exec rails assets:precompile"
+            }')
+
+            if [[ -z "$PRECOMPILE_JOB_RESPONSE" ]]; then
+              echo "Failed to retrieve creating assets precompile job information"
+              exit 1
+            fi
+
+            echo "$PRECOMPILE_JOB_RESPONSE" | jq '.'
+
+            PRECOMPILE_ID=$(echo "$PRECOMPILE_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$PRECOMPILE_ID" ]]; then
+            echo "Failed to retrieve assets-precompile-id information"
+            exit 1
+          fi
+
+          echo "$PRECOMPILE_ID"
+
+          for i in {1..180}; do
+            PRECOMPILE_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$PRECOMPILE_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$PRECOMPILE_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve running assets precompile information"
+              exit 1
+            fi
+
+            echo "$PRECOMPILE_ID_RESPONSE" | jq '.'
+
+            PRECOMPILE_STATUS=$(echo "$PRECOMPILE_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$PRECOMPILE_STATUS" == "succeeded" ]]; then
+              echo "assets precompile succeeded"
+              exit 0
+            elif [[ "$PRECOMPILE_STATUS" == "failed" ]]; then
+              echo "assets precompile failed"
+              exit 1
+            else
+              echo "Waiting for assets precompile to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "Assets precompile is still in progress after 30 minutes. Exiting."
+          echo "Final Assets precompile Status: $PRECOMPILE_STATUS"
           exit 1
