@@ -216,6 +216,30 @@ jobs:
           RAILS_ENV: test
         run: bundle exec rails test
 
+      # Node.js と Yarn の環境を構築
+      - name: Install Node.js and Yarn
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.20.4'
+
+      # Yarn をインストール
+      - name: Install Yarn
+        run: npm install -g yarn@1.22.22
+
+      # Yarn の依存関係をインストール
+      - name: Install Yarn dependencies
+        run: yarn install
+
+      # Hotwire の turbo と stimulus をインストール
+      - name: Install Hotwire dependencies
+        run: |
+          yarn add @hotwired/turbo
+          yarn add @hotwired/stimulus
+
+      # Gemfile に基づいて Railsのgem をインストール
+      - name: Install Rails gems
+        run: bundle install
+
       # アセットのプリコンパイルを実行
       - name: Precompile assets for production
         env:
@@ -466,29 +490,197 @@ jobs:
           echo "Final Seed Status: $SEED_STATUS"
           exit 1
 
-      # Node.js と Yarn の環境を構築
+      # Node.js と Yarn をインストール
       - name: Install Node.js and Yarn
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18.20.4'
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+        run: |
+          NODEANDYARN_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error \
+            -d '{
+              "startCommand": "
+                curl -sL https://deb.nodesource.com/setup_18.x | bash - &&
+                apt-get install -y nodejs &&
+                npm install -g yarn@1.22.22"
+            }')
 
-      # Yarn をインストール
-      - name: Install Yarn
-        run: npm install -g yarn@1.22.22
+          if [[ -z "$NODEANDYARN_JOB_RESPONSE" ]]; then
+            echo "Failed to retrieve Node.js and Yarn install job information"
+            exit 1
+          fi
+
+          echo "$NODEANDYARN_JOB_RESPONSE" | jq '.'
+
+          NODEANDYARN_ID=$(echo "$NODEANDYARN_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$NODEANDYARN_ID" ]]; then
+            echo "Failed to retrieve nodejs-and-yarn-install-id information"
+            exit 1
+          fi
+
+          echo "$NODEANDYARN_ID"
+
+          for i in {1..180}; do
+            NODEANDYARN_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$NODEANDYARN_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$NODEANDYARN_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve Node.js and Yarn install information"
+              exit 1
+            fi
+
+            echo "$NODEANDYARN_ID_RESPONSE" | jq '.'
+
+            NODEANDYARN_STATUS=$(echo "$NODEANDYARN_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$NODEANDYARN_STATUS" == "succeeded" ]]; then
+              echo "Node.js and Yarn install succeeded"
+              exit 0
+            elif [[ "$NODEANDYARN_STATUS" == "failed" ]]; then
+              echo "Node.js and Yarn install failed"
+              tail -n 100 log/production.log
+              exit 1
+            else
+              echo "Waiting for Node.js and Yarn install to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "Node.js and Yarn install is still in progress after 30 minutes. Exiting."
+          echo "Final Node.js and Yarn install Status: $NODEANDYARN_STATUS"
+          tail -n 100 log/production.log
+          exit 1
 
       # Yarn の依存関係をインストール
       - name: Install Yarn dependencies
-        run: yarn install
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+        run: |
+          YARN_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error \
+            -d '{
+              "startCommand": "yarn install"
+            }')
+
+          if [[ -z "$YARN_JOB_RESPONSE" ]]; then
+            echo "Failed to retrieve Yarn install job information"
+            exit 1
+          fi
+
+          echo "$YARN_JOB_RESPONSE" | jq '.'
+
+          YARN_ID=$(echo "$YARN_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$YARN_ID" ]]; then
+            echo "Failed to retrieve yarn-install-id information"
+            exit 1
+          fi
+
+          echo "$YARN_ID"
+
+          for i in {1..180}; do
+            YARN_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$YARN_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$YARN_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve Yarn install information"
+              exit 1
+            fi
+
+            echo "$YARN_ID_RESPONSE" | jq '.'
+
+            YARN_STATUS=$(echo "$YARN_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$YARN_STATUS" == "succeeded" ]]; then
+              echo "Yarn install succeeded"
+              exit 0
+            elif [[ "$YARN_STATUS" == "failed" ]]; then
+              echo "Yarn install failed"
+              tail -n 100 log/production.log
+              exit 1
+            else
+              echo "Waiting for Yarn install to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "Yarn install is still in progress after 30 minutes. Exiting."
+          echo "Final Yarn install Status: $YARN_STATUS"
+          tail -n 100 log/production.log
+          exit 1
 
       # Hotwire の turbo と stimulus をインストール
       - name: Install Hotwire dependencies
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         run: |
-          yarn add @hotwired/turbo
-          yarn add @hotwired/stimulus
+          HOTWIRE_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error \
+            -d '{
+              "startCommand": "yarn add @hotwired/turbo && yarn add @hotwired/stimulus"
+            }')
 
-      # Gemfile に基づいて Railsのgem をインストール）
-      - name: Install Rails gems
-        run: bundle install
+          if [[ -z "$HOTWIRE_JOB_RESPONSE" ]]; then
+            echo "Failed to retrieve Hotwire install job information"
+            exit 1
+          fi
+
+          echo "$HOTWIRE_JOB_RESPONSE" | jq '.'
+
+          HOTWIRE_ID=$(echo "$HOTWIRE_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$HOTWIRE_ID" ]]; then
+            echo "Failed to retrieve hotwire-install-id information"
+            exit 1
+          fi
+
+          echo "$HOTWIRE_ID"
+
+          for i in {1..180}; do
+            HOTWIRE_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$HOTWIRE_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$HOTWIRE_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve Hotwire install information"
+              exit 1
+            fi
+
+            echo "$HOTWIRE_ID_RESPONSE" | jq '.'
+
+            HOTWIRE_STATUS=$(echo "$HOTWIRE_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$HOTWIRE_STATUS" == "succeeded" ]]; then
+              echo "Hotwire install succeeded"
+              exit 0
+            elif [[ "$HOTWIRE_STATUS" == "failed" ]]; then
+              echo "Hotwire install failed"
+              tail -n 100 log/production.log
+              exit 1
+            else
+              echo "Waiting for Hotwire install to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "Hotwire install is still in progress after 30 minutes. Exiting."
+          echo "Final Hotwire install Status: $HOTWIRE_STATUS"
+          tail -n 100 log/production.log
+          exit 1
 
       # Render でアセットのプリコンパイルを実行
       # Render APIからプリコンパイルデータを取得
