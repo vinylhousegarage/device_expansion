@@ -550,7 +550,6 @@ jobs:
               exit 0
             elif [[ "$PRECOMPILE_STATUS" == "failed" ]]; then
               echo "assets precompile failed"
-              tail -n 100 log/production.log
               exit 1
             else
               echo "Waiting for assets precompile to complete... (attempt $i/180)"
@@ -560,5 +559,4 @@ jobs:
 
           echo "Assets precompile is still in progress after 30 minutes. Exiting."
           echo "Final Assets precompile Status: $PRECOMPILE_STATUS"
-          tail -n 100 log/production.log
           exit 1
