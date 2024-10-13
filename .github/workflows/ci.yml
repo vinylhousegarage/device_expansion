@@ -10,43 +10,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      # Ruby をセットアップ
-    - name: Set up Ruby for linting
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.1.0
-
-    # RuboCop を実行してコードスタイルを検証
-    - name: Run RuboCop (Lint check)
-      run: bundle exec rubocop --config .rubocop.yml --fail-level W
-
-  test:
-    runs-on: ubuntu-latest
-    needs: lint
-    steps:
-      # テストを実行
-      - name: Run tests
-        env:
-          TEST_DB: postgres_db
-          TEST_USER: ${{ secrets.POSTGRES_USER }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          RAILS_ENV: test
-        run: bundle exec rails test
-
   build:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:14
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_DB: postgres_db
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+
     timeout-minutes: 60
 
     steps:
@@ -129,6 +95,33 @@ jobs:
           sudo apt-get install -y libpq-dev || echo "Failed to install libpq-dev"
           bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
+
+      # RuboCop を実行してコードスタイルを検証
+      - name: Run RuboCop (Lint check)
+        run: bundle exec rubocop --config .rubocop.yml --fail-level W
+
+      # PostgreSQL と postgresql-client を 14 でインストール
+      - name: Install PostgreSQL 14 and client tools
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install -y postgresql-14 postgresql-client-14
+          sudo service postgresql start
+
+      # 最大60秒間 PostgreSQL の応答を確認
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..12}; do
+            if pg_isready -h localhost -p 5432; then
+              echo "PostgreSQL is ready!"
+              exit 0
+            fi
+            echo "Waiting for PostgreSQL to be ready... Attempt $i at $(date)"
+            sleep 5
+          done
+          echo "PostgreSQL did not become ready in time."
+          exit 1
 
       # ユーザーロールをセットアップ
       - name: Set up pg_role
@@ -214,29 +207,14 @@ jobs:
           RAILS_ENV: test
         run: bin/rails routes
 
-      # Node.js と Yarn の環境を構築
-      - name: Install Node.js and Yarn
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18.20.4'
-
-      # Yarn をインストール
-      - name: Install Yarn
-        run: npm install -g yarn@1.22.22
-
-      # Yarn の依存関係をインストール
-      - name: Install Yarn dependencies
-        run: yarn install
-
-      # Hotwire の turbo と stimulus をインストール
-      - name: Install Hotwire dependencies
-        run: |
-          yarn add @hotwired/turbo
-          yarn add @hotwired/stimulus
-
-      # Gemfile に基づいて Railsのgem をインストール
-      - name: Install Rails gems
-        run: bundle install
+      # テストを実行
+      - name: Run tests
+        env:
+          TEST_DB: postgres_db
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          RAILS_ENV: test
+        run: bundle exec rails test
 
       # アセットのプリコンパイルを実行
       - name: Precompile assets for production
@@ -486,4 +464,101 @@ jobs:
 
           echo "Seed is still in progress after 30 minutes. Exiting."
           echo "Final Seed Status: $SEED_STATUS"
+          exit 1
+
+      # Node.js と Yarn の環境を構築
+      - name: Install Node.js and Yarn
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.20.4'
+
+      # Yarn をインストール
+      - name: Install Yarn
+        run: npm install -g yarn@1.22.22
+
+      # Yarn の依存関係をインストール
+      - name: Install Yarn dependencies
+        run: yarn install
+
+      # Hotwire の turbo と stimulus をインストール
+      - name: Install Hotwire dependencies
+        run: |
+          yarn add @hotwired/turbo
+          yarn add @hotwired/stimulus
+
+      # Gemfile に基づいて Railsのgem をインストール）
+      - name: Install Rails gems
+        run: bundle install
+
+      # Render でアセットのプリコンパイルを実行
+      # Render APIからプリコンパイルデータを取得
+      # 変数PRECOMPILE_JOB_RESPONSE が空ではないか確認
+      # プリコンパイルID を取得
+      # 変数PRECOMPILE_ID が空ではないか確認
+      # 最大180回をプリコンパイルID情報の取得を反復
+      # Render API からプリコンパイルID情報を取得
+      # 変数PRECOMPILE_ID_RESPONSE が空ではないか確認
+      # プリコンパイルステータスを取得
+      # プリコンパイルステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run assets precompile
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+        run: |
+          PRECOMPILE_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error \
+            -d '{
+              "startCommand": "bundle install && bundle exec rails assets:precompile"
+            }')
+
+            if [[ -z "$PRECOMPILE_JOB_RESPONSE" ]]; then
+              echo "Failed to retrieve creating assets precompile job information"
+              exit 1
+            fi
+
+            echo "$PRECOMPILE_JOB_RESPONSE" | jq '.'
+
+            PRECOMPILE_ID=$(echo "$PRECOMPILE_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$PRECOMPILE_ID" ]]; then
+            echo "Failed to retrieve assets-precompile-id information"
+            exit 1
+          fi
+
+          echo "$PRECOMPILE_ID"
+
+          for i in {1..180}; do
+            PRECOMPILE_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$PRECOMPILE_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$PRECOMPILE_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve running assets precompile information"
+              exit 1
+            fi
+
+            echo "$PRECOMPILE_ID_RESPONSE" | jq '.'
+
+            PRECOMPILE_STATUS=$(echo "$PRECOMPILE_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$PRECOMPILE_STATUS" == "succeeded" ]]; then
+              echo "assets precompile succeeded"
+              exit 0
+            elif [[ "$PRECOMPILE_STATUS" == "failed" ]]; then
+              echo "assets precompile failed"
+              tail -n 100 log/production.log
+              exit 1
+            else
+              echo "Waiting for assets precompile to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "Assets precompile is still in progress after 30 minutes. Exiting."
+          echo "Final Assets precompile Status: $PRECOMPILE_STATUS"
+          tail -n 100 log/production.log
           exit 1
