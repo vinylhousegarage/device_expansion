@@ -13,9 +13,15 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      # RuboCop を実行してコードスタイルを検証
-      - name: Run RuboCop (Lint check)
-        run: bundle exec rubocop --config .rubocop.yml --fail-level W
+      # Ruby をセットアップ
+    - name: Set up Ruby for linting
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.1.0
+
+    # RuboCop を実行してコードスタイルを検証
+    - name: Run RuboCop (Lint check)
+      run: bundle exec rubocop --config .rubocop.yml --fail-level W
 
   test:
     runs-on: ubuntu-latest
