@@ -490,6 +490,147 @@ jobs:
           echo "Final Seed Status: $SEED_STATUS"
           exit 1
 
+      # Render で bundle install を実行
+      # Render APIから bundle install のデータを取得
+      # 変数BUNDLE_JOB_RESPONSE が空ではないか確認
+      # bundle install ID を取得
+      # 変数BUNDLE_ID が空ではないか確認
+      # 最大180回を bundle install ID情報の取得を反復
+      # Render API から bundle install ID情報を取得
+      # 変数BUNDLE_ID_RESPONSE が空ではないか確認
+      # bundle install のステータスを取得
+      # bundle install のステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run bundle install
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+        run: |
+          BUNDLE_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error \
+            -d '{
+              "startCommand": "bundle install"
+            }')
+
+            if [[ -z "$BUNDLE_JOB_RESPONSE" ]]; then
+              echo "Failed to retrieve creating bundle install job information"
+              exit 1
+            fi
+
+            echo "$BUNDLE_JOB_RESPONSE" | jq '.'
+
+            BUNDLE_ID=$(echo "$BUNDLE_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$BUNDLE_ID" ]]; then
+            echo "Failed to retrieve bundle-install-id information"
+            exit 1
+          fi
+
+          echo "$BUNDLE_ID"
+
+          for i in {1..180}; do
+            BUNDLE_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$BUNDLE_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$BUNDLE_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve running bundle install information"
+              exit 1
+            fi
+
+            echo "$BUNDLE_ID_RESPONSE" | jq '.'
+
+            BUNDLE_STATUS=$(echo "$BUNDLE_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$BUNDLE_STATUS" == "succeeded" ]]; then
+              echo "bundle install succeeded"
+              exit 0
+            elif [[ "$BUNDLE_STATUS" == "failed" ]]; then
+              echo "bundle install failed"
+              exit 1
+            else
+              echo "Waiting for bundle install to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "bundle install is still in progress after 30 minutes. Exiting."
+          echo "Final bundle install Status: $BUNDLE_STATUS"
+          exit 1
+
+      # Render で Yarn のインストールを実行
+      # Render APIから yarn-installデータを取得
+      # 変数YARN_JOB_RESPONSE が空ではないか確認
+      # yarn-install ID を取得
+      # 変数YARN_ID が空ではないか確認
+      # 最大180回を yarn-install ID情報の取得を反復
+      # Render API から yarn-install ID情報を取得
+      # 変数YARN_ID_RESPONSE が空ではないか確認
+      # yarn-install のステータスを取得
+      # yarn-install のステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run yarn install
+        env:
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+        run: |
+          YARN_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error \
+            -d '{
+              "startCommand": "yarn install"
+            }')
+
+            if [[ -z "$YARN_JOB_RESPONSE" ]]; then
+              echo "Failed to retrieve yarn install job information"
+              exit 1
+            fi
+
+            echo "$YARN_JOB_RESPONSE" | jq '.'
+
+            YARN_ID=$(echo "$YARN_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$YARN_ID" ]]; then
+            echo "Failed to retrieve yarn-install-id information"
+            exit 1
+          fi
+
+          echo "$YARN_ID"
+
+          for i in {1..180}; do
+            YARN_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$YARN_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$YARN_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve yarn install information"
+              exit 1
+            fi
+
+            echo "$YARN_ID_RESPONSE" | jq '.'
+
+            YARN_STATUS=$(echo "$YARN_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$YARN_STATUS" == "succeeded" ]]; then
+              echo "yarn install succeeded"
+              exit 0
+            elif [[ "$YARN_STATUS" == "failed" ]]; then
+              echo "yarn install failed"
+              exit 1
+            else
+              echo "Waiting for yarn install to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "yarn install is still in progress after 30 minutes. Exiting."
+          echo "Final yarn install Status: $YARN_STATUS"
+          exit 1
+
       # Render でアセットのプリコンパイルを実行
       # Render APIからプリコンパイルデータを取得
       # 変数PRECOMPILE_JOB_RESPONSE が空ではないか確認
