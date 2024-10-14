@@ -492,7 +492,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" --fail --show-error \
             -d '{
-              "startCommand": "./node_modules/.bin/esbuild app/javascript/*.* --bundle --sourcemap --outdir=public/assets --log-level=debug"
+              "startCommand": "./node_modules/.bin/esbuild app/javascript/*.* --bundle --sourcemap --outdir=public/assets --log-level=debug 2>&1"
             }')
 
             if [[ -z "$JS_BUNDLE_JOB_RESPONSE" ]]; then
@@ -562,7 +562,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" --fail --show-error \
             -d '{
-              "startCommand": "./node_modules/.bin/esbuild app/assets/stylesheets/application.css --bundle --outdir=public/assets --log-level=debug"
+              "startCommand": "./node_modules/.bin/esbuild app/assets/stylesheets/application.css --bundle --outdir=public/assets --log-level=debug 2>&1"
             }')
 
             if [[ -z "$CSS_BUNDLE_JOB_RESPONSE" ]]; then
