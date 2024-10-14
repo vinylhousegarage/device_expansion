@@ -12,7 +12,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     timeout-minutes: 60
 
     steps:
@@ -262,7 +261,7 @@ jobs:
       - name: Install jq
         run: sudo apt-get install -y jq
 
-      # Render で bundle install を実行
+      # Render で bundle installジョブを実行
       # Render APIから bundle install のデータを取得
       # 変数BUNDLE_INSTALL_JOB_RESPONSE が空ではないか確認
       # bundle install ID を取得
@@ -333,7 +332,7 @@ jobs:
           echo "Final bundle install Status: $BUNDLE_INSTALL_STATUS"
           exit 1
 
-      # Render で Yarn のインストールを実行
+      # Render で Yarn のインストールジョブを実行
       # Render APIから yarn-installデータを取得
       # 変数YARN_INSTALL_JOB_RESPONSE が空ではないか確認
       # yarn-install ID を取得
@@ -344,7 +343,7 @@ jobs:
       # yarn-install のステータスを取得
       # yarn-install のステータスを判定
       # 10秒待機しステータスの判定を反復
-      - name: Run yarn install
+      - name: Install dependencies
         env:
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         run: |
@@ -403,7 +402,7 @@ jobs:
           echo "Final yarn install Status: $ARN_INSTALL_STATUS"
           exit 1
 
-      # Render で esbuild のインストールを実行
+      # Render で esbuild のインストールジョブを実行
       # Render APIから esbuild-installデータを取得
       # 変数ESBUILD_INSTALL_JOB_RESPONSE が空ではないか確認
       # esbuild-install ID を取得
@@ -414,7 +413,7 @@ jobs:
       # esbuild-install のステータスを取得
       # esbuild-install のステータスを判定
       # 10秒待機しステータスの判定を反復
-      - name: Run yarn add esbuild
+      - name: Add esbuild
         env:
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         run: |
@@ -471,6 +470,76 @@ jobs:
 
           echo "esbuild install is still in progress after 30 minutes. Exiting."
           echo "Final esbuild install Status: $ESBUILD_INSTALL_STATUS"
+          exit 1
+
+      # Render で esbuild のランニングジョブを実行
+      # Render APIから esbuild-runningデータを取得
+      # 変数ESBUILD_RUNNING_JOB_RESPONSE が空ではないか確認
+      # esbuild-running ID を取得
+      # 変数ESBUILD_RUNNING_ID が空ではないか確認
+      # 最大180回を esbuild-running ID情報の取得を反復
+      # Render API から esbuild-running ID情報を取得
+      # 変数ESBUILD_RUNNING_ID_RESPONSE が空ではないか確認
+      # esbuild-running のステータスを取得
+      # esbuild-running のステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run esbuild
+        env:
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+        run: |
+          ESBUILD_RUNNING_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error \
+            -d '{
+              "startCommand": "./node_modules/.bin/esbuild app/javascript/*.* --bundle --sourcemap --outdir=public/assets && ./node_modules/.bin/esbuild app/assets/stylesheets/application.css --bundle --outdir=public/assets"
+            }')
+
+            if [[ -z "$ESBUILD_RUNNING_JOB_RESPONSE" ]]; then
+              echo "Failed to retrieve esbuild running job information"
+              exit 1
+            fi
+
+            echo "$ESBUILD_RUNNING_JOB_RESPONSE" | jq '.'
+
+            ESBUILD_RUNNING_ID=$(echo "$ESBUILD_RUNNING_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$ESBUILD_RUNNING_ID" ]]; then
+            echo "Failed to retrieve esbuild-running-id information"
+            exit 1
+          fi
+
+          echo "$ESBUILD_RUNNING_ID"
+
+          for i in {1..180}; do
+            ESBUILD_RUNNING_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$ESBUILD_RUNNING_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$ESBUILD_RUNNING_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve esbuild running information"
+              exit 1
+            fi
+
+            echo "$ESBUILD_RUNNING_ID_RESPONSE" | jq '.'
+
+            ESBUILD_RUNNING_STATUS=$(echo "$ESBUILD_RUNNING_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$ESBUILD_RUNNING_STATUS" == "succeeded" ]]; then
+              echo "esbuild running succeeded"
+              exit 0
+            elif [[ "$ESBUILD_RUNNING_STATUS" == "failed" ]]; then
+              echo "esbuild running failed"
+              exit 1
+            else
+              echo "Waiting for esbuild running to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "esbuild running is still in progress after 30 minutes. Exiting."
+          echo "Final esbuild running Status: $ESBUILD_RUNNING_STATUS"
           exit 1
 
       # Render で Yarn のビルドを実行
