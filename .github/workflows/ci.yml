@@ -335,12 +335,12 @@ jobs:
 
       # Render で Yarn のインストールを実行
       # Render APIから yarn-installデータを取得
-      # 変数YARN_JOB_RESPONSE が空ではないか確認
+      # 変数YARN_INSTALL_JOB_RESPONSE が空ではないか確認
       # yarn-install ID を取得
-      # 変数YARN_ID が空ではないか確認
+      # 変数YARN_INSTALL_ID が空ではないか確認
       # 最大180回を yarn-install ID情報の取得を反復
       # Render API から yarn-install ID情報を取得
-      # 変数YARN_ID_RESPONSE が空ではないか確認
+      # 変数YARN_INSTALL_ID_RESPONSE が空ではないか確認
       # yarn-install のステータスを取得
       # yarn-install のステータスを判定
       # 10秒待機しステータスの判定を反復
@@ -348,7 +348,7 @@ jobs:
         env:
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         run: |
-          YARN_JOB_RESPONSE=$(curl -X POST \
+          YARN_INSTALL_JOB_RESPONSE=$(curl -X POST \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" --fail --show-error \
@@ -356,41 +356,41 @@ jobs:
               "startCommand": "yarn install"
             }')
 
-            if [[ -z "$YARN_JOB_RESPONSE" ]]; then
+            if [[ -z "$YARN_INSTALL_JOB_RESPONSE" ]]; then
               echo "Failed to retrieve yarn install job information"
               exit 1
             fi
 
-            echo "$YARN_JOB_RESPONSE" | jq '.'
+            echo "$YARN_INSTALL_JOB_RESPONSE" | jq '.'
 
-            YARN_ID=$(echo "$YARN_JOB_RESPONSE" | jq -r '.id')
+            YARN_INSTALL_ID=$(echo "$YARN_INSTALL_JOB_RESPONSE" | jq -r '.id')
 
-          if [[ -z "$YARN_ID" ]]; then
+          if [[ -z "$YARN_INSTALL_ID" ]]; then
             echo "Failed to retrieve yarn-install-id information"
             exit 1
           fi
 
-          echo "$YARN_ID"
+          echo "$YARN_INSTALL_ID"
 
           for i in {1..180}; do
-            YARN_ID_RESPONSE=$(curl -X GET \
-              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$YARN_ID" \
+            YARN_INSTALL_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$YARN_INSTALL_ID" \
               -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
               -H "Content-Type: application/json" --fail --show-error)
 
-            if [[ -z "$YARN_ID_RESPONSE" ]]; then
+            if [[ -z "$YARN_INSTALL_ID_RESPONSE" ]]; then
               echo "Failed to retrieve yarn install information"
               exit 1
             fi
 
-            echo "$YARN_ID_RESPONSE" | jq '.'
+            echo "$YARN_INSTALL_ID_RESPONSE" | jq '.'
 
-            YARN_STATUS=$(echo "$YARN_ID_RESPONSE" | jq -r '.status')
+            YARN_INSTALL_STATUS=$(echo "$YARN_INSTALL_ID_RESPONSE" | jq -r '.status')
 
-            if [[ "$YARN_STATUS" == "succeeded" ]]; then
+            if [[ "$YARN_INSTALL_STATUS" == "succeeded" ]]; then
               echo "yarn install succeeded"
               exit 0
-            elif [[ "$YARN_STATUS" == "failed" ]]; then
+            elif [[ "$YARN_INSTALL_STATUS" == "failed" ]]; then
               echo "yarn install failed"
               exit 1
             else
@@ -401,6 +401,76 @@ jobs:
 
           echo "yarn install is still in progress after 30 minutes. Exiting."
           echo "Final yarn install Status: $YARN_STATUS"
+          exit 1
+
+      # Render で Yarn のビルドを実行
+      # Render APIから yarn-buildデータを取得
+      # 変数YARN_BUILD_JOB_RESPONSE が空ではないか確認
+      # yarn-build ID を取得
+      # 変数YARN_BUILD_ID が空ではないか確認
+      # 最大180回を yarn-build ID情報の取得を反復
+      # Render API から yarn-build ID情報を取得
+      # 変数YARN_BUILD_ID_RESPONSE が空ではないか確認
+      # yarn-build のステータスを取得
+      # yarn-build のステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run yarn build
+        env:
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+        run: |
+          YARN_BUILD_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error \
+            -d '{
+              "startCommand": "yarn build"
+            }')
+
+            if [[ -z "$YARN_BUILD_JOB_RESPONSE" ]]; then
+              echo "Failed to retrieve yarn build job information"
+              exit 1
+            fi
+
+            echo "$YARN_BUILD_JOB_RESPONSE" | jq '.'
+
+            YARN_BUILD_ID=$(echo "$YARN_BUILD_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$YARN_BUILD_ID" ]]; then
+            echo "Failed to retrieve yarn-build-id information"
+            exit 1
+          fi
+
+          echo "$YARN_BUILD_ID"
+
+          for i in {1..180}; do
+            YARN_BUILD_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$YARN_BUILD_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$YARN_BUILD_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve yarn build information"
+              exit 1
+            fi
+
+            echo "$YARN_BUILD_ID_RESPONSE" | jq '.'
+
+            YARN_BUILD_STATUS=$(echo "$YARN_BUILD_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$YARN_BUILD_STATUS" == "succeeded" ]]; then
+              echo "yarn build succeeded"
+              exit 0
+            elif [[ "$YARN_BUILD_STATUS" == "failed" ]]; then
+              echo "yarn build failed"
+              exit 1
+            else
+              echo "Waiting for yarn build to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "yarn build is still in progress after 30 minutes. Exiting."
+          echo "Final yarn build Status: $YARN_BUILD_STATUS"
           exit 1
 
       # Render でアセットのプリコンパイルを実行
@@ -474,10 +544,10 @@ jobs:
           echo "Final Assets precompile Status: $PRECOMPILE_STATUS"
           exit 1
 
-      # app/assets/buildsディレクトリにファイルが作成されているかを確認
+      # public/assetsディレクトリにファイルが作成されているかを確認
       - name: Check assets precompile
         run: |
-          if [ -d "app/assets/builds" ] && [ "$(ls -A app/assets/builds)" ]; then
+          if [ -d "public/assets" ] && [ "$(ls -A public/assets)" ]; then
             echo "Assets compiled successfully."
           else
             echo "Assets compilation failed or builds directory is empty."
@@ -494,7 +564,7 @@ jobs:
           --verbose \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -H "Content-Type: application/json" \
-          -d '{"clearCache":"clear"}' \
+          -d '{"clearCache": false}' \
           https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys --fail --show-error)
 
           if [[ -z "$POST_RESPONSE" ]]; then
