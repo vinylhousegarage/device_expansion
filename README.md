@@ -7,7 +7,7 @@
   - **範囲**
     - **投稿者**
       - 香典の情報を投稿するための権限を持つユーザー
-      - あらかじめ設定された「ゲスト１」～「ゲスト５」
+      - あらかじめ設定された「投稿者１」～「投稿者５」
     - **管理者**
       - 投稿者を招待する権限と、投稿と集計を管理する権限を合わせ持つユーザー
       - あらかじめ設定された「集計担当」
@@ -48,7 +48,7 @@
 
   - **初期データ**
     ```ruby
-    USERS = %w[ゲスト１ ゲスト２ ゲスト３ ゲスト４ ゲスト５ 集計担当].freeze
+    USERS = %w[投稿者１ 投稿者２ 投稿者３ 投稿者４ 投稿者５ 集計担当].freeze
     USERS.each do |user_name|
       User.find_or_create_by(name: user_name)
     end
@@ -63,12 +63,12 @@
     - コンテナ化：Docker Compose
     - ホスティング：Render（アプリケーションの稼働サーバー）
     - CI/CD：GitHub Actions（テスト）/ Render（デプロイ）
-    - テストフレームワーク：Minitest（単体テスト、機能テスト）
+    - テストフレームワーク：Minitest（単体テスト・機能テスト）
 
   - **インフラ要件**
     - サーバー構成：Puma, PostgreSQLサーバー
     - ネットワーク要件：RenderによるホスティングとDNS管理
-    - ドメイン：.onrender.com
+    - ドメイン：https://device-expansion.onrender.com
 
   - **開発環境**
     - OS：Windows 10
@@ -80,4 +80,4 @@
         - Pull Requestを通して、mainブランチにマージ
         - 現在は個人開発であるため、コードレビューは任意で行うことが可能
       - コミットメッセージ規約
-        - Conventional Commits (feat, fix, testなどを使用)
+        - Conventional Commits (feature, fix, testなどを使用)
