@@ -474,13 +474,13 @@ jobs:
           echo "Final Assets precompile Status: $PRECOMPILE_STATUS"
           exit 1
 
-      # public/assetsディレクトリにファイルが作成されているかを確認
+      # app/assets/buildsディレクトリにファイルが作成されているかを確認
       - name: Check assets precompile
         run: |
-          if [ -d "public/assets" ] && [ "$(ls -A public/assets)" ]; then
+          if [ -d "app/assets/builds" ] && [ "$(ls -A app/assets/builds)" ]; then
             echo "Assets compiled successfully."
           else
-            echo "Assets compilation failed or assets directory is empty."
+            echo "Assets compilation failed or builds directory is empty."
             exit 1
           fi
 
