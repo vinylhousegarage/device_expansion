@@ -264,12 +264,12 @@ jobs:
 
       # Render で bundle install を実行
       # Render APIから bundle install のデータを取得
-      # 変数BUNDLE_JOB_RESPONSE が空ではないか確認
+      # 変数BUNDLE_INSTALL_JOB_RESPONSE が空ではないか確認
       # bundle install ID を取得
-      # 変数BUNDLE_ID が空ではないか確認
+      # 変数BUNDLE_INSTALL_ID が空ではないか確認
       # 最大180回を bundle install ID情報の取得を反復
       # Render API から bundle install ID情報を取得
-      # 変数BUNDLE_ID_RESPONSE が空ではないか確認
+      # 変数BUNDLE_INSTALL_ID_RESPONSE が空ではないか確認
       # bundle install のステータスを取得
       # bundle install のステータスを判定
       # 10秒待機しステータスの判定を反復
@@ -278,7 +278,7 @@ jobs:
           RAILS_ENV: production
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         run: |
-          BUNDLE_JOB_RESPONSE=$(curl -X POST \
+          BUNDLE_INSTALL_JOB_RESPONSE=$(curl -X POST \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" --fail --show-error \
@@ -286,41 +286,41 @@ jobs:
               "startCommand": "bundle install"
             }')
 
-            if [[ -z "$BUNDLE_JOB_RESPONSE" ]]; then
+            if [[ -z "$BUNDLE_INSTALL_JOB_RESPONSE" ]]; then
               echo "Failed to retrieve creating bundle install job information"
               exit 1
             fi
 
-            echo "$BUNDLE_JOB_RESPONSE" | jq '.'
+            echo "$BUNDLE_INSTALL_JOB_RESPONSE" | jq '.'
 
-            BUNDLE_ID=$(echo "$BUNDLE_JOB_RESPONSE" | jq -r '.id')
+            BUNDLE_INSTALL_ID=$(echo "$BUNDLE_INSTALL_JOB_RESPONSE" | jq -r '.id')
 
-          if [[ -z "$BUNDLE_ID" ]]; then
+          if [[ -z "$BUNDLE_INSTALL_ID" ]]; then
             echo "Failed to retrieve bundle-install-id information"
             exit 1
           fi
 
-          echo "$BUNDLE_ID"
+          echo "$BUNDLE_INSTALL_ID"
 
           for i in {1..180}; do
-            BUNDLE_ID_RESPONSE=$(curl -X GET \
-              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$BUNDLE_ID" \
+            BUNDLE_INSTALL_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$BUNDLE_INSTALL_ID" \
               -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
               -H "Content-Type: application/json" --fail --show-error)
 
-            if [[ -z "$BUNDLE_ID_RESPONSE" ]]; then
+            if [[ -z "$BUNDLE_INSTALL_ID_RESPONSE" ]]; then
               echo "Failed to retrieve running bundle install information"
               exit 1
             fi
 
-            echo "$BUNDLE_ID_RESPONSE" | jq '.'
+            echo "$BUNDLE_INSTALL_ID_RESPONSE" | jq '.'
 
-            BUNDLE_STATUS=$(echo "$BUNDLE_ID_RESPONSE" | jq -r '.status')
+            BUNDLE_INSTALL_STATUS=$(echo "$BUNDLE_INSTALL_ID_RESPONSE" | jq -r '.status')
 
-            if [[ "$BUNDLE_STATUS" == "succeeded" ]]; then
+            if [[ "$BUNDLE_INSTALL_STATUS" == "succeeded" ]]; then
               echo "bundle install succeeded"
               exit 0
-            elif [[ "$BUNDLE_STATUS" == "failed" ]]; then
+            elif [[ "$BUNDLE_INSTALL_STATUS" == "failed" ]]; then
               echo "bundle install failed"
               exit 1
             else
@@ -330,7 +330,7 @@ jobs:
           done
 
           echo "bundle install is still in progress after 30 minutes. Exiting."
-          echo "Final bundle install Status: $BUNDLE_STATUS"
+          echo "Final bundle install Status: $BUNDLE_INSTALL_STATUS"
           exit 1
 
       # Render で Yarn のインストールを実行
@@ -400,7 +400,77 @@ jobs:
           done
 
           echo "yarn install is still in progress after 30 minutes. Exiting."
-          echo "Final yarn install Status: $YARN_STATUS"
+          echo "Final yarn install Status: $ARN_INSTALL_STATUS"
+          exit 1
+
+      # Render で esbuild のインストールを実行
+      # Render APIから esbuild-installデータを取得
+      # 変数ESBUILD_INSTALL_JOB_RESPONSE が空ではないか確認
+      # esbuild-install ID を取得
+      # 変数ESBUILD_INSTALL_ID が空ではないか確認
+      # 最大180回を esbuild-install ID情報の取得を反復
+      # Render API から esbuild-install ID情報を取得
+      # 変数ESBUILD_INSTALL_ID_RESPONSE が空ではないか確認
+      # esbuild-install のステータスを取得
+      # esbuild-install のステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run yarn add esbuild
+        env:
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+        run: |
+          ESBUILD_INSTALL_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error \
+            -d '{
+              "startCommand": "yarn add esbuild"
+            }')
+
+            if [[ -z "$ESBUILD_INSTALL_JOB_RESPONSE" ]]; then
+              echo "Failed to retrieve esbuild install job information"
+              exit 1
+            fi
+
+            echo "$ESBUILD_INSTALL_JOB_RESPONSE" | jq '.'
+
+            ESBUILD_INSTALL_ID=$(echo "$ESBUILD_INSTALL_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$ESBUILD_INSTALL_ID" ]]; then
+            echo "Failed to retrieve esbuild-install-id information"
+            exit 1
+          fi
+
+          echo "$ESBUILD_INSTALL_ID"
+
+          for i in {1..180}; do
+            ESBUILD_INSTALL_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$ESBUILD_INSTALL_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$ESBUILD_INSTALL_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve esbuild install information"
+              exit 1
+            fi
+
+            echo "$ESBUILD_INSTALL_ID_RESPONSE" | jq '.'
+
+            ESBUILD_INSTALL_STATUS=$(echo "$ESBUILD_INSTALL_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$ESBUILD_INSTALL_STATUS" == "succeeded" ]]; then
+              echo "esbuild install succeeded"
+              exit 0
+            elif [[ "$ESBUILD_INSTALL_STATUS" == "failed" ]]; then
+              echo "esbuild install failed"
+              exit 1
+            else
+              echo "Waiting for esbuild install to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "esbuild install is still in progress after 30 minutes. Exiting."
+          echo "Final esbuild install Status: $ESBUILD_INSTALL_STATUS"
           exit 1
 
       # Render で Yarn のビルドを実行
