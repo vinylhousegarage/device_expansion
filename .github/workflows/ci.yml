@@ -472,74 +472,144 @@ jobs:
           echo "Final esbuild install Status: $ESBUILD_INSTALL_STATUS"
           exit 1
 
-      # Render で esbuild のランニングジョブを実行
-      # Render APIから esbuild-runningデータを取得
-      # 変数ESBUILD_RUNNING_JOB_RESPONSE が空ではないか確認
-      # esbuild-running ID を取得
-      # 変数ESBUILD_RUNNING_ID が空ではないか確認
-      # 最大180回を esbuild-running ID情報の取得を反復
-      # Render API から esbuild-running ID情報を取得
-      # 変数ESBUILD_RUNNING_ID_RESPONSE が空ではないか確認
-      # esbuild-running のステータスを取得
-      # esbuild-running のステータスを判定
+      # Render で JavaScript のバンドルジョブを実行
+      # Render APIから js-bundleデータを取得
+      # 変数JS_BUNDLE_JOB_RESPONSE が空ではないか確認
+      # js-bundle ID を取得
+      # 変数JS_BUNDLE_ID が空ではないか確認
+      # 最大180回を js-bundle ID情報の取得を反復
+      # Render API から js-bundle ID情報を取得
+      # 変数JS_BUNDLE_ID_RESPONSE が空ではないか確認
+      # js-bundle のステータスを取得
+      # js-bundle のステータスを判定
       # 10秒待機しステータスの判定を反復
-      - name: Run esbuild
+      - name: Run bundle js
         env:
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
         run: |
-          ESBUILD_RUNNING_JOB_RESPONSE=$(curl -X POST \
+          JS_BUNDLE_JOB_RESPONSE=$(curl -X POST \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" --fail --show-error \
             -d '{
-              "startCommand": "./node_modules/.bin/esbuild app/javascript/*.* --bundle --sourcemap --outdir=public/assets && ./node_modules/.bin/esbuild app/assets/stylesheets/application.css --bundle --outdir=public/assets"
+              "startCommand": "./node_modules/.bin/esbuild app/javascript/*.* --bundle --sourcemap --outdir=public/assets"
             }')
 
-            if [[ -z "$ESBUILD_RUNNING_JOB_RESPONSE" ]]; then
-              echo "Failed to retrieve esbuild running job information"
+            if [[ -z "$JS_BUNDLE_JOB_RESPONSE" ]]; then
+              echo "Failed to retrieve js bundle job information"
               exit 1
             fi
 
-            echo "$ESBUILD_RUNNING_JOB_RESPONSE" | jq '.'
+            echo "$JS_BUNDLE_JOB_RESPONSE" | jq '.'
 
-            ESBUILD_RUNNING_ID=$(echo "$ESBUILD_RUNNING_JOB_RESPONSE" | jq -r '.id')
+            JS_BUNDLE_ID=$(echo "$JS_BUNDLE_JOB_RESPONSE" | jq -r '.id')
 
-          if [[ -z "$ESBUILD_RUNNING_ID" ]]; then
-            echo "Failed to retrieve esbuild-running-id information"
+          if [[ -z "$JS_BUNDLE_ID" ]]; then
+            echo "Failed to retrieve js-bundle-id information"
             exit 1
           fi
 
-          echo "$ESBUILD_RUNNING_ID"
+          echo "$JS_BUNDLE_ID"
 
           for i in {1..180}; do
-            ESBUILD_RUNNING_ID_RESPONSE=$(curl -X GET \
-              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$ESBUILD_RUNNING_ID" \
+            JS_BUNDLE_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$JS_BUNDLE_ID" \
               -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
               -H "Content-Type: application/json" --fail --show-error)
 
-            if [[ -z "$ESBUILD_RUNNING_ID_RESPONSE" ]]; then
-              echo "Failed to retrieve esbuild running information"
+            if [[ -z "$JS_BUNDLE_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve js bundle information"
               exit 1
             fi
 
-            echo "$ESBUILD_RUNNING_ID_RESPONSE" | jq '.'
+            echo "$JS_BUNDLE_ID_RESPONSE" | jq '.'
 
-            ESBUILD_RUNNING_STATUS=$(echo "$ESBUILD_RUNNING_ID_RESPONSE" | jq -r '.status')
+            JS_BUNDLE_STATUS=$(echo "$JS_BUNDLE_ID_RESPONSE" | jq -r '.status')
 
-            if [[ "$ESBUILD_RUNNING_STATUS" == "succeeded" ]]; then
-              echo "esbuild running succeeded"
+            if [[ "$JS_BUNDLE_STATUS" == "succeeded" ]]; then
+              echo "js bundle succeeded"
               exit 0
-            elif [[ "$ESBUILD_RUNNING_STATUS" == "failed" ]]; then
-              echo "esbuild running failed"
+            elif [[ "$JS_BUNDLE_STATUS" == "failed" ]]; then
+              echo "js bundle failed"
               exit 1
             else
-              echo "Waiting for esbuild running to complete... (attempt $i/180)"
+              echo "Waiting for js bundle to complete... (attempt $i/180)"
               sleep 10
             fi
           done
 
-          echo "esbuild running is still in progress after 30 minutes. Exiting."
-          echo "Final esbuild running Status: $ESBUILD_RUNNING_STATUS"
+          echo "js bundle is still in progress after 30 minutes. Exiting."
+          echo "Final js bundle Status: $JS_BUNDLE_STATUS"
+          exit 1
+
+      # Render で css のバンドルジョブを実行
+      # Render APIから css-bundleデータを取得
+      # 変数CSS_BUNDLE_JOB_RESPONSE が空ではないか確認
+      # css-bundle ID を取得
+      # 変数CSS_BUNDLE_ID が空ではないか確認
+      # 最大180回を css-bundle ID情報の取得を反復
+      # Render API から css-bundle ID情報を取得
+      # 変数CSS_BUNDLE_ID_RESPONSE が空ではないか確認
+      # css-bundle のステータスを取得
+      # css-bundle のステータスを判定
+      # 10秒待機しステータスの判定を反復
+      - name: Run bundle css
+        env:
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+        run: |
+          CSS_BUNDLE_JOB_RESPONSE=$(curl -X POST \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" --fail --show-error \
+            -d '{
+              "startCommand": "./node_modules/.bin/esbuild app/assets/stylesheets/application.css --bundle --outdir=public/assets"
+            }')
+
+            if [[ -z "$CSS_BUNDLE_JOB_RESPONSE" ]]; then
+              echo "Failed to retrieve css bundle job information"
+              exit 1
+            fi
+
+            echo "$CSS_BUNDLE_JOB_RESPONSE" | jq '.'
+
+            CSS_BUNDLE_ID=$(echo "$CSS_BUNDLE_JOB_RESPONSE" | jq -r '.id')
+
+          if [[ -z "$CSS_BUNDLE_ID" ]]; then
+            echo "Failed to retrieve css-bundle-id information"
+            exit 1
+          fi
+
+          echo "$CSS_BUNDLE_ID"
+
+          for i in {1..180}; do
+            CSS_BUNDLE_ID_RESPONSE=$(curl -X GET \
+              "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/jobs/$CSS_BUNDLE_ID" \
+              -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+              -H "Content-Type: application/json" --fail --show-error)
+
+            if [[ -z "$CSS_BUNDLE_ID_RESPONSE" ]]; then
+              echo "Failed to retrieve css bundle information"
+              exit 1
+            fi
+
+            echo "$CSS_BUNDLE_ID_RESPONSE" | jq '.'
+
+            CSS_BUNDLE_STATUS=$(echo "$CSS_BUNDLE_ID_RESPONSE" | jq -r '.status')
+
+            if [[ "$CSS_BUNDLE_STATUS" == "succeeded" ]]; then
+              echo "css bundle succeeded"
+              exit 0
+            elif [[ "$CSS_BUNDLE_STATUS" == "failed" ]]; then
+              echo "css bundle failed"
+              exit 1
+            else
+              echo "Waiting for css bundle to complete... (attempt $i/180)"
+              sleep 10
+            fi
+          done
+
+          echo "css bundle is still in progress after 30 minutes. Exiting."
+          echo "Final css bundle Status: $CSS_BUNDLE_STATUS"
           exit 1
 
       # Render で Yarn のビルドを実行
