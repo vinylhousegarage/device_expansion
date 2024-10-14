@@ -494,7 +494,7 @@ jobs:
           --verbose \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
           -H "Content-Type: application/json" \
-          -d '{"clearCache":"true"}' \
+          -d '{"clearCache":"clear"}' \
           https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys --fail --show-error)
 
           if [[ -z "$POST_RESPONSE" ]]; then
