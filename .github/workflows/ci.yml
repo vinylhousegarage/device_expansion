@@ -625,7 +625,6 @@ jobs:
           fi
 
       # Render API へデプロイ
-      # デプロイキャッシュはクリアしない設定
       # Render API からのレスポンスを確認
       - name: Trigger Render Deployment
         run: |
