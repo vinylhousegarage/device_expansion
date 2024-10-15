@@ -215,37 +215,6 @@ jobs:
           RAILS_ENV: test
         run: bundle exec rails test
 
-      # Node.js と Yarn の環境を構築
-      - name: Install Node.js and Yarn
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18.20.4'
-
-      # Yarn をインストール
-      - name: Install Yarn
-        run: npm install -g yarn@1.22.22
-
-      # Yarn の依存関係をインストール
-      - name: Install Yarn dependencies
-        run: yarn install
-
-      # Hotwire の turbo と stimulus をインストール
-      - name: Install Hotwire dependencies
-        run: |
-          yarn add @hotwired/turbo
-          yarn add @hotwired/stimulus
-
-      # Gemfile に基づいて Railsのgem をインストール
-      - name: Install Rails gems
-        run: bundle install
-
-      # アセットのプリコンパイルを実行
-      - name: Precompile assets for production
-        env:
-          RAILS_ENV: production
-          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
-        run: bundle exec rails assets:precompile
-
   deploy:
     runs-on: ubuntu-latest
     needs: build
