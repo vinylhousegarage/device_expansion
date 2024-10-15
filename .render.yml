@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: device_expansion
+    env: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerComposeYamlPath: ./compose.yml
+    buildCommand: |
+      ./bin/render-build.sh
+    startCommand: |
+      bundle exec puma -C config/puma.rb
