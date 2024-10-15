@@ -120,7 +120,7 @@ jobs:
 
             if [[ "$YARN_INSTALL_STATUS" == "succeeded" ]]; then
               echo "yarn install succeeded"
-              exit 0
+              break
             elif [[ "$YARN_INSTALL_STATUS" == "failed" ]]; then
               echo "yarn install failed"
               exit 1
@@ -130,9 +130,12 @@ jobs:
             fi
           done
 
-          echo "yarn install is still in progress after 30 minutes. Exiting."
-          echo "Final yarn install Status: $ARN_INSTALL_STATUS"
-          exit 1
+          if [[ "$YARN_INSTALL_STATUS" != "succeeded" ]]; then
+            echo "yarn install is still in progress after 30 minutes. Exiting."
+            exit 1
+          fi
+
+          echo "Proceeding with the next job after Precompilation environment setup..."
 
 
 
@@ -177,7 +180,7 @@ jobs:
 
             if [[ "$ESBUILD_INSTALL_STATUS" == "succeeded" ]]; then
               echo "esbuild install succeeded"
-              exit 0
+              break
             elif [[ "$ESBUILD_INSTALL_STATUS" == "failed" ]]; then
               echo "esbuild install failed"
               exit 1
@@ -187,9 +190,12 @@ jobs:
             fi
           done
 
-          echo "esbuild install is still in progress after 30 minutes. Exiting."
-          echo "Final esbuild install Status: $ESBUILD_INSTALL_STATUS"
-          exit 1
+          if [[ "$ESBUILD_INSTALL_STATUS" != "succeeded" ]]; then
+            echo "esbuild install is still in progress after 30 minutes. Exiting."
+            exit 1
+          fi
+
+          echo "Proceeding with the next job after Precompilation environment setup..."
 
 
 
@@ -234,7 +240,7 @@ jobs:
 
             if [[ "$JS_BUNDLE_STATUS" == "succeeded" ]]; then
               echo "js bundle succeeded"
-              exit 0
+              break
             elif [[ "$JS_BUNDLE_STATUS" == "failed" ]]; then
               echo "js bundle failed"
               exit 1
@@ -244,9 +250,12 @@ jobs:
             fi
           done
 
-          echo "js bundle is still in progress after 30 minutes. Exiting."
-          echo "Final js bundle Status: $JS_BUNDLE_STATUS"
-          exit 1
+          if [[ "$JS_BUNDLE_STATUS" != "succeeded" ]]; then
+            echo "js bundle is still in progress after 30 minutes. Exiting."
+            exit 1
+          fi
+
+          echo "Proceeding with the next job after Precompilation environment setup..."
 
 
 
@@ -291,7 +300,7 @@ jobs:
 
             if [[ "$CSS_BUNDLE_STATUS" == "succeeded" ]]; then
               echo "css bundle succeeded"
-              exit 0
+              break
             elif [[ "$CSS_BUNDLE_STATUS" == "failed" ]]; then
               echo "css bundle failed"
               exit 1
@@ -301,9 +310,12 @@ jobs:
             fi
           done
 
-          echo "css bundle is still in progress after 30 minutes. Exiting."
-          echo "Final css bundle Status: $CSS_BUNDLE_STATUS"
-          exit 1
+          if [[ "$CSS_BUNDLE_STATUS" != "succeeded" ]]; then
+            echo "css bundle is still in progress after 30 minutes. Exiting."
+            exit 1
+          fi
+
+          echo "Precompilation environment succeeded"
 
       # Render で bundle installジョブを実行
       # Render APIから bundle install のデータを取得
