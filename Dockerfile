@@ -11,9 +11,9 @@ RUN bundle config set path 'vendor/bundle' \
     && bundle install --jobs 4 --retry 3
 COPY package.json yarn.lock /app/
 RUN yarn install --check-files
+COPY . /app
 RUN yarn build
 RUN bundle exec rails assets:precompile
 ENV PATH ./vendor/bundle/ruby/3.1.0/bin:$PATH
-COPY . /app
 EXPOSE 3000
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
