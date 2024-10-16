@@ -241,7 +241,7 @@ jobs:
             -d '{"clearCache": "clear"}' \
             https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys)
 
-          if [[ "$POST_RESPONSE" != "200" ]]; then
+          if [[ "$POST_RESPONSE" != "201" ]]; then
             echo "Failed to trigger deployment (status: $POST_RESPONSE)"
             exit 1
           fi
@@ -265,7 +265,7 @@ jobs:
         run: |
           set -e
 
-          for i in {1..600}; do
+          for i in {1..60}; do
 
             GET_RESPONSE=$(curl -X GET \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
