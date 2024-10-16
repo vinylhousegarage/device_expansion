@@ -42,33 +42,36 @@ jobs:
       - name: Pull Docker image from GHCR
         run: docker pull ghcr.io/vinylhousegarage/device_expansion:latest || echo "No cached image found, continuing with fresh build"
 
-      # Dockerイメージ に差分があるコミットを commit_list.txt に抽出
-      # commit_list.txt のコミットIDを1行ずつ読み取り GHCR にビルドしプッシュ
-      # 最新のコミットを変数LATEST_COMMIT に格納
-      # 変数LATEST_COMMIT が空ではないか確認
-      # 最新のDockerイメージに latest のタグを付けGHCRにビルドしプッシュ
-      - name: Get commits with Dockerfile or compose.yaml changes and process each commit
+      # 稼働中のコンテナのイメージIDを取得
+      - name: Get running container image ID
         run: |
-          git log --reverse --pretty=format:"%H" $HEAD -- Dockerfile compose.yaml > commit_list.txt
-          if [ ! -s commit_list.txt ]; then
-            echo "No commits with Dockerfile or compose.yaml changes found."
+          docker ps --format "{{.Image}}" > running_image.txt
+
+      # GHCRのイメージハッシュを取得
+      - name: Get GHCR image hash
+        run: |
+          docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/vinylhousegarage/device_expansion:latest > ghcr_image.txt
+
+      # イメージIDとハッシュの比較
+      - name: Compare image hashes
+        run: |
+          running_image_id=$(cat running_image.txt)
+          ghcr_image_hash=$(cat ghcr_image.txt)
+          if [ "$running_image_id" == "$ghcr_image_hash" ]; then
+            echo "Running container uses the same image as GHCR"
             exit 0
+          else
+            echo "Running container uses a different image from GHCR"
           fi
 
-          set -e
-          echo "Commits to process: $(cat commit_list.txt)"
-          while IFS= read -r COMMIT; do
-            echo "Processing commit: $COMMIT with message: $(git log -1 --pretty=%B $COMMIT)"
-            docker build --cache-from ghcr.io/vinylhousegarage/device_expansion:latest \
-            -t ghcr.io/vinylhousegarage/device_expansion:$COMMIT .
-            docker push ghcr.io/vinylhousegarage/device_expansion:$COMMIT
-            LATEST_COMMIT=$COMMIT
-          done < commit_list.txt
-
-          if [[ -n "$LATEST_COMMIT" ]]; then
-            docker tag ghcr.io/vinylhousegarage/device_expansion:$LATEST_COMMIT ghcr.io/vinylhousegarage/device_expansion:latest
-            docker push ghcr.io/vinylhousegarage/device_expansion:latest
-          fi
+      # Dockerイメージをビルド＆プッシュ
+      - name: Build and push Docker image if different
+        run: |
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          docker build -t ghcr.io/vinylhousegarage/device_expansion:$COMMIT_HASH .
+          docker push ghcr.io/vinylhousegarage/device_expansion:$COMMIT_HASH
+          docker tag ghcr.io/vinylhousegarage/device_expansion:$COMMIT_HASH ghcr.io/vinylhousegarage/device_expansion:latest
+          docker push ghcr.io/vinylhousegarage/device_expansion:latest
 
       # Ruby をセットアップ
       - name: Set up Ruby
