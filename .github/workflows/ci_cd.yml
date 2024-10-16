@@ -1,4 +1,4 @@
-name: CI/CD Workflow
+name: CI
 
 on:
   push:
@@ -12,6 +12,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     timeout-minutes: 30
 
     steps:
@@ -35,8 +38,11 @@ jobs:
 
       # GHCR にログイン
       - name: Log in to GitHub Container Registry
-        run: |
-          echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       # GHCRから既存のDockerイメージをプルしてキャッシュとして使用
       - name: Pull Docker image from GHCR
@@ -289,6 +295,7 @@ jobs:
               exit 1
             else
               echo "Render Deploy ID: $RENDER_DEPLOY_ID"
+              echo "Waiting for Render Deploy to complete... (attempt $i/180)"
               echo "RENDER_DEPLOY_ID=$RENDER_DEPLOY_ID" >> $GITHUB_ENV
             fi
 
