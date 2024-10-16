@@ -248,7 +248,7 @@ jobs:
             echo "Deployment POST response:$POST_RESPONSE"
           fi
 
-      # 最大180回の反復を設定
+      # 最大60回の反復を設定
       # Render API からデプロイ情報を取得
       # 変数GET_DEPROY_RESPONSE が空ではないか確認
       # レスポンス全体を表示してデバッグ情報を確認
@@ -265,7 +265,7 @@ jobs:
         run: |
           set -e
 
-          for i in {1..180}; do
+          for i in {1..60}; do
 
             GET_DEPLOY_RESPONSE=$(curl -X GET \
             "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
@@ -292,7 +292,7 @@ jobs:
               exit 1
             else
               echo "Render Deploy ID: $RENDER_DEPLOY_ID"
-              echo "Waiting for Render Deploy to complete... (attempt $i/180)"
+              echo "Waiting for Render Deploy to complete... (attempt $i/60)"
               echo "RENDER_DEPLOY_ID=$RENDER_DEPLOY_ID" >> $GITHUB_ENV
             fi
 
