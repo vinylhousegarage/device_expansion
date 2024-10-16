@@ -229,28 +229,9 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v3
 
-      # Render API へデプロイ
-      # Render API からのレスポンスを確認
-      - name: Trigger Render Deployment
-        run: |
-          set -e
-          POST_RESPONSE=$(curl -X POST \
-          --verbose \
-          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-          -H "Content-Type: application/json" \
-          -d '{"clearCache": "clear"}' \
-          https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys --fail --show-error)
-
-          if [[ -z "$POST_RESPONSE" ]]; then
-            echo "Failed to trigger deployment for service ID: ${{ secrets.RENDER_SERVICE_ID }}"
-            exit 1
-          else
-            echo "Deployment POST response:$POST_RESPONSE"
-          fi
-
       # 最大60回の反復を設定
       # Render API からデプロイ情報を取得
-      # 変数GET_DEPROY_RESPONSE が空ではないか確認
+      # 変数RESPONSE が空ではないか確認
       # レスポンス全体を表示してデバッグ情報を確認
       # 最新のデプロイ情報を取得
       # 変数LATEST_DEPLOY が空ではないか確認
@@ -261,25 +242,27 @@ jobs:
       # 変数RENDER_DEPLOY_STATUS が空でないか確認
       # ステータスを判定
       # 10秒待機しステータスの判定を反復
-      - name: Check Render Deployment Status
+      - name: Trigger Render Deployment
         run: |
           set -e
 
           for i in {1..60}; do
 
-            GET_DEPLOY_RESPONSE=$(curl -X GET \
-            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
+            RESPONSE=$(curl -X POST \
+            --verbose \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-            -H "Content-Type: application/json" --fail --show-error)
+            -H "Content-Type: application/json" \
+            -d '{"clearCache": "clear"}' \
+            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys --fail --show-error)
 
-            if [[ -z "$GET_DEPLOY_RESPONSE" ]]; then
+            if [[ -z "$RESPONSE" ]]; then
               echo "Failed to retrieve deployment information"
               exit 1
             fi
 
-            echo "$GET_DEPLOY_RESPONSE" | jq '.'
+            echo "$RESPONSE" | jq '.'
 
-            LATEST_DEPLOY=$(echo "$GET_DEPLOY_RESPONSE" | jq -r 'map(.deploy) | sort_by(.createdAt) | last')
+            LATEST_DEPLOY=$(echo "$RESPONSE" | jq -r 'map(.deploy) | sort_by(.createdAt) | last')
 
             if [[ -z "$LATEST_DEPLOY" ]]; then
               echo "Failed to retrieve the latest deploy"
