@@ -38,21 +38,21 @@ jobs:
         run: |
           echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      # GHCRから既存のDockerイメージをプルしてキャッシュとして使用
+      # GHCR から既存の Dockerイメージをプルしてキャッシュとして使用
       - name: Pull Docker image from GHCR
         run: docker pull ghcr.io/vinylhousegarage/device_expansion:latest || echo "No cached image found, continuing with fresh build"
 
-      # 稼働中のコンテナのイメージIDを取得
+      # 稼働中のコンテナのイメージID を取得
       - name: Get running container image ID
         run: |
           docker ps --format "{{.Image}}" > running_image.txt
 
-      # GHCRのイメージハッシュを取得
+      # GHCR のイメージハッシュを取得
       - name: Get GHCR image hash
         run: |
           docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/vinylhousegarage/device_expansion:latest > ghcr_image.txt
 
-      # イメージIDとハッシュの比較
+      # イメージID とハッシュの比較
       - name: Compare image hashes
         run: |
           running_image_id=$(cat running_image.txt)
@@ -64,7 +64,7 @@ jobs:
             echo "Running container uses a different image from GHCR"
           fi
 
-      # Dockerイメージをビルド＆プッシュ
+      # Dockerイメージを GHCR にビルドしプッシュ
       - name: Build and push Docker image if different
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
