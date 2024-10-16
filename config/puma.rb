@@ -37,7 +37,11 @@ workers ENV.fetch('WEB_CONCURRENCY', 2)
 # before forking the application. This takes advantage of Copy On Write
 # process behavior so workers use less memory.
 
-preload_app!
+# preload_app!
+
+on_worker_boot do
+  ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
+end
 
 stdout_redirect 'log/puma.stdout.log', 'log/puma.stderr.log', true if ENV.fetch('RAILS_ENV') == 'production'
 
