@@ -52,7 +52,8 @@ jobs:
       - name: Pull latest image from GHCR
         run: docker pull ghcr.io/vinylhousegarage/device_expansion:latest || echo "No cached image found."
 
-      # イメージのハッシュを比較し、差分があればプッシュ
+      # Dockerイメージと GHCRからプルしたイメージのハッシュを比較
+      # 差分があれ ばDockerイメージを GHCR にプッシュ
       - name: Compare and Push Docker Image if Different
         run: |
           temp_hash=$(docker inspect --format='{{.Id}}' device_expansion-web)
