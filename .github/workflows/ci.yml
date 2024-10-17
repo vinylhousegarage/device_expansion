@@ -12,73 +12,52 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
 
     steps:
-      # リモートリポジトリをチェックアウト
+      # コードのチェックアウト
       - name: Check out the repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      # 実行中のユーザーを確認
-      - name: Check current user
-        run: whoami
+      # Docker Buildx のセットアップ
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      # ls -ld コマンドを実行して、ディレクトリの所有者とパーミッションを確認
-      - name: Check directory permissions and ownership
-        run: ls -ld /home/runner/work/device_expansion/device_expansion
+      # Dockerイメージをビルド
+      - name: Build Docker Image with Compose
+        run: docker compose build
 
-      # ディレクトリ内のパーミッションの確認
-      - name: Check permissions of all files
-        run: ls -lR /home/runner/work/device_expansion/device_expansion
+      # Dockerイメージ一覧を表示
+      - name: List Docker Images
+        run: docker images
 
       # GHCR にログイン
       - name: Log in to GitHub Container Registry
         run: |
           echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      # GHCRから既存のDockerイメージをプルしてキャッシュとして使用
-      - name: Pull Docker image from GHCR
-        run: docker pull ghcr.io/vinylhousegarage/device_expansion:latest || echo "No cached image found, continuing with fresh build"
+      # GHCRから最新のイメージをプル
+      - name: Pull latest image from GHCR
+        run: docker pull ghcr.io/vinylhousegarage/device_expansion:latest || echo "No cached image found."
 
-      # HEAD の初期化
-      # Dockerイメージ に差分があるコミットを commit_list.txt に抽出
-      # 同じコミットのイメージが既に存在する場合はスキップ
-      # commit_list.txt のコミットIDを1行ずつ読み取り GHCR にビルドしプッシュ
-      # 最新のコミットを変数LATEST_COMMIT に格納
-      # 変数LATEST_COMMIT が空ではないか確認
-      # 最新のDockerイメージに latest のタグを付けGHCRにビルドしプッシュ
-      - name: Get commits with Dockerfile or compose.yaml changes and process each commit
+      # Dockerイメージと GHCRからプルしたイメージのハッシュを比較
+      # 差分があれ ばDockerイメージを GHCR にプッシュ
+      - name: Compare and Push Docker Image if Different
         run: |
-          HEAD=$(git rev-parse HEAD)
+          temp_hash=$(docker inspect --format='{{.Id}}' device_expansion-web)
+          ghcr_hash=$(docker inspect --format='{{.Id}}' ghcr.io/vinylhousegarage/device_expansion:latest || echo "")
 
-          git log --reverse --pretty=format:"%H" origin/main..HEAD -- Dockerfile compose.yaml > commit_list.txt
-          if [ ! -s commit_list.txt ]; then
-            echo "No commits with Dockerfile or compose.yaml changes found."
-            exit 0
-          fi
+          echo "Temp Image Hash: $temp_hash"
+          echo "GHCR Image Hash: $ghcr_hash"
 
-          set -e
-
-          echo "Commits to process: $(cat commit_list.txt)"
-          while IFS= read -r COMMIT; do
-            if docker manifest inspect ghcr.io/vinylhousegarage/device_expansion:$COMMIT > /dev/null 2>&1; then
-              echo "Image for commit $COMMIT already exists. Skipping build."
-              continue
-            fi
-
-            echo "Processing commit: $COMMIT with message: $(git log -1 --pretty=%B $COMMIT)"
-            docker build --cache-from ghcr.io/vinylhousegarage/device_expansion:latest \
-              -t ghcr.io/vinylhousegarage/device_expansion:$COMMIT .
-            docker push ghcr.io/vinylhousegarage/device_expansion:$COMMIT
-            LATEST_COMMIT=$COMMIT
-          done < commit_list.txt
-
-          # 最新のコミットに latest タグを付与
-          if [[ -n "$LATEST_COMMIT" ]]; then
-            docker tag ghcr.io/vinylhousegarage/device_expansion:$LATEST_COMMIT ghcr.io/vinylhousegarage/device_expansion:latest
+          if [ "$temp_hash" != "$ghcr_hash" ]; then
+            echo "Images differ. Proceeding to tag and push."
+            docker tag device_expansion-web ghcr.io/vinylhousegarage/device_expansion:latest
             docker push ghcr.io/vinylhousegarage/device_expansion:latest
+          else
+            echo "Images are identical. No push needed."
           fi
 
       # Ruby をセットアップ
@@ -207,15 +186,11 @@ jobs:
             echo "Seed data successfully inserted: $user_count users found."
           fi
 
-      # bin/rails への実行権限を付与
-      - name: Grant execute permission to bin/rails
-        run: chmod +x bin/rails
-
       # ルーティングを確認
       - name: Run Rails routes to check routing
         env:
           RAILS_ENV: test
-        run: bin/rails routes
+        run: bundle exec rails routes
 
       # テストを実行
       - name: Run tests
