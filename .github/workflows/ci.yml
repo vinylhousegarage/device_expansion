@@ -38,41 +38,38 @@ jobs:
         run: |
           echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      # GHCR から既存の Dockerイメージをプルしてキャッシュとして使用
+      # GHCR から最新の Dockerイメージをプル
       - name: Pull Docker image from GHCR
         run: docker pull ghcr.io/vinylhousegarage/device_expansion:latest || echo "No cached image found, continuing with fresh build"
 
-      # 稼働中のコンテナのイメージID を取得
-      - name: Get running container image ID
+      # プルリクエスト作成コミットの Dockerイメージを取得
+      - name: Build temporary Docker image
         run: |
-          docker ps --format "{{.Image}}" > running_image.txt
-
-      # GHCR のイメージハッシュを取得
-      - name: Get GHCR image hash
-        run: |
-          docker inspect --format='{{index .RepoDigests 0}}' ghcr.io/vinylhousegarage/device_expansion:latest > ghcr_image.txt
-
-      # イメージID とハッシュの比較
-      - name: Compare image hashes
-        run: |
-          running_image_id=$(cat running_image.txt)
-          ghcr_image_hash=$(cat ghcr_image.txt)
-          if [ "$running_image_id" == "$ghcr_image_hash" ]; then
-            echo "Running container uses the same image as GHCR"
-            exit 0
-          else
-            echo "Running container uses a different image from GHCR"
-          fi
-
-      # Dockerイメージを GHCR にビルドしプッシュ
-      - name: Build and push Docker image if different
-        run: |
-          set -eux
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          docker build -t ghcr.io/vinylhousegarage/device_expansion:$COMMIT_HASH .
-          docker push ghcr.io/vinylhousegarage/device_expansion:$COMMIT_HASH
-          docker tag ghcr.io/vinylhousegarage/device_expansion:$COMMIT_HASH ghcr.io/vinylhousegarage/device_expansion:latest
-          docker push ghcr.io/vinylhousegarage/device_expansion:latest
+          docker build -t temp-image:$COMMIT_HASH .
+
+      # GHCR の最新Dockerイメージとプルリクエスト作成コミットの Dockerイメージのハッシュを取得
+      - name: Get image hashes
+        run: |
+          temp_hash=$(docker inspect --format='{{index .Id}}' temp-image:$COMMIT_HASH)
+          ghcr_hash=$(docker inspect --format='{{index .Id}}' ghcr.io/vinylhousegarage/device_expansion:latest || echo "")
+
+          echo "Temporary Image Hash: $temp_hash"
+          echo "GHCR Image Hash: $ghcr_hash"
+
+      # ハッシュを比較
+      # 差分があった場合プルリクエスト作成コミットの Dockerイメージで GHCR を更新
+      - name: Compare and Push if Different
+        run: |
+          if [ "$temp_hash" != "$ghcr_hash" ]; then
+            echo "Images are different. Building and pushing new image."
+            docker tag temp-image:$COMMIT_HASH ghcr.io/vinylhousegarage/device_expansion:$COMMIT_HASH
+            docker push ghcr.io/vinylhousegarage/device_expansion:$COMMIT_HASH
+            docker tag temp-image:$COMMIT_HASH ghcr.io/vinylhousegarage/device_expansion:latest
+            docker push ghcr.io/vinylhousegarage/device_expansion:latest
+          else
+            echo "Images are identical. No need to push."
+          fi
 
       # Ruby をセットアップ
       - name: Set up Ruby
