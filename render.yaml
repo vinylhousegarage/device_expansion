@@ -5,4 +5,3 @@ services:
     plan: starter
     dockerfilePath: ./Dockerfile.production
     preDeployCommand: ./bin/render-build.sh
-    startCommand: bundle exec puma -C config/puma.rb
