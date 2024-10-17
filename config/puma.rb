@@ -4,7 +4,7 @@
 # the maximum value specified for Puma. Default is set to 5 threads for minimum
 # and maximum; this matches the default thread size of Active Record.
 #
-max_threads_count = ENV.fetch('RAILS_MAX_THREADS', 6)
+max_threads_count = ENV.fetch('RAILS_MAX_THREADS', 5)
 min_threads_count = ENV.fetch('RAILS_MIN_THREADS') { max_threads_count }
 threads min_threads_count, max_threads_count
 
@@ -37,7 +37,11 @@ workers ENV.fetch('WEB_CONCURRENCY', 2)
 # before forking the application. This takes advantage of Copy On Write
 # process behavior so workers use less memory.
 
-preload_app!
+# preload_app!
+
+on_worker_boot do
+  ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
+end
 
 stdout_redirect 'log/puma.stdout.log', 'log/puma.stderr.log', true if ENV.fetch('RAILS_ENV') == 'production'
 
