@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
 
     services:
       postgres:
@@ -93,6 +93,12 @@ jobs:
       # bin/rails に実行権限を付与
       - name: Grant execute permission to bin/rails
         run: chmod +x bin/rails
+
+      # 環境変数を設定
+      - name: Set environment variables
+        run: |
+          export TEST_USER=${{ secrets.POSTGRES_USER }}
+          export TEST_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
 
       # データベースのセットアップ
       - name: Run database setup
