@@ -4,6 +4,5 @@ services:
     env: docker
     plan: starter
     dockerfilePath: ./Dockerfile.production
-    dockerComposeYamlPath: ./docker-compose.production.yml
     preDeployCommand: ./bin/render-build.sh
     startCommand: bundle exec puma -C config/puma.rb
