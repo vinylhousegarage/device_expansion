@@ -42,38 +42,44 @@ jobs:
       - name: Pull Docker image from GHCR
         run: docker pull ghcr.io/vinylhousegarage/device_expansion:latest || echo "No cached image found, continuing with fresh build"
 
+      # HEAD の初期化
       # Dockerイメージ に差分があるコミットを commit_list.txt に抽出
+      # 同じコミットのイメージが既に存在する場合はスキップ
       # commit_list.txt のコミットIDを1行ずつ読み取り GHCR にビルドしプッシュ
       # 最新のコミットを変数LATEST_COMMIT に格納
       # 変数LATEST_COMMIT が空ではないか確認
       # 最新のDockerイメージに latest のタグを付けGHCRにビルドしプッシュ
       - name: Get commits with Dockerfile or compose.yaml changes and process each commit
         run: |
-          git log --reverse --pretty=format:"%H" $HEAD -- Dockerfile compose.yaml > commit_list.txt
+          HEAD=$(git rev-parse HEAD)
+
+          git log --reverse --pretty=format:"%H" origin/main..HEAD -- Dockerfile compose.yaml > commit_list.txt
           if [ ! -s commit_list.txt ]; then
             echo "No commits with Dockerfile or compose.yaml changes found."
             exit 0
           fi
 
           set -e
+
           echo "Commits to process: $(cat commit_list.txt)"
           while IFS= read -r COMMIT; do
+            if docker manifest inspect ghcr.io/vinylhousegarage/device_expansion:$COMMIT > /dev/null 2>&1; then
+              echo "Image for commit $COMMIT already exists. Skipping build."
+              continue
+            fi
+
             echo "Processing commit: $COMMIT with message: $(git log -1 --pretty=%B $COMMIT)"
             docker build --cache-from ghcr.io/vinylhousegarage/device_expansion:latest \
-            -t ghcr.io/vinylhousegarage/device_expansion:$COMMIT .
+              -t ghcr.io/vinylhousegarage/device_expansion:$COMMIT .
             docker push ghcr.io/vinylhousegarage/device_expansion:$COMMIT
             LATEST_COMMIT=$COMMIT
           done < commit_list.txt
 
+          # 最新のコミットに latest タグを付与
           if [[ -n "$LATEST_COMMIT" ]]; then
             docker tag ghcr.io/vinylhousegarage/device_expansion:$LATEST_COMMIT ghcr.io/vinylhousegarage/device_expansion:latest
             docker push ghcr.io/vinylhousegarage/device_expansion:latest
           fi
-
-
-
-
-
 
       # Ruby をセットアップ
       - name: Set up Ruby
