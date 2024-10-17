@@ -13,6 +13,8 @@
     "esbuild-rails": "^1.0.7"
   },
   "scripts": {
-    "build": "esbuild app/javascript/application.js --bundle --sourcemap --outdir=public/assets && esbuild app/assets/stylesheets/application.css --bundle --outdir=public/assets"
+    "build": "esbuild app/javascript/application.js --bundle --sourcemap --outdir=public/assets && esbuild app/assets/stylesheets/application.css --bundle --outdir=public/assets",
+    "dev": "esbuild app/javascript/application.js --bundle --sourcemap --watch --outdir=public/assets",
+    "build:production": "esbuild app/javascript/application.js --bundle --minify --outdir=public/assets && esbuild app/assets/stylesheets/application.css --bundle --minify --outdir=public/assets"
   }
 }
