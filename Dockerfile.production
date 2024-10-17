@@ -10,4 +10,3 @@ COPY . /app
 ENV RAILS_ENV production
 ENV PATH ./vendor/bundle/ruby/3.1.0/bin:$PATH
 EXPOSE 3000
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
