@@ -14,214 +14,99 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: postgres_db
+        ports:
+          - 5432:5432
+
     steps:
-      # リモートリポジトリをチェックアウト
+      # コードのチェックアウト
       - name: Check out the repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      # 実行中のユーザーを確認
-      - name: Check current user
-        run: whoami
+      # Docker Buildx のセットアップ
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      # ls -ld コマンドを実行して、ディレクトリの所有者とパーミッションを確認
-      - name: Check directory permissions and ownership
-        run: ls -ld /home/runner/work/device_expansion/device_expansion
+      # Dockerイメージをビルド
+      - name: Build Docker Image with Compose
+        run: docker compose build
 
-      # ディレクトリ内のパーミッションの確認
-      - name: Check permissions of all files
-        run: ls -lR /home/runner/work/device_expansion/device_expansion
+      # Dockerイメージ一覧を表示
+      - name: List Docker Images
+        run: docker images
 
       # GHCR にログイン
       - name: Log in to GitHub Container Registry
         run: |
           echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      # GHCRから既存のDockerイメージをプルしてキャッシュとして使用
-      - name: Pull Docker image from GHCR
-        run: docker pull ghcr.io/vinylhousegarage/device_expansion:latest || echo "No cached image found, continuing with fresh build"
+      # GHCRから最新のイメージをプル
+      - name: Pull latest image from GHCR
+        run: docker pull ghcr.io/vinylhousegarage/device_expansion:latest || echo "No cached image found."
 
-      # HEAD の初期化
-      # Dockerイメージ に差分があるコミットを commit_list.txt に抽出
-      # 同じコミットのイメージが既に存在する場合はスキップ
-      # commit_list.txt のコミットIDを1行ずつ読み取り GHCR にビルドしプッシュ
-      # 最新のコミットを変数LATEST_COMMIT に格納
-      # 変数LATEST_COMMIT が空ではないか確認
-      # 最新のDockerイメージに latest のタグを付けGHCRにビルドしプッシュ
-      - name: Get commits with Dockerfile or compose.yaml changes and process each commit
+      # イメージのハッシュを比較し、差分があればプッシュ
+      - name: Compare and Push Docker Image if Different
         run: |
-          HEAD=$(git rev-parse HEAD)
+          temp_hash=$(docker inspect --format='{{.Id}}' device_expansion_web)
+          ghcr_hash=$(docker inspect --format='{{.Id}}' ghcr.io/vinylhousegarage/device_expansion:latest || echo "")
 
-          git log --reverse --pretty=format:"%H" origin/main..HEAD -- Dockerfile compose.yaml > commit_list.txt
-          if [ ! -s commit_list.txt ]; then
-            echo "No commits with Dockerfile or compose.yaml changes found."
-            exit 0
-          fi
+          echo "Temp Image Hash: $temp_hash"
+          echo "GHCR Image Hash: $ghcr_hash"
 
-          set -e
-
-          echo "Commits to process: $(cat commit_list.txt)"
-          while IFS= read -r COMMIT; do
-            if docker manifest inspect ghcr.io/vinylhousegarage/device_expansion:$COMMIT > /dev/null 2>&1; then
-              echo "Image for commit $COMMIT already exists. Skipping build."
-              continue
-            fi
-
-            echo "Processing commit: $COMMIT with message: $(git log -1 --pretty=%B $COMMIT)"
-            docker build --cache-from ghcr.io/vinylhousegarage/device_expansion:latest \
-              -t ghcr.io/vinylhousegarage/device_expansion:$COMMIT .
-            docker push ghcr.io/vinylhousegarage/device_expansion:$COMMIT
-            LATEST_COMMIT=$COMMIT
-          done < commit_list.txt
-
-          # 最新のコミットに latest タグを付与
-          if [[ -n "$LATEST_COMMIT" ]]; then
-            docker tag ghcr.io/vinylhousegarage/device_expansion:$LATEST_COMMIT ghcr.io/vinylhousegarage/device_expansion:latest
+          if [ "$temp_hash" != "$ghcr_hash" ]; then
+            echo "Images differ. Proceeding to tag and push."
+            docker tag device_expansion_web ghcr.io/vinylhousegarage/device_expansion:latest
             docker push ghcr.io/vinylhousegarage/device_expansion:latest
+          else
+            echo "Images are identical. No push needed."
           fi
 
-      # Ruby をセットアップ
+      # Rubyをセットアップ
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1.0
 
-      # Gem のキャッシュを利用してビルドを高速化
+      # Gemのキャッシュを利用
       - name: Cache gems
         uses: actions/cache@v3
         with:
           path: vendor/bundle
           key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-v1
           restore-keys: |
-            ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-v1
             ${{ runner.os }}-gems-v1
 
-      # PostgreSQL 関連のライブラリと gem をインストール
+      # 依存関係のインストール
       - name: Install dependencies
         run: |
-          set -e
-          sudo apt-get update
-          sudo apt-get install -y libpq-dev || echo "Failed to install libpq-dev"
           bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
 
-      # RuboCop を実行してコードスタイルを検証
-      - name: Run RuboCop (Lint check)
-        run: bundle exec rubocop --config .rubocop.yml --fail-level W
-
-      # PostgreSQL と postgresql-client を 14 でインストール
-      - name: Install PostgreSQL 14 and client tools
-        run: |
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-          sudo apt-get update
-          sudo apt-get install -y postgresql-14 postgresql-client-14
-          sudo service postgresql start
-
-      # 最大60秒間 PostgreSQL の応答を確認
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          for i in {1..12}; do
-            if pg_isready -h localhost -p 5432; then
-              echo "PostgreSQL is ready!"
-              exit 0
-            fi
-            echo "Waiting for PostgreSQL to be ready... Attempt $i at $(date)"
-            sleep 5
-          done
-          echo "PostgreSQL did not become ready in time."
-          exit 1
-
-      # ユーザーロールをセットアップ
-      - name: Set up pg_role
-        run: |
-          if ! sudo -u postgres psql -tc "SELECT 1 FROM pg_roles WHERE rolname='${{ secrets.POSTGRES_USER }}'" | grep -q 1; then
-            sudo -u postgres psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" || exit 1
-          fi
-
-      # スーパーユーザー権限を付与
-      - name: Grant superuser privileges to the PostgreSQL user
-        run: |
-          if ! sudo -u postgres psql -tc "SELECT rolsuper FROM pg_roles WHERE rolname = '${{ secrets.POSTGRES_USER }}' AND rolsuper = 't'" | grep -q 1; then
-            sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH SUPERUSER;" || exit 1
-          fi
-
-      # データベースの有無を確認
-      - name: List all databases with expanded output
-        run: |
-          echo "Listing all databases in expanded mode:"
-          sudo -u postgres psql -c "\l"
-
-      # デーベースの名前を確認
-      - name: List all database names
-        run: |
-          echo "Listing all database names in PostgreSQL:"
-          sudo -u postgres psql -c "SELECT datname FROM pg_database;"
-
-      # POSTGRES_DB を生成
-      - name: Run database create
+      # データベースのマイグレーションとシード
+      - name: Run database setup
         env:
-          TEST_DB: postgres_db
-          TEST_USER: ${{ secrets.POSTGRES_USER }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        run: bundle exec rails db:create RAILS_ENV=test
-
-      # POSTGRES_DB の生成を確認
-      - name: List all databases with expanded output
+          RAILS_ENV: test
         run: |
-          echo "Listing all databases in expanded mode:"
-          sudo -u postgres psql -c "\l"
-
-      # POSTGRES_DB をマイグレート
-      - name: Run database migrations
-        env:
-          TEST_DB: postgres_db
-          TEST_USER: ${{ secrets.POSTGRES_USER }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        run: bundle exec rails db:migrate RAILS_ENV=test
+          bin/rails db:create
+          bin/rails db:migrate
+          bin/rails db:seed
 
       # マイグレーション履歴を確認
       - name: Check applied migrations
         run: |
           echo "Checking applied migrations..."
-          sudo -u postgres psql -d postgres_db -c "SELECT * FROM schema_migrations;"
-
-      # マイグレートした POSTGRES_DB に初期データを挿入
-      - name: Run Seed the test database
-        env:
-          TEST_DB: postgres_db
-          TEST_USER: ${{ secrets.POSTGRES_USER }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        run: bundle exec rails db:seed RAILS_ENV=test
-
-      # 初期データ挿入の成否を確認
-      - name: Check if seed data was inserted
-        run: |
-          echo "Checking if users are inserted into the test database..."
-          user_count=$(sudo -u postgres psql -d postgres_db -tAc "SELECT COUNT(*) FROM users;")
-          if [ "$user_count" -eq 0 ]; then
-            echo "Error: No users found in the test database. Seed data was not inserted correctly."
-            exit 1
-          else
-            echo "Seed data successfully inserted: $user_count users found."
-          fi
-
-      # bin/rails への実行権限を付与
-      - name: Grant execute permission to bin/rails
-        run: chmod +x bin/rails
-
-      # ルーティングを確認
-      - name: Run Rails routes to check routing
-        env:
-          RAILS_ENV: test
-        run: bin/rails routes
+          bin/rails db:migrate:status
 
       # テストを実行
       - name: Run tests
         env:
-          TEST_DB: postgres_db
-          TEST_USER: ${{ secrets.POSTGRES_USER }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           RAILS_ENV: test
-        run: bundle exec rails test
+        run: bin/rails test
