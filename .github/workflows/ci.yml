@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       # リモートリポジトリをチェックアウト
@@ -38,38 +38,42 @@ jobs:
         run: |
           echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      # GHCR から最新の Dockerイメージをプル
+      # GHCRから既存のDockerイメージをプルしてキャッシュとして使用
       - name: Pull Docker image from GHCR
         run: docker pull ghcr.io/vinylhousegarage/device_expansion:latest || echo "No cached image found, continuing with fresh build"
 
-      # プルリクエスト作成コミットの Dockerイメージを取得
-      - name: Build temporary Docker image
+      # Dockerイメージ に差分があるコミットを commit_list.txt に抽出
+      # commit_list.txt のコミットIDを1行ずつ読み取り GHCR にビルドしプッシュ
+      # 最新のコミットを変数LATEST_COMMIT に格納
+      # 変数LATEST_COMMIT が空ではないか確認
+      # 最新のDockerイメージに latest のタグを付けGHCRにビルドしプッシュ
+      - name: Get commits with Dockerfile or compose.yaml changes and process each commit
         run: |
-          COMMIT_HASH=$(git rev-parse --short HEAD)
-          docker build -t temp-image:$COMMIT_HASH .
-
-      # GHCR の最新Dockerイメージとプルリクエスト作成コミットの Dockerイメージのハッシュを取得
-      - name: Get image hashes
-        run: |
-          temp_hash=$(docker inspect --format='{{index .Id}}' temp-image:$COMMIT_HASH)
-          ghcr_hash=$(docker inspect --format='{{index .Id}}' ghcr.io/vinylhousegarage/device_expansion:latest || echo "")
-
-          echo "Temporary Image Hash: $temp_hash"
-          echo "GHCR Image Hash: $ghcr_hash"
-
-      # ハッシュを比較
-      # 差分があった場合プルリクエスト作成コミットの Dockerイメージで GHCR を更新
-      - name: Compare and Push if Different
-        run: |
-          if [ "$temp_hash" != "$ghcr_hash" ]; then
-            echo "Images are different. Building and pushing new image."
-            docker tag temp-image:$COMMIT_HASH ghcr.io/vinylhousegarage/device_expansion:$COMMIT_HASH
-            docker push ghcr.io/vinylhousegarage/device_expansion:$COMMIT_HASH
-            docker tag temp-image:$COMMIT_HASH ghcr.io/vinylhousegarage/device_expansion:latest
-            docker push ghcr.io/vinylhousegarage/device_expansion:latest
-          else
-            echo "Images are identical. No need to push."
+          git log --reverse --pretty=format:"%H" $HEAD -- Dockerfile compose.yaml > commit_list.txt
+          if [ ! -s commit_list.txt ]; then
+            echo "No commits with Dockerfile or compose.yaml changes found."
+            exit 0
           fi
+
+          set -e
+          echo "Commits to process: $(cat commit_list.txt)"
+          while IFS= read -r COMMIT; do
+            echo "Processing commit: $COMMIT with message: $(git log -1 --pretty=%B $COMMIT)"
+            docker build --cache-from ghcr.io/vinylhousegarage/device_expansion:latest \
+            -t ghcr.io/vinylhousegarage/device_expansion:$COMMIT .
+            docker push ghcr.io/vinylhousegarage/device_expansion:$COMMIT
+            LATEST_COMMIT=$COMMIT
+          done < commit_list.txt
+
+          if [[ -n "$LATEST_COMMIT" ]]; then
+            docker tag ghcr.io/vinylhousegarage/device_expansion:$LATEST_COMMIT ghcr.io/vinylhousegarage/device_expansion:latest
+            docker push ghcr.io/vinylhousegarage/device_expansion:latest
+          fi
+
+
+
+
+
 
       # Ruby をセットアップ
       - name: Set up Ruby
@@ -92,7 +96,7 @@ jobs:
         run: |
           set -e
           sudo apt-get update
-          sudo apt-get install -y libpq-dev
+          sudo apt-get install -y libpq-dev || echo "Failed to install libpq-dev"
           bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
 
