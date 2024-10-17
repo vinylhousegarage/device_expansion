@@ -55,7 +55,7 @@ jobs:
       # イメージのハッシュを比較し、差分があればプッシュ
       - name: Compare and Push Docker Image if Different
         run: |
-          temp_hash=$(docker inspect --format='{{.Id}}' device_expansion_web)
+          temp_hash=$(docker inspect --format='{{.Id}}' device_expansion-web)
           ghcr_hash=$(docker inspect --format='{{.Id}}' ghcr.io/vinylhousegarage/device_expansion:latest || echo "")
 
           echo "Temp Image Hash: $temp_hash"
@@ -63,7 +63,7 @@ jobs:
 
           if [ "$temp_hash" != "$ghcr_hash" ]; then
             echo "Images differ. Proceeding to tag and push."
-            docker tag device_expansion_web ghcr.io/vinylhousegarage/device_expansion:latest
+            docker tag device_expansion-web ghcr.io/vinylhousegarage/device_expansion:latest
             docker push ghcr.io/vinylhousegarage/device_expansion:latest
           else
             echo "Images are identical. No push needed."
