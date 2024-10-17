@@ -14,16 +14,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
-    services:
-      postgres:
-        image: postgres:14
-        env:
-          TEST_DB: postgres_db
-          TEST_USER: ${{ secrets.POSTGRES_USER }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        ports:
-          - 5432:5432
-
     steps:
       # コードのチェックアウト
       - name: Check out the repository
@@ -70,54 +60,143 @@ jobs:
             echo "Images are identical. No push needed."
           fi
 
-      # Rubyをセットアップ
+      # Ruby をセットアップ
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.1.0
 
-      # Gemのキャッシュを利用
+      # Gem のキャッシュを利用してビルドを高速化
       - name: Cache gems
         uses: actions/cache@v3
         with:
           path: vendor/bundle
           key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-v1
           restore-keys: |
+            ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-v1
             ${{ runner.os }}-gems-v1
 
-      # 依存関係のインストール
+      # PostgreSQL 関連のライブラリと gem をインストール
       - name: Install dependencies
         run: |
+          set -e
+          sudo apt-get update
+          sudo apt-get install -y libpq-dev || echo "Failed to install libpq-dev"
           bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
 
-      # bin/rails に実行権限を付与
-      - name: Grant execute permission to bin/rails
-        run: chmod +x bin/rails
+      # RuboCop を実行してコードスタイルを検証
+      - name: Run RuboCop (Lint check)
+        run: bundle exec rubocop --config .rubocop.yml --fail-level W
 
-      # 環境変数を設定
-      - name: Set environment variables
+      # PostgreSQL と postgresql-client を 14 でインストール
+      - name: Install PostgreSQL 14 and client tools
         run: |
-          export TEST_USER=${{ secrets.POSTGRES_USER }}
-          export TEST_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install -y postgresql-14 postgresql-client-14
+          sudo service postgresql start
 
-      # データベースのセットアップ
-      - name: Run database setup
+      # 最大60秒間 PostgreSQL の応答を確認
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..12}; do
+            if pg_isready -h localhost -p 5432; then
+              echo "PostgreSQL is ready!"
+              exit 0
+            fi
+            echo "Waiting for PostgreSQL to be ready... Attempt $i at $(date)"
+            sleep 5
+          done
+          echo "PostgreSQL did not become ready in time."
+          exit 1
+
+      # ユーザーロールをセットアップ
+      - name: Set up pg_role
+        run: |
+          if ! sudo -u postgres psql -tc "SELECT 1 FROM pg_roles WHERE rolname='${{ secrets.POSTGRES_USER }}'" | grep -q 1; then
+            sudo -u postgres psql -c "CREATE USER ${{ secrets.POSTGRES_USER }} WITH PASSWORD '${{ secrets.POSTGRES_PASSWORD }}';" || exit 1
+          fi
+
+      # スーパーユーザー権限を付与
+      - name: Grant superuser privileges to the PostgreSQL user
+        run: |
+          if ! sudo -u postgres psql -tc "SELECT rolsuper FROM pg_roles WHERE rolname = '${{ secrets.POSTGRES_USER }}' AND rolsuper = 't'" | grep -q 1; then
+            sudo -u postgres psql -c "ALTER USER ${{ secrets.POSTGRES_USER }} WITH SUPERUSER;" || exit 1
+          fi
+
+      # データベースの有無を確認
+      - name: List all databases with expanded output
+        run: |
+          echo "Listing all databases in expanded mode:"
+          sudo -u postgres psql -c "\l"
+
+      # デーベースの名前を確認
+      - name: List all database names
+        run: |
+          echo "Listing all database names in PostgreSQL:"
+          sudo -u postgres psql -c "SELECT datname FROM pg_database;"
+
+      # POSTGRES_DB を生成
+      - name: Run database create
         env:
-          RAILS_ENV: test
+          TEST_DB: postgres_db
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: bundle exec rails db:create RAILS_ENV=test
+
+      # POSTGRES_DB の生成を確認
+      - name: List all databases with expanded output
         run: |
-          bin/rails db:create
-          bin/rails db:migrate
-          bin/rails db:seed
+          echo "Listing all databases in expanded mode:"
+          sudo -u postgres psql -c "\l"
+
+      # POSTGRES_DB をマイグレート
+      - name: Run database migrations
+        env:
+          TEST_DB: postgres_db
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: bundle exec rails db:migrate RAILS_ENV=test
 
       # マイグレーション履歴を確認
       - name: Check applied migrations
         run: |
           echo "Checking applied migrations..."
-          bin/rails db:migrate:status
+          sudo -u postgres psql -d postgres_db -c "SELECT * FROM schema_migrations;"
+
+      # マイグレートした POSTGRES_DB に初期データを挿入
+      - name: Run Seed the test database
+        env:
+          TEST_DB: postgres_db
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: bundle exec rails db:seed RAILS_ENV=test
+
+      # 初期データ挿入の成否を確認
+      - name: Check if seed data was inserted
+        run: |
+          echo "Checking if users are inserted into the test database..."
+          user_count=$(sudo -u postgres psql -d postgres_db -tAc "SELECT COUNT(*) FROM users;")
+          if [ "$user_count" -eq 0 ]; then
+            echo "Error: No users found in the test database. Seed data was not inserted correctly."
+            exit 1
+          else
+            echo "Seed data successfully inserted: $user_count users found."
+          fi
+
+      # ルーティングを確認
+      - name: Run Rails routes to check routing
+        env:
+          RAILS_ENV: test
+        run: bundle exec rails routes
 
       # テストを実行
       - name: Run tests
         env:
+          TEST_DB: postgres_db
+          TEST_USER: ${{ secrets.POSTGRES_USER }}
+          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           RAILS_ENV: test
-        run: bin/rails test
+        run: bundle exec rails test
