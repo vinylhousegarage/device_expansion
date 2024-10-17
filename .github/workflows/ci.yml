@@ -67,6 +67,7 @@ jobs:
       # Dockerイメージを GHCR にビルドしプッシュ
       - name: Build and push Docker image if different
         run: |
+          set -eux
           COMMIT_HASH=$(git rev-parse --short HEAD)
           docker build -t ghcr.io/vinylhousegarage/device_expansion:$COMMIT_HASH .
           docker push ghcr.io/vinylhousegarage/device_expansion:$COMMIT_HASH
