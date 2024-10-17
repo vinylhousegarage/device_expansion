@@ -90,7 +90,11 @@ jobs:
           bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
 
-      # データベースのマイグレーションとシード
+      # bin/rails に実行権限を付与
+      - name: Grant execute permission to bin/rails
+        run: chmod +x bin/rails
+
+      # データベースのセットアップ
       - name: Run database setup
         env:
           RAILS_ENV: test
