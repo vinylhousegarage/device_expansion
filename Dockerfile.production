@@ -13,6 +13,8 @@ RUN bundle config set path 'vendor/bundle' \
 COPY package.json yarn.lock ./
 ENV NODE_ENV=production
 RUN yarn install --check-files
+COPY bin/render-build.sh /usr/bin/render-build.sh
+RUN chmod +x /usr/bin/render-build.sh
 COPY . .
 ENV RAILS_ENV production
 ENV PATH ./vendor/bundle/ruby/3.1.0/bin:$PATH
