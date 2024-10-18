@@ -10,11 +10,16 @@
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.10",
     "esbuild": "^0.24.0",
-    "esbuild-rails": "^1.0.7"
+    "esbuild-rails": "^1.0.7",
+    "npm": "^10.9.0",
+    "yarn": "^1.22.22"
   },
-"scripts": {
-  "build": "esbuild app/javascript/application.js --bundle --sourcemap --outdir=public/assets && esbuild app/assets/stylesheets/application.css --bundle --loader=css --outdir=public/assets",
-  "dev": "esbuild app/javascript/application.js --bundle --sourcemap --watch --outdir=public/assets",
-  "build:production": "cross-env NODE_ENV=production esbuild app/javascript/application.js --bundle --minify --outdir=public/assets && cross-env NODE_ENV=production esbuild app/assets/stylesheets/application.css --bundle --minify --outdir=public/assets"
-}
+  "scripts": {
+    "build": "esbuild app/javascript/application.js --bundle --sourcemap --outdir=public/assets && cat app/assets/stylesheets/application.css | esbuild --bundle --loader=css --outfile=public/assets/application.css",
+    "dev": "esbuild app/javascript/application.js --bundle --sourcemap --watch --outdir=public/assets",
+    "build:production": "cross-env NODE_ENV=production esbuild app/javascript/application.js --bundle --minify --outdir=public/assets && cat app/assets/stylesheets/application.css | esbuild --bundle --loader=css --minify --outfile=public/assets/application.css"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  }
 }
