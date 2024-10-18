@@ -12,9 +12,9 @@
     "esbuild": "^0.24.0",
     "esbuild-rails": "^1.0.7"
   },
-  "scripts": {
-    "build": "esbuild app/javascript/application.js --bundle --sourcemap --outdir=public/assets && esbuild app/assets/stylesheets/application.css --bundle --outdir=public/assets",
-    "dev": "esbuild app/javascript/application.js --bundle --sourcemap --watch --outdir=public/assets",
-    "build:production": "esbuild app/javascript/application.js --bundle --minify --outdir=public/assets && esbuild app/assets/stylesheets/application.css --bundle --minify --outdir=public/assets"
-  }
+"scripts": {
+  "build": "esbuild app/javascript/application.js --bundle --sourcemap --outdir=public/assets && esbuild app/assets/stylesheets/application.css --bundle --loader=css --outdir=public/assets",
+  "dev": "esbuild app/javascript/application.js --bundle --sourcemap --watch --outdir=public/assets",
+  "build:production": "cross-env NODE_ENV=production esbuild app/javascript/application.js --bundle --minify --outdir=public/assets && cross-env NODE_ENV=production esbuild app/assets/stylesheets/application.css --bundle --minify --outdir=public/assets"
+}
 }
