@@ -1,12 +1,20 @@
 FROM ruby:3.1.0
-RUN apt-get update -qq && apt-get install -y \
-    libpq-dev postgresql-client curl \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends build-essential libpq-dev curl postgresql-client && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    apt-get remove --purge -y build-essential
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install yarn@1.22.22
 WORKDIR /app
-COPY Gemfile Gemfile.lock /app/
-RUN bundle config set path 'vendor/bundle' \
-    && bundle install --jobs 4 --retry 3
-COPY . /app
+COPY Gemfile Gemfile.lock ./
+RUN bundle config set path 'vendor/bundle' && \
+    bundle install --jobs 4 --retry 3
+COPY package.json yarn.lock ./
+RUN yarn install --check-files && yarn build
+COPY . .
+COPY bin/entrypoint.sh /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/entrypoint.sh
 ENV PATH ./vendor/bundle/ruby/3.1.0/bin:$PATH
 EXPOSE 3000
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+ENTRYPOINT ["entrypoint.sh"]
