@@ -4,6 +4,4 @@
 log
 tmp
 
-node_modules
-
 *.md
