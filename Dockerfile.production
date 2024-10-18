@@ -11,6 +11,7 @@ COPY Gemfile Gemfile.lock ./
 RUN bundle config set path 'vendor/bundle' \
     && bundle install --jobs 4 --retry 3
 COPY package.json yarn.lock ./
+ENV NODE_ENV=production
 RUN yarn install --check-files
 COPY . .
 ENV RAILS_ENV production
