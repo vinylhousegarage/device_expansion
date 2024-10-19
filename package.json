@@ -16,7 +16,7 @@
   "scripts": {
     "build": "yarn build:js && yarn build:css",
     "build:js": "esbuild ./app/javascript/application.js --bundle --sourcemap --outdir=public/assets",
-    "build:css": "esbuild ./app/assets/stylesheets/application.css --bundle --loader=css --outfile=public/assets/application.css",
+    "build:css": "esbuild ./app/assets/stylesheets/application.css --bundle --outfile=public/assets/application.css",
     "dev": "esbuild ./app/javascript/application.js --bundle --sourcemap --watch --outdir=public/assets",
     "build:production": "cross-env NODE_ENV=production yarn build"
   },
