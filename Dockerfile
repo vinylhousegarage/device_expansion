@@ -28,6 +28,10 @@ RUN bundle config set path 'vendor/bundle' && \
     bundle install --jobs 4 --retry 3
 
 COPY package.json yarn.lock ./
+
+RUN yarn remove npm && \
+    yarn add esbuild@0.19.3
+
 RUN yarn install --check-files && yarn build
 
 COPY . .
