@@ -7,6 +7,10 @@ RUN apt-get update -qq && \
         curl \
         postgresql-client \
         gnupg && \
+    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm cache clean --force && \
+    rm -rf /root/.npm /root/.config /root/.cache && \
     curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | \
         gpg --dearmor -o /usr/share/keyrings/yarn-archive-keyring.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/yarn-archive-keyring.gpg] https://dl.yarnpkg.com/debian/ stable main" | \
