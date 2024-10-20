@@ -1,17 +1,10 @@
 #!/usr/bin/env bash
 set -o errexit
 
-echo "Running bundle install..."
-bundle install
-
-echo "Running yarn install..."
-yarn install
-
-echo "Adding esbuild..."
-yarn add esbuild
+export NODE_ENV=production
 
 echo "Building assets..."
-yarn build
+yarn build:production
 
 echo "Precompiling assets..."
 bundle exec rails assets:precompile
