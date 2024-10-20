@@ -1,9 +1,6 @@
 .git
 .gitignore
-
+node_modules
 log
 tmp
-
-node_modules
-
 *.md
