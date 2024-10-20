@@ -28,6 +28,7 @@ ENV RAILS_ENV=production
 COPY package.json yarn.lock ./
 RUN yarn install --check-files
 COPY . .
+RUN chmod +x bin/rails
 RUN bin/rails importmap:install
 COPY bin/entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh
