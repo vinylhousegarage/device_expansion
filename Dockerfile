@@ -19,6 +19,7 @@ RUN apt-get update -qq && \
     apt-mark hold yarn && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+RUN mkdir -p /app/tmp/pids
 WORKDIR /app
 COPY Gemfile Gemfile.lock ./
 RUN bundle config set path 'vendor/bundle' && \
@@ -31,8 +32,10 @@ RUN yarn build
 COPY bin/entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh
 ENV PATH="./vendor/bundle/ruby/3.1.0/bin:$PATH"
+ENV RAILS_ENV=development
 EXPOSE 3000
 RUN apt-get remove --purge -y build-essential && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/entrypoint.sh"]
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
