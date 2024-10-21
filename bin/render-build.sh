@@ -4,6 +4,9 @@ set -o errexit
 export NODE_ENV=production
 export SECRET_KEY_BASE=${SECRET_KEY_BASE}
 
+echo "Installing Ruby gems..."
+bundle install --without development test || { echo "Bundle install failed"; exit 1; }
+
 echo "Installing importmap..."
 bin/rails importmap:install
 
