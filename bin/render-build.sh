@@ -10,6 +10,10 @@ bin/rails importmap:install
 echo "Building assets..."
 yarn build
 
+echo "Preparing public/assets directory..."
+mkdir -p public/assets
+cp -r app/assets/builds/* public/assets/
+
 echo "Precompiling assets..."
 bundle exec rails assets:precompile
 
