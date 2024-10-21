@@ -22,14 +22,13 @@ RUN apt-get update -qq && \
 WORKDIR /app
 COPY Gemfile Gemfile.lock ./
 RUN bundle config set path 'vendor/bundle' && \
-    bundle install --jobs 4 --retry 3
+    bundle install --without development test --jobs 4 --retry 3
 ENV NODE_ENV=production
 ENV RAILS_ENV=production
 COPY package.json yarn.lock ./
 RUN yarn install --check-files
 COPY . .
-COPY bin/entrypoint.sh /usr/bin/entrypoint.sh
-RUN chmod +x bin/rails && chmod +x bin/entrypoint.sh
+RUN chmod +x bin/rails
 ENV PATH="./vendor/bundle/ruby/3.1.0/bin:$PATH"
 EXPOSE 3000
 RUN apt-get remove --purge -y build-essential && \
