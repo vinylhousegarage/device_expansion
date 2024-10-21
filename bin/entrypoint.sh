@@ -1,14 +1,24 @@
 #!/usr/bin/env bash
-set -o errexit  # エラーが発生したら即座に終了
+set -o errexit
 
-echo "Running database creation..."
-bundle exec rails db:create RAILS_ENV=development || echo "Database already exists, skipping creation."
+if [ -f tmp/pids/server.pid ]; then
+  echo "Removing old PID file..."
+  rm -f tmp/pids/server.pid
+fi
 
-echo "Running database migrations..."
-bundle exec rails db:migrate
+if [ "$RAILS_ENV" == "development" ]; then
+  echo "Running database creation..."
+  bundle exec rails db:create || echo "Database already exists, skipping creation."
 
-echo "Seeding the database..."
-bundle exec rails db:seed
+  echo "Running database migrations..."
+  bundle exec rails db:migrate
 
-echo "Starting Puma server..."
-exec bundle exec puma -C config/puma.rb
+  echo "Seeding the database..."
+  bundle exec rails db:seed
+
+  echo "Starting Puma server for development..."
+  exec bundle exec puma -C config/puma.rb
+else
+  echo "Starting Puma server for production..."
+  exec "$@"
+fi
