@@ -43,7 +43,5 @@ on_worker_boot do
   ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
 end
 
-stdout_redirect 'log/puma.stdout.log', 'log/puma.stderr.log', true if ENV.fetch('RAILS_ENV') == 'production'
-
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart

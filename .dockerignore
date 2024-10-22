@@ -2,5 +2,6 @@
 .gitignore
 node_modules
 log
+!log/.keep
 tmp
 *.md
