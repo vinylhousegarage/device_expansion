@@ -4,3 +4,7 @@
 require_relative 'config/application'
 
 Rails.application.load_tasks
+
+if Rake::Task.task_defined?("assets:precompile")
+  Rake::Task["assets:precompile"].clear
+end
