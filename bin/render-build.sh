@@ -17,9 +17,8 @@ bin/rails importmap:install
 echo "Building assets..."
 yarn build
 
-echo "Preparing public/assets directory..."
-mkdir -p public/assets
-cp -r app/assets/builds/* public/assets/
+echo "Compiling assets..."
+bundle exec rails assets:precompile
 
 echo "Running database migrations..."
 bundle exec rails db:migrate
