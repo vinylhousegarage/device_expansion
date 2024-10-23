@@ -159,7 +159,6 @@ jobs:
 
       # POSTGRES_DB をマイグレート
       - name: Run database migrations
-        env:
         run: bundle exec rails db:migrate
 
       # マイグレーション履歴を確認
@@ -186,8 +185,6 @@ jobs:
 
       # ルーティングを確認
       - name: Run Rails routes to check routing
-        env:
-          RAILS_ENV: test
         run: bundle exec rails routes
 
       # アセットをプリコンパイル
