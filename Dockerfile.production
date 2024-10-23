@@ -26,9 +26,9 @@ RUN bundle config set path 'vendor/bundle' && \
 COPY package.json yarn.lock ./
 RUN yarn install --check-files
 COPY . .
-RUN mkdir -p tmp/pids && \
-    chmod +x bin/rails && \
-    chmod +x bin/entrypoint.sh
+RUN mkdir -p public/assets tmp/pids && \
+    chmod -R 755 public/assets && \
+    chmod +x bin/rails bin/entrypoint.sh
 ENV NODE_ENV=production
 ENV RAILS_ENV=production
 ENV PATH="./vendor/bundle/ruby/3.1.0/bin:$PATH"
