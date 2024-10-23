@@ -22,6 +22,9 @@ Rails.application.configure do
     'Cache-Control' => "public, max-age=#{1.hour.to_i}"
   }
 
+  config.public_file_server.enabled = true
+  config.assets.compile = true
+  config.assets.digest = true
   config.assets.precompile += %w( application.css application.js )
 
   # Show full error reports and disable caching.
