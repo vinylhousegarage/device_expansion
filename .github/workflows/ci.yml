@@ -12,6 +12,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      TEST_DB: postgres_db
+      TEST_USER: ${{ secrets.POSTGRES_USER }}
+      TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      RAILS_ENV: test
     timeout-minutes: 30
 
     steps:
@@ -144,11 +149,7 @@ jobs:
 
       # POSTGRES_DB を生成
       - name: Run database create
-        env:
-          TEST_DB: postgres_db
-          TEST_USER: ${{ secrets.POSTGRES_USER }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        run: bundle exec rails db:create RAILS_ENV=test
+        run: bundle exec rails db:create
 
       # POSTGRES_DB の生成を確認
       - name: List all databases with expanded output
@@ -159,10 +160,7 @@ jobs:
       # POSTGRES_DB をマイグレート
       - name: Run database migrations
         env:
-          TEST_DB: postgres_db
-          TEST_USER: ${{ secrets.POSTGRES_USER }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        run: bundle exec rails db:migrate RAILS_ENV=test
+        run: bundle exec rails db:migrate
 
       # マイグレーション履歴を確認
       - name: Check applied migrations
@@ -172,11 +170,7 @@ jobs:
 
       # マイグレートした POSTGRES_DB に初期データを挿入
       - name: Run Seed the test database
-        env:
-          TEST_DB: postgres_db
-          TEST_USER: ${{ secrets.POSTGRES_USER }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        run: bundle exec rails db:seed RAILS_ENV=test
+        run: bundle exec rails db:seed
 
       # 初期データ挿入の成否を確認
       - name: Check if seed data was inserted
@@ -190,19 +184,17 @@ jobs:
             echo "Seed data successfully inserted: $user_count users found."
           fi
 
-      # ルーティングを確認
+      # アセットをプリコンパイル
       - name: Run Rails routes to check routing
         env:
           RAILS_ENV: test
         run: bundle exec rails routes
 
+      - name: Precompile assets
+        run: bundle exec rails assets:precompile
+
       # テストを実行
       - name: Run tests
-        env:
-          TEST_DB: postgres_db
-          TEST_USER: ${{ secrets.POSTGRES_USER }}
-          TEST_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          RAILS_ENV: test
         run: bundle exec rails test
 
   deploy:
