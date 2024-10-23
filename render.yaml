@@ -5,6 +5,7 @@ services:
     plan: starter
     dockerfilePath: ./Dockerfile.production
     preDeployCommand: |
+      #!/bin/bash
       export NODE_ENV=production
       export SECRET_KEY_BASE=${SECRET_KEY_BASE}
 
