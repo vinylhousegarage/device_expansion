@@ -5,7 +5,7 @@ services:
     plan: starter
     dockerfilePath: ./Dockerfile.production
     preDeployCommand: |
-      test -f tmp/pids/server.pid && rm -f tmp/pids/server.pid
+      sh -c 'test -f tmp/pids/server.pid && rm -f tmp/pids/server.pid'
 
       echo "Installing Ruby gems..."
       NODE_ENV=production SECRET_KEY_BASE=${SECRET_KEY_BASE} bundle install --jobs 4 --retry 3 || { echo "Bundle install failed"; exit 1; }
