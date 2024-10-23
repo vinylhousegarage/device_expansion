@@ -36,4 +36,4 @@ EXPOSE 3000
 RUN apt-get remove --purge -y build-essential && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+CMD rm -f tmp/pids/server.pid && bundle exec puma -C config/puma.rb
