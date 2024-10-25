@@ -164,6 +164,10 @@ jobs:
         with:
           fetch-depth: 0
 
+      # 実行権限を付与
+      - name: Add Permissions
+        run: chmod +x bin/rails
+
       # Dockerイメージをビルド
       - name: Build Docker Image with Compose
         run: docker compose build
