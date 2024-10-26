@@ -1,5 +1,5 @@
 # lib/tasks/assets.rake
-namespace :assets do
+namespace :custom_assets do
   desc "Precompile assets using esbuild"
   task :precompile do
     puts "Running esbuild for assets..."
