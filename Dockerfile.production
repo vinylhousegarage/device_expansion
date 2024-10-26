@@ -29,7 +29,7 @@ COPY . .
 RUN mkdir -p public/assets tmp/pids && \
     chmod -R 775 public/assets
 RUN yarn build
-COPY app/assets/builds/. public/assets
+RUN bundle exec rails assets:precompile
 ENV NODE_ENV=production
 ENV RAILS_ENV=production
 ENV PATH="./vendor/bundle/ruby/3.1.0/bin:$PATH"
