@@ -28,6 +28,7 @@ RUN yarn install --check-files
 COPY . .
 RUN mkdir -p public/assets tmp/pids && \
     chmod -R 775 public/assets
+RUN yarn build
 COPY app/assets/builds/. public/assets
 ENV NODE_ENV=production
 ENV RAILS_ENV=production
