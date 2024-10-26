@@ -27,9 +27,7 @@ COPY package.json yarn.lock ./
 RUN yarn install --check-files
 COPY . .
 RUN mkdir -p public/assets tmp/pids && \
-    chmod -R 775 public/assets && \
-    chmod +x bin/rails
-RUN bin/rails importmap:install
+    chmod -R 775 public/assets
 RUN yarn build
 COPY app/assets/builds/. public/assets
 ENV NODE_ENV=production

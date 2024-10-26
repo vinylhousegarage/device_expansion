@@ -27,7 +27,6 @@ RUN bundle config set path 'vendor/bundle' && \
 COPY package.json yarn.lock ./
 RUN yarn install --check-files
 COPY . .
-RUN bin/rails importmap:install
 RUN yarn build
 COPY bin/entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh
