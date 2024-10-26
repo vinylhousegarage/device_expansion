@@ -2,8 +2,14 @@ import { Turbo } from "@hotwired/turbo-rails";
 Turbo.start();
 
 import { Application } from "@hotwired/stimulus";
-import { definitionsFromContext } from "@hotwired/stimulus-loading";
 
 const application = Application.start();
-const context = require.context("./controllers", true, /\.js$/);
-application.load(definitionsFromContext(context));
+
+const modules = import.meta.glob('./controllers/**/*.js');
+
+for (const path in modules) {
+  modules[path]().then((module) => {
+    const controller = module.default;
+    application.register(controller.name, controller);
+  });
+}
