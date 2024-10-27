@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  include Rails.application.routes.url_helpers
   has_many :posts, dependent: :destroy
 
   # 管理者を「集計担当」として定義
@@ -12,7 +13,7 @@ class User < ApplicationRecord
 
   # QRコードを生成
   def generate_qr_code
-    qrcode = RQRCode::QRCode.new(post_url(self))
+    qrcode = RQRCode::QRCode.new(user_url(self, host: 'localhost:3000'))
     qrcode.as_svg(
       offset: 0,
       color: '000',
