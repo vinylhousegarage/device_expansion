@@ -25,7 +25,7 @@ Rails.application.configure do
   config.public_file_server.enabled = true
   config.assets.compile = true
   config.assets.digest = true
-  config.assets.precompile += %w( application.css application.js )
+  config.assets.precompile += %w[application.css application.js]
 
   # Show full error reports and disable caching.
   config.consider_all_requests_local       = true

@@ -1,19 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 # 初期データの設定
-poster_1:
+first_poster:
   name: "投稿者１"
 
-poster_2:
+second_poster:
   name: "投稿者２"
 
-poster_3:
+third_poster:
   name: "投稿者３"
 
-poster_4:
+fourth_poster:
   name: "投稿者４"
 
-poster_5:
+fifth_poster:
   name: "投稿者５"
 
 admin:

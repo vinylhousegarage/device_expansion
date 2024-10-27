@@ -1,5 +1,4 @@
 class UsersController < ApplicationController
-
   # 管理者のセッションを取得
   def login
     admin_users = User.admin_users

@@ -19,7 +19,7 @@ module App
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
-    config.assets.paths << Rails.root.join("app/assets/builds")
+    config.assets.paths << Rails.root.join('app/assets/builds')
     config.assets.compile = false
     config.public_file_server.enabled = true
   end
