@@ -43,7 +43,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # QRコードの生成をテスト
   test 'should get login_form and set session' do
-    get login_form_user_path(@user.id)
+    post login_form_user_path(@user.id)
     assert_response :success
     assert_equal @user.id, session[:user_id], 'User ID should be stored in session'
     assert_equal @user, assigns(:user), 'User should be assigned correctly'
