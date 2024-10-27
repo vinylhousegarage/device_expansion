@@ -14,7 +14,7 @@ if [ "$RAILS_ENV" == "development" ]; then
   bundle exec rails db:migrate
 
   echo "Seeding the database..."
-  bundle exec rails db:seed
+  bundle exec rails db:seed:replant
 
   echo "Starting Puma server for development..."
   exec bundle exec puma -C config/puma.rb
