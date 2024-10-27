@@ -18,7 +18,7 @@ class UserTest < ActiveSupport::TestCase
       address: '市町村1丁目-nameⅡ',
       tel: '0123456789',
       others: '供花:20,000円(2段)',
-      user: @user,
+      user: @user
     }.merge(attributes))
   end
 
