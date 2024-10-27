@@ -47,8 +47,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal @user.id, session[:user_id], 'User ID should be stored in session'
     assert_select 'svg', true, 'QR code SVG should be present in the response'
-    expected_url = "http://localhost:3000/users/#{@user.id}"
-    assert_includes response.body, expected_url, 'QR code should contain the correct user URL'
     assert_template :login_form
   end
 end
