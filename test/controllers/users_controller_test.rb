@@ -14,7 +14,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   # newアクション実行時のセッションID の空チェック
-  test j'should reset session in new' do
+  test 'should reset session in new' do
     get new_user_path
     assert_nil session[:user_id]
   end
@@ -31,8 +31,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # スコープ poster_users の参照をテスト
   test 'should display poster users in new action' do
     get new_user_path
-    assert_select 'form[action=?]', login_form_user_path(users(:poster_one)), text: '投稿者１さんを招待する'
-    assert_select 'form[action=?]', login_form_user_path(users(:poster_two)), text: '投稿者２さんを招待する'
+    assert_select 'form[action=?]', login_form_user_path(users(:first_poster)), text: '投稿者１さんを招待する'
+    assert_select 'form[action=?]', login_form_user_path(users(:second_poster)), text: '投稿者２さんを招待する'
     assert_select 'form[action=?]', login_form_user_path(users(:admin)), count: 0
   end
 end
