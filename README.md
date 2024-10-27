@@ -64,7 +64,7 @@
     - コンテナ化：Docker Compose
     - ホスティング：Render（アプリケーションの稼働サーバー）
     - CI/CD：GitHub Actions（テスト）/ Render（デプロイ）
-    - テストフレームワーク：Minitest（単体テスト・機能テスト）/
+    - テストフレームワーク：Minitest（単体テスト・機能テスト）/ capybara（システムテスト）
 
   - **インフラ要件**
     - サーバー構成：Puma, PostgreSQLサーバー
