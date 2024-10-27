@@ -7,7 +7,7 @@ class UserTest < ActiveSupport::TestCase
 
   # 初期データを挿入しユーザーを取得
   setup do
-    @user = users(:poster_one)
+    @user = users(:first_poster)
   end
 
   # Postインスタンスの初期属性を設定
@@ -24,8 +24,8 @@ class UserTest < ActiveSupport::TestCase
 
   # UserがPostを複数持てるかのテスト
   test 'should have many postsj' do
-    post1 = posts(:post_1)
-    post2 = posts(:post_2)
+    post1 = posts(:first_post)
+    post2 = posts(:second_post)
 
     assert_equal 2, @user.posts.size
     assert_includes @user.posts, post1
@@ -40,7 +40,7 @@ class UserTest < ActiveSupport::TestCase
 
   # login_formアクションロジックのテスト
   test 'generates valid QR code SVG' do
-    user = users(:poster_one)
+    user = users(:first_poster)
     svg = user.generate_qr_code
 
     assert svg.include?('<svg'), 'QR code SVG should start with <svg'
