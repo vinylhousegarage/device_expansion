@@ -11,4 +11,11 @@ class UsersController < ApplicationController
     session[:user_id] = nil
     @users = User.poster_users
   end
+
+  # QRコードを取得し@svgに格納
+  def login_form
+    @user = User.find(params[:id])
+    session[:user_id] = @user.id
+    @svg = @user.generate_qr_code
+  end
 end

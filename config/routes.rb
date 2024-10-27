@@ -11,4 +11,6 @@ Rails.application.routes.draw do
       post 'login'
     end
   end
+
+  resources :posts
 end
