@@ -38,3 +38,13 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "集計担当", admin_user.name
   end
 end
+
+  # login_formアクションロジックのテスト
+  test "generates valid QR code SVG" do
+    user = users(:poster_1)
+    svg = user.generate_qr_code
+
+    assert svg.include?("<svg"), "QR code SVG should start with <svg"
+    assert svg.include?("</svg>"), "QR code SVG should end with </svg>"
+  end
+end
