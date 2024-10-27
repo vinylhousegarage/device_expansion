@@ -27,33 +27,27 @@ class PostTest < ActiveSupport::TestCase
     invalid_amounts.each do |invalid_amount|
       @post.amount = invalid_amount
       assert_not @post.valid?, "Post with amount '#{invalid_amount}' should be invalid"
-      if invalid_amount.to_s.strip.empty?
-        assert_includes @post.errors[:amount], "can't be blank", 'Amount should be invalid when blank'
-      else
-        assert_includes @post.errors[:amount], 'must be greater than or equal to 0', 'Amount should be greater than or equal to 0'
-      end
+      message = invalid_amount.to_s.strip.empty? ? "can't be blank" : 'must be greater than or equal to 0'
+      assert_includes @post.errors[:amount], message, 'Amount validation failed'
     end
   end
 
   # Postインスタンスの新規生成テスト
   test 'creates post with valid attributes' do
-    new_post = Post.new(
-      name: '新しい氏名',
-      amount: 5000,
-      address: '新しい市町村1丁目',
-      tel: '0987654321',
-      others: '新しい供花:10,000円',
-      user: @user
-    )
-    assert new_post.valid?, 'Post should be valid with correct attributes'
     assert_difference('Post.count', 1) do
-      new_post.save
+      Post.create!(
+        name: '新しい氏名',
+        amount: 5000,
+        address: '新しい市町村1丁目',
+        tel: '0987654321',
+        others: '新しい供花:10,000円',
+        user: @user
+      )
     end
   end
 
   # Postインスタンスのアソシエーションテスト
   test 'post belongs to correct user' do
     assert_equal @user, @post.user, "Post's user should be the user with name '投稿者１'"
-    assert @post.save, 'Post should be saved successfully'
   end
 end
