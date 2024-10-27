@@ -10,3 +10,16 @@ class User < ApplicationRecord
   # 投稿者をデータベースから取得するスコープを定義
   scope :poster_users, -> { where(name: POSTER_USERS) }
 end
+
+  # QRコードを生成
+  def generate_qr_code
+    qrcode = RQRCode::QRCode.new(post_url(self))
+    qrcode.as_svg(
+      offset: 0,
+      color: '000',
+      shape_rendering: 'crispEdges',
+      module_size: 3,
+      standalone: true
+    )
+  end
+end
