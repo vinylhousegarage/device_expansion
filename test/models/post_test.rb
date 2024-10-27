@@ -7,8 +7,8 @@ class PostTest < ActiveSupport::TestCase
 
   # 初期データを挿入しユーザーを取得
   setup do
-    @user = users(:poster_one)
-    @post = posts(:post_one)
+    @user = users(:first_poster)
+    @post = posts(:first_post)
   end
 
   # name属性のバリデーションをテスト
