@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  has_many :posts
+  has_many :posts, dependent: :destroy
 
   # 管理者を「集計担当」として定義
   ADMIN_USERS = ['集計担当'].freeze
