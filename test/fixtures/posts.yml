@@ -1,17 +1,16 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-post_1:
-  name: "試験 氏名"
+first_post:
+  name: '試験 氏名'
   amount: 10000
-  address: "市町村1丁目-nameⅡ"
-  tel: "0123456789"
-  others: "供花:20,000円(2段)"
-  user: poster_1
+  address: '市町村1丁目-nameⅡ'
+  tel: '0123456789'
+  others: '供花:20,000円(2段)'
+  user: first_poster
 
-post_2:
-  name: "Test Name"
+second_post:
+  name: 'Test Name'
   amount: 20000
-  address: "市町村1丁目-nameⅡ"
-  tel: "0123456789"
-  others: "供物:10,000円"
-  user: poster_1
+  address: '市町村1丁目-nameⅡ'
+  tel: '0123456789'
+  others: '供物:10,000円'
+  user: first_poster
