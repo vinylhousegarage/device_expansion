@@ -1,7 +1,7 @@
 # lib/tasks/assets.rake
 namespace :custom_assets do
   desc 'Precompile assets using esbuild'
-  task :precompile: :environment do
+  task precompile: :environment do
     puts 'Running esbuild for assets...'
 
     system('yarn build') or raise 'esbuild failed'
