@@ -36,10 +36,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_select 'form[action=?]', login_form_user_path(users(:admin)), count: 0
   end
 
+  # 投稿者を設定
   setup do
     @user = users(:first_poster)
   end
 
+  # QRコードの生成をテスト
   test 'should get login_form and set session' do
     get login_form_user_path(@user.id)
     assert_response :success
