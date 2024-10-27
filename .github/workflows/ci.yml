@@ -126,7 +126,7 @@ jobs:
 
       # マイグレートした POSTGRES_DB に初期データを挿入
       - name: Run Seed the test database
-        run: bundle exec rails db:seed
+        run: bundle exec rails db:seed:replant
 
       # 初期データ挿入の成否を確認
       - name: Check if seed data was inserted
