@@ -1,29 +1,29 @@
 require 'test_helper'
 
 class UserTest < ActiveSupport::TestCase
-  # test "the truth" do
+  # test 'the truth' do
   #   assert true
   # end
 
   # 初期データを挿入しユーザーを取得
   setup do
-    @user = users(:poster_1)
+    @user = users(:poster_one)
   end
 
   # Postインスタンスの初期属性を設定
   def new_post(attributes = {})
     Post.new({
-      name: "試験 氏名",
+      name: '試験 氏名',
       amount: 10000,
-      address: "市町村1丁目-nameⅡ",
-      tel: "0123456789",
-      others: "供花:20,000円(2段)",
+      address: '市町村1丁目-nameⅡ',
+      tel: '0123456789',
+      others: '供花:20,000円(2段)',
       user: @user,
     }.merge(attributes))
   end
 
   # UserがPostを複数持てるかのテスト
-  test "should have many posts" do
+  test 'should have many postsj' do
     post1 = posts(:post_1)
     post2 = posts(:post_2)
 
@@ -33,18 +33,17 @@ class UserTest < ActiveSupport::TestCase
   end
 
   # loginアクションのテスト
-  test "should get admin user from fixture" do
+  test 'should get admin user from fixture' do
     admin_user = users(:admin)
-    assert_equal "集計担当", admin_user.name
+    assert_equal '集計担当', admin_user.name
   end
-end
 
   # login_formアクションロジックのテスト
-  test "generates valid QR code SVG" do
-    user = users(:poster_1)
+  test 'generates valid QR code SVG' do
+    user = users(:poster_one)
     svg = user.generate_qr_code
 
-    assert svg.include?("<svg"), "QR code SVG should start with <svg"
-    assert svg.include?("</svg>"), "QR code SVG should end with </svg>"
+    assert svg.include?('<svg'), 'QR code SVG should start with <svg'
+    assert svg.include?('</svg>'), 'QR code SVG should end with </svg>'
   end
 end
