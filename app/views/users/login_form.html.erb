@@ -1,9 +1,9 @@
 QRコードを<br>
 読み取ってください<br>
 <br>
-
+<%= link_to new_post_path do %>
   <%= raw @svg %>
-
+<% end %>
 <br>
 <br>
-
+<%= button_to "初期画面へ戻る", new_user_path, method: :get %>
