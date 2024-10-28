@@ -50,4 +50,18 @@ class PostTest < ActiveSupport::TestCase
   test 'post belongs to correct user' do
     assert_equal @user, @post.user, "Post's user should be the user with name '投稿者１'"
   end
+
+  # Post model のスコープのテスト
+  test 'only posts of user' do
+    posts = Post.by_user(@user.id)
+    assert_includes posts, @post
+  end
+
+  # 存在しないユーザーの投稿を取得した場合は空の結果を返す
+  NON_EXISTENT_USER_ID = -1
+
+  test 'empty for non-existent user' do
+    posts = Post.by_user(NON_EXISTENT_USER_ID)
+    assert_empty posts
+  end
 end

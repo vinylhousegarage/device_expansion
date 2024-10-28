@@ -1,0 +1,31 @@
+<h3>新規登録</h3>
+
+<%= form_with model: @post, local: true do |form| %>
+
+  <table>
+    <tr>
+      <td><%= form.label :お名前 %></td>
+      <td><%= form.text_field :name %></td>
+      <td><%= form.label :円 %></td>
+    </tr>
+    <tr>
+      <td><%= form.label :金　額 %></td>
+      <td><%= form.number_field :amount %></td>
+      <td><%= form.label :円 %></td>
+    </tr>
+    <tr>
+      <td><%= form.label :住　所 %></td>
+      <td><%= form.text_field :address %></td>
+    </tr>
+    <tr>
+      <td><%= form.label :電　話 %></td>
+      <td><%= form.text_field :tel, pattern: '\d*', title: '―無し' %></td>
+      <td><%= form.label :―無し %></td>
+    </tr>
+    <tr>
+      <td><%= form.label :その他 %></td>
+      <td><%= form.text_field :others %></td>
+    </tr>
+  </table><br>
+
+<% end %>
