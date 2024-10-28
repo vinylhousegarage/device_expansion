@@ -22,4 +22,10 @@ class User < ApplicationRecord
       standalone: true
     )
   end
+
+  # セッションからユーザーを取得
+  def self.find_from_session(session)
+    user_id = session[:user_id]
+    find_by(id: user_id) if user_id.present?
+  end
 end
