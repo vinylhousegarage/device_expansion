@@ -46,4 +46,18 @@ class UserTest < ActiveSupport::TestCase
     assert svg.include?('<svg'), 'QR code SVG should start with <svg'
     assert svg.include?('</svg>'), 'QR code SVG should end with </svg>'
   end
+
+  # Post model のスコープのテスト
+  test 'only posts of user' do
+    posts = Post.by_user(@user.id)
+    assert_includes posts, @post
+  end
+
+  # 存在しないユーザーの投稿を取得した場合は空の結果を返す
+  NON_EXISTENT_USER_ID = -1
+
+  test 'empty for non-existent user' do
+    posts = Post.by_user(NON_EXISTENT_USER_ID)
+    assert_empty posts
+  end
 end
