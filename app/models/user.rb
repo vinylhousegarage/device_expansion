@@ -13,7 +13,7 @@ class User < ApplicationRecord
 
   # QRコードを生成
   def generate_qr_code
-    qrcode = RQRCode::QRCode.new(user_url(self, host: 'localhost:3000'))
+    qrcode = RQRCode::QRCode.new(user_url(self, host: 'https://device-expansion.onrender.com'))
     qrcode.as_svg(
       offset: 0,
       color: '000',
