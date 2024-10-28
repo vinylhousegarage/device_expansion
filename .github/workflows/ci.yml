@@ -126,7 +126,7 @@ jobs:
 
       # マイグレートした POSTGRES_DB に初期データを挿入
       - name: Run Seed the test database
-        run: bundle exec rails db:seed
+        run: bundle exec rails db:seed:replant
 
       # 初期データ挿入の成否を確認
       - name: Check if seed data was inserted
@@ -189,7 +189,7 @@ jobs:
       # 差分があれ ばDockerイメージを GHCR にプッシュ
       - name: Compare and Push Docker Image if Different
         run: |
-          temp_hash=$(docker inspect --format='{{.Id}}' device_expansion-web)
+          temp_hash=$(docker inspect --format='{{.Id}}' device_expansion-development)
           ghcr_hash=$(docker inspect --format='{{.Id}}' ghcr.io/vinylhousegarage/device_expansion:latest || echo "")
 
           echo "Temp Image Hash: $temp_hash"
@@ -197,7 +197,7 @@ jobs:
 
           if [ "$temp_hash" != "$ghcr_hash" ]; then
             echo "Images differ. Proceeding to tag and push."
-            docker tag device_expansion-web ghcr.io/vinylhousegarage/device_expansion:latest
+            docker tag device_expansion-development ghcr.io/vinylhousegarage/device_expansion:latest
             docker push ghcr.io/vinylhousegarage/device_expansion:latest
           else
             echo "Images are identical. No push needed."

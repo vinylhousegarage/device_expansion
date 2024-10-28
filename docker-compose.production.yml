@@ -18,6 +18,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.production
+    image: device_expansion-production
     command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
     ports:
       - "3000:3000"

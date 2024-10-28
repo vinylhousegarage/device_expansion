@@ -15,4 +15,4 @@ services:
       NODE_ENV=production SECRET_KEY_BASE=${SECRET_KEY_BASE} bundle exec rails db:migrate || { echo "Migration failed"; exit 1; }
 
       echo "Seeding the database..."
-      NODE_ENV=production SECRET_KEY_BASE=${SECRET_KEY_BASE} bundle exec rails db:seed || { echo "Seeding failed"; exit 1; }
+      NODE_ENV=production SECRET_KEY_BASE=${SECRET_KEY_BASE} bundle exec rails db:seed:replant || { echo "Seeding failed"; exit 1; }
