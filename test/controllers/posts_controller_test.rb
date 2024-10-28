@@ -9,12 +9,17 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:first_poster)
     @post = posts(:first_post)
-    @session_data = { user_id: @user.id }
+    log_in_as(@user)
+  end
+
+  # ログインヘルパーメソッドを定義
+  def log_in_as(user)
+    post login_path, params: { session: { user_id: user.id } }
   end
 
   # newアクションをテスト
   test 'should get new for existing user' do
-    get new_post_path, params: {}, session: @session_data
+    get new_post_path
 
     assert_response :success
     assert_select 'form[action=?]', posts_path
