@@ -16,7 +16,6 @@ services:
 
   web:
     build: .
-    image: device_expansion-development
     command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
     volumes:
       - ".:/app"
