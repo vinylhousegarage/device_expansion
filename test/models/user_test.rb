@@ -47,5 +47,25 @@ class UserTest < ActiveSupport::TestCase
     assert svg.include?('</svg>'), 'QR code SVG should end with </svg>'
   end
 
+  # User.find_from_sessionメソッドのテスト
+  test 'should find user from session' do
+    user = users(:first_poster)
+    session = { user_id: user.id }
 
+    assert_equal user, User.find_from_session(session)
+  end
+
+  test 'should return nil if user_id is missing' do
+    session = {}
+
+    assert_nil User.find_from_session(session)
+  end
+
+  NON_EXISTENT_USER_ID = -1
+
+  test 'should return nil if user does not exist' do
+    session = { user_id: NON_EXISTENT_USER_ID }
+
+    assert_nil User.find_from_session(session)
+  end
 end
