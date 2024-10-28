@@ -46,4 +46,6 @@ class UserTest < ActiveSupport::TestCase
     assert svg.include?('<svg'), 'QR code SVG should start with <svg'
     assert svg.include?('</svg>'), 'QR code SVG should end with </svg>'
   end
+
+
 end
