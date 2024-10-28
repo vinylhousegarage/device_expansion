@@ -14,15 +14,21 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # ログインヘルパーメソッドを定義
   def log_in_as(user)
-    @request.session[:user_id] = user.id
+    post login_form_user_path(user.id)
   end
 
   # newアクションをテスト
-  test 'should get new for existing user' do
+  test 'should get new post form' do
     get new_post_path
 
     assert_response :success
-    assert_select 'form[action=?]', posts_path
-    assert_select 'div.post', text: @post.title
+
+    assert_select 'form[action=?][method=?]', posts_path, 'post' do
+      assert_select 'input[type=text][name=?]', 'post[name]'
+      assert_select 'input[type=number][name=?]', 'post[amount]'
+      assert_select 'input[type=text][name=?]', 'post[address]'
+      assert_select 'input[type=text][name=?]', 'post[tel]'
+      assert_select 'input[type=text][name=?]', 'post[others]'
+    end
   end
 end
