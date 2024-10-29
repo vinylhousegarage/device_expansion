@@ -1,7 +1,7 @@
 QRコードを<br>
 読み取ってください<br>
 <br>
-<%= link_to new_post_path do %>
+<%= link_to new_post_path(user_id: @user.id) do %>
   <%= raw @svg %>
 <% end %>
 <br>
