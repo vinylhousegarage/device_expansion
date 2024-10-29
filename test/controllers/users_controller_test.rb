@@ -19,7 +19,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_nil session[:user_id]
   end
 
-  # ページの表示をテスト
+  # users#new のパスをテスト
   test 'should get new user page' do
     get new_user_path
     assert_response :success
@@ -48,4 +48,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'svg', svg_expected_count
   end
+end
+
+# users#login_poster のパスをテスト
+test 'should get new user page' do
+  post login_poster_user_path
+  assert_response :success
 end
