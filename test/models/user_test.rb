@@ -8,6 +8,7 @@ class UserTest < ActiveSupport::TestCase
   # 初期データを挿入しユーザーを取得
   setup do
     @user = users(:first_poster)
+    @session = { user_id: @user.id }
   end
 
   # Postインスタンスの初期属性を設定
@@ -39,12 +40,24 @@ class UserTest < ActiveSupport::TestCase
   end
 
   # login_formアクションロジックのテスト
-  test 'generates valid QR code SVG' do
-    user = users(:first_poster)
-    svg = user.generate_qr_code
+  test 'QR code includes the correct new post URL' do
+    svg = @user.generate_qr_code_with_session(@session)
 
-    assert svg.include?('<svg'), 'QR code SVG should start with <svg'
-    assert svg.include?('</svg>'), 'QR code SVG should end with </svg>'
+    login_form_url = Rails.application.routes.url_helpers.login_form_user_url(
+      @user, host: 'https://device-expansion.onrender.com'
+    )
+    expected_url = Rails.application.routes.url_helpers.new_post_url(
+      host: 'https://device-expansion.onrender.com',
+      params: { session_id: @user.id, ref: login_form_url }
+    )
+
+    assert_includes svg, expected_url
+  end
+
+  test 'QR code is generated in SVG format' do
+    svg = @user.generate_qr_code_with_session(@session)
+
+    assert_includes svg, '<svg'
   end
 
   # User.find_from_sessionメソッドのテスト
