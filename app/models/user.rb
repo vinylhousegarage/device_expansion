@@ -13,7 +13,6 @@ class User < ApplicationRecord
 
   # セッションからユーザーを取得
   def self.find_from_session(session)
-    session[:user_id] = params[:id]
     user_id = session[:user_id]
     find_by(id: user_id) if user_id.present?
   end
