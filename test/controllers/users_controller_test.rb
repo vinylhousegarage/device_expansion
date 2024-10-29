@@ -39,13 +39,15 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # 投稿者を設定
   setup do
     @user = users(:first_poster)
+    @session = { user_id: @user.id }
   end
 
   # QRコードの生成をテスト
-  test 'should get login_form and set session' do
+  test 'should get login form and generate QR code' do
+    svg_expected_count = 1
     post login_form_user_path(@user.id)
     assert_response :success
-    assert_equal @user.id, session[:user_id], 'User ID should be stored in session'
-    assert_select 'svg', true, 'QR code SVG should be present in the response'
+    assert_equal @user.id, session[:user_id]
+    assert_select 'svg', svg_expected_count
   end
 end

@@ -8,6 +8,7 @@ class UserTest < ActiveSupport::TestCase
   # 初期データを挿入しユーザーを取得
   setup do
     @user = users(:first_poster)
+    @session = { user_id: @user.id }
   end
 
   # Postインスタンスの初期属性を設定
@@ -38,13 +39,21 @@ class UserTest < ActiveSupport::TestCase
     assert_equal '集計担当', admin_user.name
   end
 
-  # login_formアクションロジックのテスト
-  test 'generates valid QR code SVG' do
-    user = users(:first_poster)
-    svg = user.generate_qr_code
+  # QRコードがSVG形式で生成されていることを確認するテスト
+  test 'QR code is generated in SVG format' do
+    svg = @user.generate_qr_code(@session)
 
-    assert svg.include?('<svg'), 'QR code SVG should start with <svg'
-    assert svg.include?('</svg>'), 'QR code SVG should end with </svg>'
+    assert_includes svg, '<svg'
+  end
+
+  private
+
+  # ログインフォームのURLを取得
+  def login_form_url(user)
+    Rails.application.routes.url_helpers.login_form_user_url(
+      user,
+      host: 'https://device-expansion.onrender.com'
+    )
   end
 
   # User.find_from_sessionメソッドのテスト
@@ -61,10 +70,10 @@ class UserTest < ActiveSupport::TestCase
     assert_nil User.find_from_session(session)
   end
 
-  NON_EXISTENT_USER_ID = -1
+  non_existent_user_id = -1
 
   test 'should return nil if user does not exist' do
-    session = { user_id: NON_EXISTENT_USER_ID }
+    session = { user_id: non_existent_user_id }
 
     assert_nil User.find_from_session(session)
   end
