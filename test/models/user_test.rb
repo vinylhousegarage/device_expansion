@@ -42,6 +42,7 @@ class UserTest < ActiveSupport::TestCase
   # QRコードに正しいURLが含まれているかを確認するテスト
   test 'QR code contains the correct new post URL' do
     svg = @user.generate_qr_code(@session)
+    puts svg
     expected_url = Rails.application.routes.url_helpers.new_post_url(
       host: 'https://device-expansion.onrender.com',
       params: { session_id: @user.id }
