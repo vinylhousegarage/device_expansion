@@ -18,8 +18,8 @@ class User < ApplicationRecord
   end
 
   # QRコードを生成
-  def generate_qr_code(session)
-    url = Rails.application.routes.url_helpers.user_url(
+  def generate_qr_code_with_session(session)
+    url = Rails.application.routes.url_helpers.login_form_user_url(
       self,
       host: 'https://device-expansion.onrender.com',
       params: { session_id: session[:user_id] }
