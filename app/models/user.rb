@@ -11,7 +11,14 @@ class User < ApplicationRecord
   # 投稿者をデータベースから取得するスコープを定義
   scope :poster_users, -> { where(name: POSTER_USERS) }
 
-  # QRコードを生成するメソッド
+  # セッションからユーザーを取得
+  def self.find_from_session(session)
+    session[:user_id] = params[:id]
+    user_id = session[:user_id]
+    find_by(id: user_id) if user_id.present?
+  end
+
+  # QRコードを生成
   def generate_qr_code(session)
     url = Rails.application.routes.url_helpers.user_url(
       self,
@@ -28,11 +35,5 @@ class User < ApplicationRecord
       module_size: 3,
       standalone: true
     )
-  end
-
-  # セッションからユーザーを取得
-  def self.find_from_session(session)
-    user_id = session[:user_id]
-    find_by(id: user_id) if user_id.present?
   end
 end
