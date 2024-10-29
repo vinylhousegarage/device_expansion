@@ -58,10 +58,10 @@ class PostTest < ActiveSupport::TestCase
   end
 
   # 存在しないユーザーの投稿を取得した場合は空の結果を返す
-  NON_EXISTENT_USER_ID = -1
+  non_existent_user_id = -1
 
   test 'empty for non-existent user' do
-    posts = Post.by_user(NON_EXISTENT_USER_ID)
+    posts = Post.by_user(non_existent_user_id)
     assert_empty posts
   end
 end
