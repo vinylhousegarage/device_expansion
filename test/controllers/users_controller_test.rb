@@ -52,6 +52,6 @@ end
 
 # users#login_poster のパスをテスト
 test 'should get new user page' do
-  post login_poster_user_path
+  post login_poster_user_path, params: { id: @user.id }
   assert_response :success
 end
