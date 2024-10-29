@@ -44,7 +44,7 @@ class UserTest < ActiveSupport::TestCase
     svg = @user.generate_qr_code(@session)
     expected_url = Rails.application.routes.url_helpers.new_post_url(
       host: 'https://device-expansion.onrender.com',
-      params: { session_id: @user.id, ref: login_form_url(@user) }
+      params: { session_id: @user.id }
     )
     assert_includes svg, expected_url
   end
