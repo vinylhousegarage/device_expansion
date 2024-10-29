@@ -52,7 +52,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # 投稿者の"投稿者１"ユーザーでログインするテスト
   test 'should log in first_poster user and redirect to new_post path' do
     post login_poster_user_path(@user), params: { id: @user.id }
-    assert_equal @user.id, session[:user_id]
+    assert_equal @user.id, session[:user_id].to_i
     assert_redirected_to new_post_path
   end
 end
