@@ -8,7 +8,6 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   # セッションデータを設定
   setup do
     @user = users(:first_poster)
-    @post = posts(:first_post)
     log_in_as(@user)
   end
 
@@ -19,9 +18,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # newアクションをテスト
   test 'should get new post form' do
-    get new_post_path
-
+    get new_post_path(user_id: @user.id)
     assert_response :success
-    assert_equal @user.id, session[:user_id], 'Session user_id should be available on the new post page'
   end
 end
