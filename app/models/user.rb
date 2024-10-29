@@ -17,20 +17,19 @@ class User < ApplicationRecord
     find_by(id: user_id) if user_id.present?
   end
 
-  # id情報を含んだ QRコード読み取りによる遷移先の URL を変数に代入
-  def generate_qr_code(session)
-    new_post_url = generate_new_post_url(session)
+  # QRコードを生成
+  def generate_qr_code_with_params
+    new_post_url = generate_new_post_url
     generate_qr_code_svg(new_post_url)
   end
 
   private
 
-  # ログインフォームURL の id を取得
-  # id情報を含んだ QRコード読み取りによる遷移先の URL を生成
-  def generate_new_post_url(session)
+  # 新規投稿ページのURLを生成
+  def generate_new_post_url
     Rails.application.routes.url_helpers.new_post_url(
       host: 'https://device-expansion.onrender.com',
-      params: { session_id: session[:user_id], ref: login_form_url }
+      params: { user_id: id, ref: login_form_url }
     )
   end
 
@@ -42,9 +41,9 @@ class User < ApplicationRecord
     )
   end
 
-  # QRコードをSVG形式で出力
-  def generate_qr_code_svg(new_post_url)
-    qrcode = RQRCode::QRCode.new(new_post_url)
+  # QRコードをSVG形式で生成
+  def generate_qr_code_svg(url)
+    qrcode = RQRCode::QRCode.new(url)
     qrcode.as_svg(
       offset: 0,
       color: '000',
