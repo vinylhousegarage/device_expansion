@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resources :users do
     member do
       post 'login_form'
+      post 'login_poster'
     end
     collection do
       post 'login'
