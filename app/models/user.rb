@@ -19,13 +19,17 @@ class User < ApplicationRecord
 
   # QRコードを生成
   def generate_qr_code_with_session(session)
-    url = Rails.application.routes.url_helpers.login_form_user_url(
+    login_form_url = Rails.application.routes.url_helpers.login_form_user_url(
       self,
-      host: 'https://device-expansion.onrender.com',
-      params: { session_id: session[:user_id] }
+      host: 'https://device-expansion.onrender.com'
     )
 
-    qrcode = RQRCode::QRCode.new(url)
+    new_post_url_with_params = Rails.application.routes.url_helpers.new_post_url(
+      host: 'https://device-expansion.onrender.com',
+      params: { session_id: session[:user_id], ref: login_form_url }
+    )
+
+    qrcode = RQRCode::QRCode.new(new_post_url_with_params)
 
     qrcode.as_svg(
       offset: 0,
