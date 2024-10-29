@@ -11,9 +11,16 @@ class User < ApplicationRecord
   # 投稿者をデータベースから取得するスコープを定義
   scope :poster_users, -> { where(name: POSTER_USERS) }
 
-  # QRコードを生成
-  def generate_qr_code
-    qrcode = RQRCode::QRCode.new(user_url(self, host: 'https://device-expansion.onrender.com'))
+  # QRコードを生成するメソッド
+  def generate_qr_code(session)
+    url = Rails.application.routes.url_helpers.user_url(
+      self,
+      host: 'https://device-expansion.onrender.com',
+      params: { session_id: session[:user_id] }
+    )
+
+    qrcode = RQRCode::QRCode.new(url)
+
     qrcode.as_svg(
       offset: 0,
       color: '000',
