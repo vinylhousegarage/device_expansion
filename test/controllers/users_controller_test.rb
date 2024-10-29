@@ -44,7 +44,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # QRコードの生成をテスト
   test 'should get login form and generate QR code' do
     svg_expected_count = 1
-    get login_form_user_path(@user.id)
+    post login_form_user_path(@user.id)
     assert_response :success
     assert_equal @user.id, session[:user_id]
     assert_select 'svg', svg_expected_count
