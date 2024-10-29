@@ -17,4 +17,10 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     @svg = @user.generate_qr_code
   end
+
+  # 投稿者のトップページを設定
+  def login_poster
+    session[:user_id] = params[:id]
+    @user = User.find(session[:user_id])
+  end
 end
