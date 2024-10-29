@@ -39,25 +39,31 @@ class UserTest < ActiveSupport::TestCase
     assert_equal '集計担当', admin_user.name
   end
 
-  # login_formアクションロジックのテスト
-  test 'QR code includes the correct new post URL' do
-    svg = @user.generate_qr_code_with_session(@session)
-
-    login_form_url = Rails.application.routes.url_helpers.login_form_user_url(
-      @user, host: 'https://device-expansion.onrender.com'
-    )
+  # QRコードに正しいURLが含まれているかを確認するテスト
+  test 'QR code contains the correct new post URL' do
+    svg = @user.generate_qr_code(@session)
     expected_url = Rails.application.routes.url_helpers.new_post_url(
       host: 'https://device-expansion.onrender.com',
-      params: { session_id: @user.id, ref: login_form_url }
+      params: { session_id: @user.id, ref: login_form_url(@user) }
     )
-
     assert_includes svg, expected_url
   end
 
+  # QRコードがSVG形式で生成されていることを確認するテスト
   test 'QR code is generated in SVG format' do
-    svg = @user.generate_qr_code_with_session(@session)
+    svg = @user.generate_qr_code(@session)
 
     assert_includes svg, '<svg'
+  end
+
+  private
+
+  # ログインフォームのURLを取得
+  def login_form_url(user)
+    Rails.application.routes.url_helpers.login_form_user_url(
+      user,
+      host: 'https://device-expansion.onrender.com'
+    )
   end
 
   # User.find_from_sessionメソッドのテスト
@@ -74,10 +80,10 @@ class UserTest < ActiveSupport::TestCase
     assert_nil User.find_from_session(session)
   end
 
-  NON_EXISTENT_USER_ID = -1
+  non_existent_user_id = -1
 
   test 'should return nil if user does not exist' do
-    session = { user_id: NON_EXISTENT_USER_ID }
+    session = { user_id: non_existent_user_id }
 
     assert_nil User.find_from_session(session)
   end
