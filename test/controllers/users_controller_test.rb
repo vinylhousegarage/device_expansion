@@ -39,6 +39,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # 投稿者を設定
   setup do
     @user = users(:first_poster)
+    @session = { user_id: @user.id }
   end
 
   # QRコードの生成をテスト
