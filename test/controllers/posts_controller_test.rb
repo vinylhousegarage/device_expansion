@@ -22,5 +22,6 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     get new_post_path
 
     assert_response :success
+    assert_equal @user.id, session[:user_id], 'Session user_id should be available on the new post page'
   end
 end
