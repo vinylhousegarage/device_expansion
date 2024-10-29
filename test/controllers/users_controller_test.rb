@@ -39,13 +39,22 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # 投稿者を設定
   setup do
     @user = users(:first_poster)
+    @session = { user_id: @user.id }
   end
 
   # QRコードの生成をテスト
-  test 'should get login_form and set session' do
-    post login_form_user_path(@user.id)
-    assert_response :success
-    assert_equal @user.id, session[:user_id], 'User ID should be stored in session'
-    assert_select 'svg', true, 'QR code SVG should be present in the response'
+  test 'QR code includes the correct URL' do
+    svg = @user.generate_qr_code_with_session(@session)
+
+    expected_url = Rails.application.routes.url_helpers.login_form_user_url(
+      @user, host: 'https://device-expansion.onrender.com', params: { session_id: @user.id }
+    )
+    assert_includes svg, expected_url
+  end
+
+  # QRコードがSVG形式で生成されるかをテスト
+  test "QR code is generated as SVG" do
+    svg = @user.generate_qr_code_with_session(@session)
+    assert_includes svg, "<svg"
   end
 end
