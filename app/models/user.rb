@@ -18,7 +18,7 @@ class User < ApplicationRecord
   end
 
   # QRコードを生成
-  def generate_qr_code_with_params
+  def generate_qr_code
     new_post_url = generate_new_post_url
     generate_qr_code_svg(new_post_url)
   end
