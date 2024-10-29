@@ -14,7 +14,7 @@ class UsersController < ApplicationController
 
   # QRコードを取得し@svgに格納
   def login_form
-    session[:user_id] = params[:id]
+    session[:user_id] = params[:id].to_i
     @user = User.find_from_session(session)
     @svg = @user.generate_qr_code(session)
   end
