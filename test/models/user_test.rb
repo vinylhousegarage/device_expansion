@@ -41,7 +41,7 @@ class UserTest < ActiveSupport::TestCase
 
   # QRコードがSVG形式で生成されていることを確認するテスト
   test 'QR code is generated in SVG format' do
-    svg = @user.generate_qr_code(@session)
+    svg = @user.generate_qr_code
 
     assert_includes svg, '<svg'
   end
