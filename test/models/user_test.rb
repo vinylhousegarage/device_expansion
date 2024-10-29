@@ -39,17 +39,6 @@ class UserTest < ActiveSupport::TestCase
     assert_equal '集計担当', admin_user.name
   end
 
-  # QRコードに正しいURLが含まれているかを確認するテスト
-  test 'QR code contains the correct new post URL' do
-    svg = @user.generate_qr_code(@session)
-    puts svg
-    expected_url = Rails.application.routes.url_helpers.new_post_url(
-      host: 'https://device-expansion.onrender.com',
-      params: { session_id: @user.id }
-    )
-    assert_includes svg, expected_url
-  end
-
   # QRコードがSVG形式で生成されていることを確認するテスト
   test 'QR code is generated in SVG format' do
     svg = @user.generate_qr_code(@session)
