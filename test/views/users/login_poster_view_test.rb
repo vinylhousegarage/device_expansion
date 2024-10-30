@@ -3,7 +3,7 @@ require 'test_helper'
 class UsersNewViewTest < ActionView::TestCase
   fixtures :users
 
-  test 'renders the new user invitation form' do
+  test 'test poster login form is rendered correctly' do
     @user = users(:first_poster)
     render template: 'users/login_poster'
     assert_select 'h3', 'ようこそ'
