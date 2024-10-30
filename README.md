@@ -77,8 +77,8 @@
     - コンテナ開発環境：Docker Compose
     - バージョン管理の方法
       - **ブランチ戦略**
-        - mainブランチと作業ブランチ（featブランチやtestブランチなど）に分けて管理
-        - Pull Requestを通して、mainブランチにマージ
-        - 現在は個人開発であるため、コードレビューは任意で行うことが可能
+        - mainブランチと作業ブランチ（featureブランチやtestブランチなど）に分けて管理
+        - Pull Requestを通してmainブランチにマージ
+        - 現在は個人開発であるためコードレビューは任意で行うことが可能
       - コミットメッセージ規約
         - Conventional Commits (feature, fix, testなどを使用)
