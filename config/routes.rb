@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     end
     collection do
       post 'login'
+      get 'login_poster_redirect'
     end
   end
 
