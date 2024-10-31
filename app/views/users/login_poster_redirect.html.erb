@@ -5,13 +5,16 @@
       'Content-Type': 'application/json',
       'X-CSRF-Token': '<%= form_authenticity_token %>'
     }
-  }).then(response => {
-    if (response.redirected) {
-      window.location.href = response.url;
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.redirect_url) {
+      window.location.href = data.redirect_url;
     } else {
-      document.body.innerHTML += `<p>Not redirected: ${response.status}</p>`;
+      document.body.innerHTML += `<p>Not redirected</p>`;
     }
-  }).catch(error => {
+  })
+  .catch(error => {
     document.body.innerHTML += `<p>Error: ${error.message}</p>`;
   });
 </script>
