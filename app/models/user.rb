@@ -17,17 +17,25 @@ class User < ApplicationRecord
     find_by(id: user_id) if user_id.present?
   end
 
-  # QRコード生成メソッドを実行
-  def generate_qr_code_for_login_poster
-    login_poster_url = generate_login_poster_url
-    generate_qr_code_svg(login_poster_url)
+  # QRコードを生成
+  def generate_qr_code
+    new_post_url = generate_new_post_url
+    generate_qr_code_svg(new_post_url)
   end
 
   private
 
-  # login_poster のURLを取得
-  def generate_login_poster_url
-    Rails.application.routes.url_helpers.login_poster_user_url(
+  # 新規投稿ページのURLを生成
+  def generate_new_post_url
+    Rails.application.routes.url_helpers.new_post_url(
+      host: 'https://device-expansion.onrender.com',
+      params: { user_id: id, ref: login_form_url }
+    )
+  end
+
+  # ログインフォームURLを取得
+  def login_form_url
+    Rails.application.routes.url_helpers.login_form_user_url(
       self,
       host: 'https://device-expansion.onrender.com'
     )
