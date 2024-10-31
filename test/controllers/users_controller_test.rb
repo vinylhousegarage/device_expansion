@@ -55,16 +55,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal @user.id, session[:user_id].to_i
   end
 
-  # login_poster_redirect のルーティングをテスト
-  test 'should route to login_poster_redirect' do
-    assert_routing({ method: 'get', path: '/users/1/login_poster_redirect' },
-                   { controller: 'users', action: 'login_poster_redirect', id: @user.id.to_s })
-  end
-
-  # login_poster へのリダイレクトをテスト
-  test 'should process login_poster' do
-    post login_poster_user_path(@user)
+  # login_poster_redirect ルートとリダイレクトを確認
+  test 'should route to login_poster_redirect and redirect to login_poster' do
+    get login_poster_redirect_user_path(@user)
     assert_response :redirect
+    assert_redirected_to login_poster_user_path(@user)
   end
 end
 
