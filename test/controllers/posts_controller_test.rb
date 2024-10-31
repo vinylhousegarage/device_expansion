@@ -13,7 +13,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # ログインヘルパーメソッドを定義
   def log_in_as(user)
-    post login_form_user_path, params: { session: { user_id: user.id } }
+    post login_form_user_path(user.id), params: { session: { user_id: user.id } }
   end
 
   # newアクションをテスト
