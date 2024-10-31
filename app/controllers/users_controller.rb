@@ -23,4 +23,9 @@ class UsersController < ApplicationController
     session[:user_id] = params[:id]
     @user = User.find(session[:user_id])
   end
+
+  # GETルートで受けたQRコードのパスをPOSTルートに変換
+  def login_poster_redirect
+    redirect_to login_poster_user_path(id: params[:id]), method: :post
+  end
 end
