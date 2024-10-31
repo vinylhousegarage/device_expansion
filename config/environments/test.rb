@@ -8,6 +8,10 @@ require 'active_support/core_ext/integer/time'
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Set the log level to debug for detailed log output in the test environment.
+  config.logger = Logger.new(STDOUT)
+  config.log_level = :debug
+
   # Turn false under Spring and add config.action_view.cache_template_loading = true.
   config.cache_classes = true
 
