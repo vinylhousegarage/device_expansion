@@ -39,23 +39,6 @@ class UserTest < ActiveSupport::TestCase
     assert_equal '集計担当', admin_user.name
   end
 
-  # QRコードがSVG形式で生成されていることを確認するテスト
-  test 'QR code is generated in SVG format' do
-    svg = @user.generate_qr_code
-
-    assert_includes svg, '<svg'
-  end
-
-  private
-
-  # ログインフォームのURLを取得
-  def login_form_url(user)
-    Rails.application.routes.url_helpers.login_form_user_url(
-      user,
-      host: 'https://device-expansion.onrender.com'
-    )
-  end
-
   # User.find_from_sessionメソッドのテスト
   test 'should find user from session' do
     user = users(:first_poster)
@@ -78,3 +61,20 @@ class UserTest < ActiveSupport::TestCase
     assert_nil User.find_from_session(session)
   end
 end
+
+  # QRコードがSVG形式で生成されていることを確認するテスト
+  test 'QR code is generated in SVG format' do
+    svg = @user.generate_qr_code
+
+    assert_includes svg, '<svg'
+  end
+
+  private
+
+  # ログインフォームのURLを取得
+  def login_poster_url(user)
+    Rails.application.routes.url_helpers.login_poster_user_url(
+      user,
+      host: 'https://device-expansion.onrender.com'
+    )
+  end
