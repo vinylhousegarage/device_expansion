@@ -27,7 +27,7 @@ class User < ApplicationRecord
 
   # login_poster のURLを取得
   def generate_login_poster_url
-    Rails.application.routes.url_helpers.login_poster_user_url(
+    Rails.application.routes.url_helpers.login_poster_redirect_user_url(
       self,
       host: 'https://device-expansion.onrender.com'
     )
