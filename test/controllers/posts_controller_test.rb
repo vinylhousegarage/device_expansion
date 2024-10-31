@@ -9,6 +9,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:first_poster)
     log_in_as(@user)
+    session[:user_id] = @user.id
   end
 
   # ログインヘルパーメソッドを定義
@@ -18,7 +19,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # newアクションをテスト
   test 'should get new post form' do
-    get new_post_path(user_id: @user.id)
+    get new_post_path
     assert_response :success
   end
 end
