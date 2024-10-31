@@ -1,0 +1,14 @@
+<h1>Redirecting...</h1>
+<script>
+  fetch('<%= login_poster_user_path(@user) %>', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': '<%= form_authenticity_token %>'
+    }
+  }).then(response => {
+    if (response.redirected) {
+      window.location.href = response.url;
+    }
+  });
+</script>
