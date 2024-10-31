@@ -7,10 +7,10 @@ Rails.application.routes.draw do
     member do
       post 'login_form'
       post 'login_poster'
+      get 'login_poster_redirect'
     end
     collection do
       post 'login'
-      get 'login_poster_redirect'
     end
   end
 
