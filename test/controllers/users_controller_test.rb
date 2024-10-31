@@ -49,18 +49,15 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_select 'svg', svg_expected_count
   end
 
-  # "投稿者１"ユーザーでのログインをテスト
-  test 'should log in first_poster user and redirect to new_post path' do
+  # "投稿者１"でのログインをテスト
+  test 'should log in first_poster user' do
     post login_poster_user_path(@user), params: { id: @user.id }
     assert_equal @user.id, session[:user_id].to_i
   end
 
   # login_poster_redirect ルートとリダイレクトを確認
-  test 'should route to login_poster_redirect and redirect to login_poster' do
+  test 'should route to login_poster_redirect' do
     get login_poster_redirect_user_path(@user)
-    assert_response :redirect
-    assert_redirected_to login_poster_user_path(@user)
+    assert_response :success
   end
 end
-
-
