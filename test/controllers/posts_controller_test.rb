@@ -13,12 +13,12 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # ログインヘルパーメソッドを定義
   def log_in_as(user)
-    post login_form_user_path(user.id)
+    post login_poster_user_path(user.id), params: { id: user.id }
   end
 
   # newアクションをテスト
   test 'should get new post form' do
-    get new_post_path(user_id: @user.id)
+    get new_post_path
     assert_response :success
   end
 end
