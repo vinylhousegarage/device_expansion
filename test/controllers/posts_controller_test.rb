@@ -9,12 +9,11 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:first_poster)
     log_in_as(@user)
-    session[:user_id] = @user.id
   end
 
   # ログインヘルパーメソッドを定義
   def log_in_as(user)
-    post login_form_user_path(user.id)
+    post login_form_user_path, params: { session: { user_id: user.id } }
   end
 
   # newアクションをテスト
