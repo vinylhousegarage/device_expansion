@@ -21,7 +21,7 @@ class UsersController < ApplicationController
   # 投稿者のトップページを設定
   def login_poster
     session[:user_id] = params[:id]
-    $stdout.puts 'Session user_id set to: #{session[:user_id]}'
+    $stdout.puts "Session user_id set to: #{session[:user_id]}"
     @user = User.find(session[:user_id])
     redirect_url = Rails.application.routes.url_helpers.login_poster_redirect_user_url(self, host: 'https://device-expansion.onrender.com')
     render json: { redirect_url: redirect_url }
@@ -29,7 +29,7 @@ class UsersController < ApplicationController
 
   # GETルートで受けたQRコードのパスをPOSTルートに変換
   def login_poster_redirect
-    puts 'Params: #{params.inspect}'
+    puts "Params: #{params.inspect}"
     @user = User.find(params[:id])
   end
 end
