@@ -23,7 +23,8 @@ class UsersController < ApplicationController
     session[:user_id] = params[:id]
     $stdout.puts "Session user_id set to: #{session[:user_id]}"
     @user = User.find(session[:user_id])
-    render json: { redirect_url: login_poster_user_path }
+    redirect_url = Rails.application.routes.url_helpers.login_poster_redirect_user_url(self, host: 'https://device-expansion.onrender.com')
+    render json: { redirect_url: redirect_url }
   end
 
   # GETルートで受けたQRコードのパスをPOSTルートに変換
