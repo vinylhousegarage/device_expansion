@@ -18,9 +18,9 @@ class User < ApplicationRecord
   end
 
   # QRコード生成メソッドを実行
-  def generate_qr_code_for_login_poster_url
+  def generate_qr_code_for_login_poster
     login_poster_redirect_url = generate_login_poster_redirect_url
-    generate_qr_code_svg(login_poster_redirect_url)
+    generate_qr_code_for_login_poster_svg(login_poster_redirect_url)
   end
 
   private
