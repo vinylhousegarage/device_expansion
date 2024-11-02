@@ -34,7 +34,7 @@ class User < ApplicationRecord
   end
 
   # QRコードをSVG形式で生成
-  def generate_qr_code_svg(url)
+  def generate_qr_code_for_login_poster_svg(url)
     qrcode = RQRCode::QRCode.new(url)
     qrcode.as_svg(
       offset: 0,
