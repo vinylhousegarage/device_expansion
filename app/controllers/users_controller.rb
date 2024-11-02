@@ -23,7 +23,7 @@ class UsersController < ApplicationController
     session[:user_id] = params[:id]
     $stdout.puts "Session user_id set to: #{session[:user_id]}"
     @user = User.find(session[:user_id])
-    redirect_url = Rails.application.routes.url_helpers.login_poster_redirect_user_url(self, host: 'https://device-expansion.onrender.com')
+    redirect_url = Rails.application.routes.url_helpers.login_poster_redirect_user_url(@user.id, host: 'https://device-expansion.onrender.com')
     render json: { redirect_url: redirect_url }
   end
 
