@@ -23,7 +23,7 @@ class UsersController < ApplicationController
     session[:user_id] = params[:id]
     $stdout.puts "Session user_id set to: #{session[:user_id]}"
     @user = User.find(session[:user_id])
-    render json: { redirect_path: login_poster_user_path(@user.id) }
+    render json: { redirect_url: login_poster_user_path(@user.id) }
   end
 
   # GETルートで受けたQRコードのパスをPOSTルートに変換
