@@ -8,8 +8,8 @@
   })
   .then(response => response.json())
   .then(data => {
-    if (data.redirect_url) {
-      window.location.href = data.redirect_url;
+    if (data.redirect_path) {
+      window.location.href = data.redirect_path;
     } else {
       document.body.innerHTML += `<p>Not redirected</p>`;
     }
