@@ -18,15 +18,15 @@ class User < ApplicationRecord
   end
 
   # QRコード生成メソッドを実行
-  def generate_qr_code_for_login_poster
-    login_poster_url = generate_login_poster_url
-    generate_qr_code_svg(login_poster_url)
+  def generate_qr_code_for_login_poster_url
+    login_poster_redirect_url = generate_login_poster_redirect_url
+    generate_qr_code_svg(login_poster_redirect_url)
   end
 
   private
 
-  # login_poster のURLを取得
-  def generate_login_poster_url
+  # login_poster_redirect のURLを取得
+  def generate_login_poster_redirect_url
     Rails.application.routes.url_helpers.login_poster_redirect_user_url(
       self,
       host: 'https://device-expansion.onrender.com'
