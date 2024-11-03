@@ -3,11 +3,11 @@ class ApplicationController < ActionController::Base
 
   # セッションの user_id に基づいて現在のユーザーを取得
   def current_user
-    @current_user ||= User.find(id: session[:user_id]) if session[:user_id]
+    @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
   end
 
   # params[:id] に基づいてユーザーを取得
   def find_params_id
-    User.find(id: params[:id])
+    User.find(params[:id])
   end
 end
