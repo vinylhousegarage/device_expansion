@@ -73,4 +73,5 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get login_poster_redirect_user_path(id: @user.id)
     assert_response :success
     assert_includes response.body, @user.name
+  end
 end
