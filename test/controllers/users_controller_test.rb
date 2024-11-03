@@ -63,7 +63,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # current_userメソッドのテスト
   test "current_user should return the user based on session user_id" do
-    post login_poster_user_path, session: { user_id: @user.id }
+    post login_poster_user_path(id: @user.id), session: { user_id: @user.id }
     assert_response :success
     assert_includes response.body, @user.name
   end
