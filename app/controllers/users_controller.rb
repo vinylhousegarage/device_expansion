@@ -28,7 +28,6 @@ class UsersController < ApplicationController
 
   # GETルートで受けたQRコードのパスをPOSTルートに変換
   def login_poster_redirect
-    puts "Params: #{params.inspect}"
     @user = find_params_id
   end
 end
