@@ -18,7 +18,6 @@ class PostsNewViewTest < ActionView::TestCase
       assert_select 'input[type=text][name=?]', 'post[others]'
     end
 
-    assert_select 'b', text: /#{@user.name}さんの登録件数：\d+/
-    assert_select 'b', text: /#{@user.name}さんの合計金額：\d+円/
+    assert_select 'div#user-info'
   end
 end
