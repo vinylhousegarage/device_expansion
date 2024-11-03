@@ -3,7 +3,7 @@ require 'test_helper'
 class SharedUserInfoPartialTest < ActionView::TestCase
   def setup
     @user = users(:first_poster)
-    @posts = posts(:first_post, :second_post)
+    @posts = Post.where(id: [posts(:first_post).id, posts(:second_post).id])
   end
 
   # 登録件数をテスト
