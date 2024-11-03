@@ -68,7 +68,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   # find_user_idメソッドのテスト
-  test "find_user_by_id should find user based on params[:id]" do
+  test "find_user_id should find user based on params[:id]" do
     @controller.params = { id: @user.id }
     assert_equal @user, @controller.find_user_id
   end
