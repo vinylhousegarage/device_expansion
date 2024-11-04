@@ -1,0 +1,43 @@
+<h3>登録状況</h3>
+
+<table>
+  <tr>
+    <td><b>　合　　計　　</b></td>
+    <td><b><%= @user_posts.count %>件　</b></td>
+    <td><b><%= number_with_delimiter(@user_posts.sum(:amount)) %> 円　</b></td>
+    <td><%= button_to "詳細", posts_path, method: :get %></td>
+  </tr>
+</table>
+
+<table>
+
+  <% @users.each do |user| %>
+
+  <tr>
+    <td><%= user.name %></td>
+    <td><%= user.posts.count %>件　</td>
+    <td><%= number_with_delimiter(user.posts.sum(:amount)) %> 円　</td>
+    <td><%= button_to "詳細", user_path(user.id), method: :get %></td>
+  </tr>
+  <% end %>
+</table>
+
+<table>
+  <tr>
+    <td></td>
+  </tr>
+</table>
+-------------------------------------------
+<table>
+  <tr>
+    <td><b>集計担当も数える</b></td>
+    <td><%= button_to "参加", new_post_path, method: :get %></td>
+  </tr>
+</table>
+-------------------------------------------
+<table>
+  <tr>
+    <td><b>初期画面に戻る　</b></td>
+    <td><%= button_to "戻る", new_user_path, method: :get %></td>
+  </tr>
+</table>

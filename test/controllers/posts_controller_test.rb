@@ -8,12 +8,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   # セッションデータを設定
   setup do
     @user = users(:first_poster)
-    log_in_as(@user)
-  end
-
-  # ログインヘルパーメソッドを定義
-  def log_in_as(user)
-    post login_poster_user_path(user.id), params: { id: user.id }
+    json_sign_in_as(@user)
   end
 
   # newアクションをテスト
