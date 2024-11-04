@@ -58,14 +58,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal @user.id, session[:user_id].to_i
   end
 
-  # login_poster_redirect ルートとリダイレクトを確認
+  # login_poster_redirectルートとリダイレクトを確認
   test 'should route to login_poster_redirect' do
     get login_poster_redirect_user_path(@user)
     assert_response :success
   end
 
-  # index ルートとリダイレクトを確認
-  test 'should route to index' do
+  # indexルートと一覧表示を確認
+  test 'should display all users and their posts on index page' do
     get users_path
     assert_response :success
 
@@ -74,11 +74,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     end
 
     Post.all.each do |post|
-      assert_match post.name, response.body
+      assert_match post.amount, response.body
     end
 
     Post.where(user_id: @user.id).each do |post|
-      assert_match post.name, response.body
+      assert_match post.amount, response.body
     end
   end
 end
