@@ -9,6 +9,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:first_poster)
     @admin_user = users(:admin)
+    @post = posts(:first_post)
+    sign_in_as(@user)
   end
 
   # 管理者の"集計担当"ユーザーでログインするテスト
@@ -59,5 +61,29 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test 'should route to login_poster_redirect' do
     get login_poster_redirect_user_path(@user)
     assert_response :success
+  end
+
+  # index ルートとリダイレクトを確認
+  test 'should route to index' do
+    get users_path
+    assert_response :success
+
+    User.all.each do |user|
+      assert_match user.name, response.body
+    end
+
+    Post.all.each do |post|
+      assert_match post.content, response.body
+    end
+
+    Post.where(user_id: @user.id).each do |post|
+      assert_match post.content, response.body
+    end
+  end
+
+  private
+
+  def sign_in_as(user)
+    post login_poster_user_path(user.id), params: { session: { user_id: user.id } }
   end
 end
