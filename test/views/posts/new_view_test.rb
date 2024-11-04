@@ -4,7 +4,7 @@ class PostsNewViewTest < ActionView::TestCase
   setup do
     @post = Post.new
     @user = users(:first_poster)
-    @posts = Post.where(user_id: @user.id)
+    @user_posts = Post.where(user_id: @user.id)
   end
 
   test 'new post form renders correctly' do
