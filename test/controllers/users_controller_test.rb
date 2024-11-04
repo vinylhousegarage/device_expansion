@@ -9,7 +9,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:first_poster)
     @admin_user = users(:admin)
-    @post = Post.find_by(user_id: @user.id)
+    @post = posts(:first_post)
     json_sign_in_as(@user)
   end
 
