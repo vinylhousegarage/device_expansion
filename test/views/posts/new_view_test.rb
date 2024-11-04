@@ -16,6 +16,7 @@ class PostsNewViewTest < ActionView::TestCase
       assert_select 'input[type=text][name=?]', 'post[address]'
       assert_select 'input[type=text][name=?]', 'post[tel]'
       assert_select 'input[type=text][name=?]', 'post[others]'
+      assert_select 'input[type=submit][value=?]', '　　　登　録　　　'
     end
 
     assert_select 'div#user-info'
