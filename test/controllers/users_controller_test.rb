@@ -74,11 +74,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     end
 
     Post.all.each do |post|
-      assert_match post.content, response.body
+      assert_match post.name, response.body
     end
 
     Post.where(user_id: @user.id).each do |post|
-      assert_match post.content, response.body
+      assert_match post.name, response.body
     end
   end
 end
