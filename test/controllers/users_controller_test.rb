@@ -1,6 +1,7 @@
 require 'test_helper'
 
 class UsersControllerTest < ActionDispatch::IntegrationTest
+  include ActionView::Helpers::NumberHelper
   # test "the truth" do
   #   assert true
   # end
@@ -9,6 +10,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:first_poster)
     @admin_user = users(:admin)
+    @posts = Post.where(user: @user)
+    json_sign_in_as(@user)
   end
 
   # 管理者の"集計担当"ユーザーでログインするテスト
@@ -51,13 +54,27 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # "投稿者１"でのログインをテスト
   test 'should log in first_poster user' do
-    post login_poster_user_path(@user), params: { id: @user.id }
+    post login_poster_user_path(@user), params: { id: @user.id }, as: :json
+    assert_response :success
     assert_equal @user.id, session[:user_id].to_i
   end
 
-  # login_poster_redirect ルートとリダイレクトを確認
+  # login_poster_redirectルートとリダイレクトを確認
   test 'should route to login_poster_redirect' do
     get login_poster_redirect_user_path(@user)
     assert_response :success
+  end
+
+  # indexルートと一覧表示を確認
+  test 'should display all users and their posts on index page' do
+    get users_path
+    assert_response :success
+
+    User.all.each do |user|
+      assert_match user.name, response.body
+    end
+
+    user_posts_total_amount = number_with_delimiter(Post.where(user_id: @user.id).sum(:amount)) + " 円"
+    assert_match user_posts_total_amount, response.body
   end
 end

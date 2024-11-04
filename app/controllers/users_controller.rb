@@ -30,4 +30,10 @@ class UsersController < ApplicationController
   def login_poster_redirect
     @user = find_params_id
   end
+
+  # 投稿者一覧を表示
+  def index
+    @users = User.all
+    @user_posts = Post.by_user(session[:user_id])
+  end
 end
