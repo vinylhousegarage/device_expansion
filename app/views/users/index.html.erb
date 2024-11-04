@@ -1,0 +1,12 @@
+users/index(登録状況)<br>
+
+<h3>登録状況</h3>
+
+<table>
+  <tr>
+    <td><b>　合　　計　　</b></td>
+    <td><b><%= @user_posts.count %>件　</b></td>
+    <td><b><%= number_with_delimiter(@user_posts.sum(:amount)) %> 円　</b></td>
+
+  </tr>
+</table>
