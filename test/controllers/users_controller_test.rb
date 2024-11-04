@@ -9,7 +9,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:first_poster)
     @admin_user = users(:admin)
-    @post = posts(:first_post)
+    @posts = Post.where(user: @user)
     json_sign_in_as(@user)
   end
 
@@ -73,12 +73,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       assert_match user.name, response.body
     end
 
-    Post.all.each do |post|
-      assert_match post.amount, response.body
-    end
-
-    Post.where(user_id: @user.id).each do |post|
-      assert_match post.amount, response.body
-    end
+    user_posts_total_amount = Post.where(user_id: @user.id).sum(:amount).to_s
+    assert_match user_posts_total_amount, response.body
   end
 end
