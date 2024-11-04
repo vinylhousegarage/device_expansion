@@ -10,7 +10,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @user = users(:first_poster)
     @admin_user = users(:admin)
     @post = posts(:first_post)
-    sign_in_as(@user)
+    json_sign_in_as(@user)
   end
 
   # 管理者の"集計担当"ユーザーでログインするテスト
@@ -84,7 +84,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def sign_in_as(user)
-    post login_poster_user_path(user.id), params: { session: { user_id: user.id } }
+  def json_sign_in_as(user)
+    post login_poster_user_path(user.id), params: { session: { user_id: user.id } }, as: :json
   end
 end
