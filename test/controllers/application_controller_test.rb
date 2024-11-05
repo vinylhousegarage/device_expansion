@@ -11,7 +11,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
   test 'current_user should return the user based on session user_id' do
     post login_poster_user_path(id: @user.id), as: :json
     assert_response :success
-    json_response = JSON.parse(response.body)
+    json_response = response.parsed_body
     assert_equal new_post_path, json_response["redirect_url"]
   end
 
