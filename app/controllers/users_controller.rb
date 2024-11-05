@@ -1,15 +1,21 @@
 class UsersController < ApplicationController
-  # 管理者のセッションを取得
-  def login
-    admin_users = User.admin_users
-    session[:user_id] = admin_users.first.id if admin_users.any?
-    redirect_to users_path
+  # 投稿者一覧を表示
+  def index
+    @users = User.all
+    @user_posts = Post.by_user(session[:user_id])
   end
 
   # ルートのページでセッションを空にする
   def new
     session[:user_id] = nil
     @users = User.poster_users
+  end
+
+  # 管理者のセッションを取得
+  def login
+    admin_users = User.admin_users
+    session[:user_id] = admin_users.first.id if admin_users.any?
+    redirect_to users_path
   end
 
   # QRコードを取得し@svgに格納
@@ -29,11 +35,5 @@ class UsersController < ApplicationController
   # GETルートで受けたQRコードのパスをPOSTルートに変換
   def login_poster_redirect
     @user = find_params_id
-  end
-
-  # 投稿者一覧を表示
-  def index
-    @users = User.all
-    @user_posts = Post.by_user(session[:user_id])
   end
 end
