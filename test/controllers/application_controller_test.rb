@@ -12,7 +12,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
     post login_poster_user_path(id: @user.id), as: :json
     assert_response :success
     json_response = response.parsed_body
-    assert_equal new_post_path, json_response["redirect_url"]
+    assert_equal new_post_path, json_response['redirect_url']
   end
 
   # find_params_id メソッドのテスト
