@@ -19,6 +19,7 @@ class UsersNewViewTest < ActionView::TestCase
       assert_select 'form[action=?][method=?]', user_path(user.id), 'get' do
         assert_select 'button', '詳細'
       end
+    end
     assert_select 'form[action=?][method=?]', new_post_path, 'get' do
       assert_select 'button', '参加'
     end
