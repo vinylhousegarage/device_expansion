@@ -74,7 +74,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       assert_match user.name, response.body
     end
 
-    user_posts_total_amount = number_with_delimiter(Post.where(user_id: @user.id).sum(:amount)) + " 円"
+    user_posts_total_amount = "#{number_with_delimiter(Post.where(user_id: @user.id).sum(:amount))} 円"
     assert_match user_posts_total_amount, response.body
   end
 end
