@@ -70,7 +70,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get users_path
     assert_response :success
 
-    User.all.each do |user|
+    User.find_each do |user|
       assert_match user.name, response.body
     end
 
