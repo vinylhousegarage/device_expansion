@@ -5,6 +5,8 @@ class UsersNewViewTest < ActionView::TestCase
 
   test 'renders index form' do
     @users = [users(:first_poster), users(:second_poster)]
+    @user_posts = Post.where(user: @users)
+
     render template: 'users/index'
     assert_select 'h3', '登録状況'
     assert_select 'button', '詳細'
