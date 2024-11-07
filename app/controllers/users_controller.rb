@@ -8,7 +8,7 @@ class UsersController < ApplicationController
   # ルートのページでセッションを空にする
   def new
     session[:user_id] = nil
-    @users = User.poster_users
+    @poster_users = User.poster_users
   end
 
   # 管理者のセッションを取得
