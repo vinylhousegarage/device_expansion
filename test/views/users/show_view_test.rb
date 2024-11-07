@@ -4,8 +4,10 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
   def setup
-    @user = users(:first_poster)
-    @admin = users(:admin)
+    @user = User.create!(name: '投稿者１')
+    @user_post = Post.create!(name: 'テスト ネーム', amount: 5000, user: @user)
+    @admin = User.create!(name: "集計担当")
+    @admin_post = Post.create!(name: '試験 氏名', amount: 30000, user: @admin)
   end
 
   test "show template displays user info and posts for different user roles" do
