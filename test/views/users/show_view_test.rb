@@ -2,21 +2,21 @@ require 'test_helper'
 
 class UsersShowViewTest < ActionDispatch::IntegrationTest
   def setup
-    @params_find_user = users(:first_poster)
+    @user = users(:first_poster)
     @user_posts = [
       posts(:first_post),
       posts(:second_post)
     ]
     # テストのセッションデータを設定
-    sign_in_as(@params_find_user)
+    sign_in_as(@user)
   end
 
   test "show template displays user info and posts" do
-    get user_path(@params_find_user)
+    get user_path(@user)
     assert_template 'users/show'
 
     # shared/user_info が表示されているか
-    assert_select 'h3', text: "#{@params_find_user.name}さんの登録一覧"
+    assert_select 'h3', text: "#{@user.name}さんの登録一覧"
 
     # テーブルのヘッダーが正しく表示されているか
     assert_select 'table' do
