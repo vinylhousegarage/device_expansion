@@ -2,14 +2,8 @@ require 'test_helper'
 
 class UsersShowViewTest < ActionDispatch::IntegrationTest
   def setup
-    @users = [
-      users(:first_poster),
-      users(:admin)
-    ]
-    @user_posts = [
-      posts(:first_post),
-      posts(:second_post)
-    ]
+    @users = [users(:first_poster), users(:second_poster)]
+    @user_posts = Post.where(user: @users)
   end
 
   test "show template displays user info and posts for different user roles" do
