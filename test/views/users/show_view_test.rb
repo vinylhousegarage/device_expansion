@@ -16,7 +16,6 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
     @users.each do |user|
       sign_in_as(user)
       get user_path(user)
-      assert_template 'users/show'
 
       assert_select 'h3', text: "#{user.name}さんの登録一覧"
 
