@@ -4,7 +4,7 @@ class UsersNewViewTest < ActionView::TestCase
   fixtures :users
 
   test 'renders the new user invitation form' do
-    @users = [users(:first_poster), users(:second_poster)]
+    @poster_users = [users(:first_poster), users(:second_poster)]
     render template: 'users/new'
     assert_select 'h3', 'みんなで香典集計'
     assert_select 'form[action=?][method=?]', login_form_user_path(users(:first_poster)), 'post' do
