@@ -5,13 +5,13 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
 
   def setup
     @users = [users(:first_poster), users(:admin)]
-    @user_posts = Post.where(user: @users)
   end
 
   test "show template displays user info and posts for different user roles" do
     @users.each do |user|
       sign_in_as(user)
       get user_path(user)
+      user_posts = Post.where(user: user)
 
       assert_select 'h3', text: "#{user.name}さんの登録一覧"
 
@@ -21,7 +21,7 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
         assert_select 'th', text: '金　額'
       end
 
-      @user_posts.each_with_index do |user_post, index|
+      user_posts.each_with_index do |user_post, index|
         assert_select 'tr' do
           assert_select 'td', text: (index + 1).to_s
           assert_select 'td', text: user_post.name
