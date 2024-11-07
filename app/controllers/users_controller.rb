@@ -7,7 +7,7 @@ class UsersController < ApplicationController
 
   # 個人別投稿一覧を表示
   def show
-    @params_find_user = find_params_id
+    @user = find_params_id
     @user_posts = Post.by_user(params[:id])
   end
 
