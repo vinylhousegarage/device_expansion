@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class UsersShowViewTest < ActionDispatch::IntegrationTest
+  include ApplicationHelper
+
   def setup
     @users = [users(:first_poster), users(:admin)]
     @user_posts = Post.where(user: @users)
