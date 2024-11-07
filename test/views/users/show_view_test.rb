@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class UsersShowViewTest < ActionDispatch::IntegrationTest
-  include ApplicationHelper
+  include ActionView::Helpers::NumberHelper
 
   def setup
     @users = [users(:first_poster), users(:admin)]
