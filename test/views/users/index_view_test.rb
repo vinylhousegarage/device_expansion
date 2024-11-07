@@ -4,7 +4,7 @@ class UsersNewViewTest < ActionView::TestCase
   fixtures :users
 
   test 'renders index form' do
-    @poster_users = [users(:first_poster), users(:second_poster)]
+    @users = [users(:first_poster), users(:second_poster)]
     @user_posts = Post.where(user: @users)
 
     render template: 'users/index'
@@ -12,11 +12,11 @@ class UsersNewViewTest < ActionView::TestCase
     assert_select 'button', '詳細'
     assert_select 'td', text: "#{@user_posts.count}件　"
     assert_select 'td', text: "#{number_with_delimiter(@user_posts.sum(:amount))} 円　"
-    @poster_users.each do |poster_user|
-      assert_select 'td', text: poster_user.name
-      assert_select 'td', text: "#{poster_user.posts.count}件　"
-      assert_select 'td', text: "#{number_with_delimiter(poster_user.posts.sum(:amount))} 円　"
-      assert_select 'form[action=?][method=?]', user_path(poster_user.id), 'get' do
+    @users.each do |user|
+      assert_select 'td', text: user.name
+      assert_select 'td', text: "#{user.posts.count}件　"
+      assert_select 'td', text: "#{number_with_delimiter(user.posts.sum(:amount))} 円　"
+      assert_select 'form[action=?][method=?]', user_path(user.id), 'get' do
         assert_select 'button', '詳細'
       end
     end
