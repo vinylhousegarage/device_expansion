@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   # 投稿者一覧を表示
   def index
-    @users = User.all
+    @poster_users = User.poster_users
     @user_posts = Post.by_user(session[:user_id])
   end
 
