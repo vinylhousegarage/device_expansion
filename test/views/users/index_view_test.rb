@@ -16,8 +16,6 @@ class UsersNewViewTest < ActionView::TestCase
       assert_select 'td', text: user.name
       assert_select 'td', text: "#{user.posts.count}件　"
       assert_select 'td', text: "#{number_with_delimiter(user.posts.sum(:amount))} 円　"
-    end
-    @poster_users.each do |poster_user|
       assert_select 'form[action=?][method=?]', user_path(user.id), 'get' do
         assert_select 'button', '詳細'
       end
