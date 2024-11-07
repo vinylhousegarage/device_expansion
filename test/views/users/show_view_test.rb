@@ -2,7 +2,7 @@ require 'test_helper'
 
 class UsersShowViewTest < ActionDispatch::IntegrationTest
   def setup
-    @users = [users(:first_poster), users(:second_poster)]
+    @users = [users(:first_poster), users(:admin)]
     @user_posts = Post.where(user: @users)
   end
 
