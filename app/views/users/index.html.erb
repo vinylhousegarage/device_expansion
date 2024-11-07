@@ -14,10 +14,10 @@
   <% @poster_users.each do |poster_user| %>
 
   <tr>
-    <td><%= user.name %></td>
-    <td><%= user.posts.count %>件　</td>
-    <td><%= number_with_delimiter(user.posts.sum(:amount)) %> 円　</td>
-    <td><%= button_to '詳細', user_path(user.id), method: :get %></td>
+    <td><%= poster_user.name %></td>
+    <td><%= poster_user.posts.count %>件　</td>
+    <td><%= number_with_delimiter(poster_user.posts.sum(:amount)) %> 円　</td>
+    <td><%= button_to '詳細', user_path(poster_user.id), method: :get %></td>
   </tr>
   <% end %>
 </table>
