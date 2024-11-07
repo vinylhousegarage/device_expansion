@@ -19,7 +19,7 @@
   <% end %>
 </table>
 <br>
-<% if session[:user_id] == 6 %>
+<% if @user.name == "集計担当" %>
   <%= button_to '新規登録へ戻る', new_post_path, method: :get %>
   <br>
   <%= button_to '登録状況へ戻る', users_path, method: :get %>
