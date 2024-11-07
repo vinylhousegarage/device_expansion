@@ -4,11 +4,12 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
   def setup
-    @users = [users(:first_poster), users(:admin)]
+    @user = users(:first_poster)
+    @admin = users(:admin)
   end
 
   test "show template displays user info and posts for different user roles" do
-    @users.each do |user|
+    [@user, @admin].each do |user|
       sign_in_as(user)
       get user_path(user)
       user_posts = Post.where(user: user)
