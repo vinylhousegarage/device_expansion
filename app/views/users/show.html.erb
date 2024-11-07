@@ -20,11 +20,11 @@
 </table>
 <br>
 <% if session[:user_id] == 6 %>
-  <%= button_to "新規登録へ戻る", new_post_path, method: :get %>
+  <%= button_to '新規登録へ戻る', new_post_path, method: :get %>
   <br>
-  <%= button_to "登録状況へ戻る", users_path, method: :get %>
+  <%= button_to '登録状況へ戻る', users_path, method: :get %>
   <br>
-  <%= button_to "初期画面へ戻る", new_user_path, method: :get %>
+  <%= button_to '初期画面へ戻る', new_user_path, method: :get %>
 <% else %>
-  <%= button_to "新規登録へ戻る", new_post_path, method: :get %>
+  <%= button_to '新規登録へ戻る', new_post_path, method: :get %>
 <% end %>
