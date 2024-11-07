@@ -2,7 +2,7 @@ require 'test_helper'
 
 class UsersShowViewTest < ActionDispatch::IntegrationTest
   def setup
-    @params_find_user = users(:first_poste)
+    @params_find_user = users(:first_poster)
     @user_posts = [
       posts(:first_post),
       posts(:second_post)
