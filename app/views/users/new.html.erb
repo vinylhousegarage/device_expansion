@@ -2,8 +2,8 @@
 
 <p></p>
 
-<% @users.each do |user| %>
-  <%= button_to user.name + "さんを招待する", login_form_user_path(user), method: :post, data: { turbo: false }, id: "invite-button-#[user.id]" %>
+<% @poster_users.each do |poster_user| %>
+  <%= button_to user.name + "さんを招待する", login_form_user_path(poster_user), method: :post, data: { turbo: false }, id: "invite-button-#[poster_user.id]" %>
 
   <br>
 <% end %>
