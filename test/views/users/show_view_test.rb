@@ -13,6 +13,8 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
       get user_path(user)
       user_posts = user.posts
 
+      Rails.logger.debug "User: #{user.name}, Posts: #{user_posts.map { |post| { name: post.name, amount: post.amount } }}"
+
       assert_select 'h3', text: "#{user.name}さんの登録一覧"
 
       assert_select 'table' do
@@ -22,6 +24,9 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
       end
 
       user_posts.each_with_index do |user_post, index|
+
+        Rails.logger.debug "Post #{index + 1}: Name: #{user_post.name}, Amount: #{user_post.amount}"
+
         assert_select 'tr' do
           assert_select 'td', text: (index + 1).to_s
           assert_select 'td', text: user_post.name
