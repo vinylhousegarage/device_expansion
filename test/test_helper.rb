@@ -13,5 +13,6 @@ module ActiveSupport
 
     # Add more helper methods to be used by all tests here...
     include JsonSignInHelper
+    include SignInHelper
   end
 end

@@ -5,6 +5,12 @@ class UsersController < ApplicationController
     @user_posts = Post.by_user(session[:user_id])
   end
 
+  # 個人別投稿一覧を表示
+  def show
+    @user = find_params_id
+    @user_posts = @user.posts
+  end
+
   # ルートのページでセッションを空にする
   def new
     session[:user_id] = nil
