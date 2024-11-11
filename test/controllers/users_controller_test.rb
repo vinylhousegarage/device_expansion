@@ -80,7 +80,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
     # users#logout のパスをテスト
     test 'should get logout user page' do
-      post logout_user_path
+      post logout_users_path
       assert_response :redirect
       assert_redirected_to root_path
     end
