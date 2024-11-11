@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     end
     collection do
       post 'login'
+      post 'logout'
     end
   end
 
