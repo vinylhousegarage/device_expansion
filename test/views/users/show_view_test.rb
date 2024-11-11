@@ -8,7 +8,7 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
   end
 
   test "show template displays user info and posts for different user roles" do
-    [@user, @admin].each do |user|
+    @users.each do |user|
       sign_in_as(user)
       get user_path(user)
       user_posts = user.posts
