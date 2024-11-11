@@ -45,6 +45,8 @@ class UsersController < ApplicationController
 
   # セッションをリセット
   def logout
+    @user = current_user
     session[:user_id] = nil
+    render :logout
   end
 end
