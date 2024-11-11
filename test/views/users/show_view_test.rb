@@ -30,7 +30,7 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
         assert_select 'tr' do
           assert_select 'td', text: (index + 1).to_s
           assert_select 'td', text: user_post.name
-          assert_select 'td', text: "#{user_post.amount} 円"
+          assert_select 'td', text: "　#{number_with_delimiter(user_post.amount)} 円　"
           assert_select 'form[action=?][method=?]', post_path(user_post), 'get' do
             assert_select 'button', '詳細'
           end
