@@ -77,4 +77,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     user_posts_total_amount = "#{number_with_delimiter(Post.where(user_id: @user.id).sum(:amount))} 円"
     assert_match user_posts_total_amount, response.body
   end
+
+    # users#logout のパスをテスト
+    test 'should get logout user page' do
+      post logout_users_path
+      assert_response :success
+    end
 end

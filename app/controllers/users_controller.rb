@@ -42,4 +42,9 @@ class UsersController < ApplicationController
   def login_poster_redirect
     @user = find_params_id
   end
+
+  # セッションをリセット
+  def logout
+    session[:user_id] = nil
+  end
 end
