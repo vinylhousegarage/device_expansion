@@ -1,0 +1,6 @@
+<br><br>
+<h3>おつかれ様でした</h3>
+<br><br>
+<% if @user.name == "集計担当" %>
+  <%= button_to '初期画面へ戻る', new_user_path, method: :get %>
+<% end %>
