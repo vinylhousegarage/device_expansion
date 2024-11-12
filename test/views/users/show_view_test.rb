@@ -7,11 +7,10 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
     @users = [users(:first_poster), users(:admin)]
   end
 
-  test "show template displays user info and posts for different user roles" do
+  test 'displays headers in show template for different user roles' do
     @users.each do |user|
       sign_in_as(user)
       get user_path(user)
-      user_posts = user.posts
 
       assert_select 'h3', text: "#{user.name}さんの登録一覧"
 
@@ -20,8 +19,15 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
         assert_select 'th', text: '氏　名'
         assert_select 'th', text: '金　額'
       end
+    end
+  end
 
-      user_posts.each_with_index do |user_post, index|
+  test 'displays user posts with correct details in show template' do
+    @users.each do |user|
+      sign_in_as(user)
+      get user_path(user)
+
+      user.posts.each_with_index do |user_post, index|
         assert_select 'tr' do
           assert_select 'td', text: (index + 1).to_s
           assert_select 'td', text: user_post.name
@@ -31,20 +37,24 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
           end
         end
       end
+    end
+  end
 
-      if user.name == "集計担当"
-        assert_select 'form[action=?][method=?]', new_post_path, 'get' do
-          assert_select 'button', '新規登録へ戻る'
-        end
+  test 'displays navigation buttons based on user role in show template' do
+    @users.each do |user|
+      sign_in_as(user)
+      get user_path(user)
+
+      assert_select 'form[action=?][method=?]', new_post_path, 'get' do
+        assert_select 'button', '新規登録へ戻る'
+      end
+
+      if user.name == '集計担当'
         assert_select 'form[action=?][method=?]', users_path, 'get' do
           assert_select 'button', '登録状況へ戻る'
         end
         assert_select 'form[action=?][method=?]', new_user_path, 'get' do
           assert_select 'button', '初期画面へ戻る'
-        end
-      else
-        assert_select 'form[action=?][method=?]', new_post_path, 'get' do
-          assert_select 'button', '新規登録へ戻る'
         end
       end
     end
