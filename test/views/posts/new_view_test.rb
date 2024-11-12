@@ -2,6 +2,8 @@ require 'test_helper'
 
 class UsersShowViewTest < ActionDispatch::IntegrationTest
   setup do
+    @user = users(:first_poster)
+    @user_posts = @user.posts
     @users = [users(:first_poster), users(:admin)]
   end
 
