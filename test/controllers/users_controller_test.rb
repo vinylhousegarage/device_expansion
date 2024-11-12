@@ -45,7 +45,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   # QRコードの生成をテスト
-  test 'should get login form and generate QR code' do
+  test 'should post to login form and generate QR code' do
     svg_expected_count = 1
     post login_form_user_path(@user.id)
     assert_response :success
@@ -78,9 +78,15 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_match user_posts_total_amount, response.body
   end
 
-    # users#logout のパスをテスト
-    test 'should get logout user page' do
-      post logout_users_path
-      assert_response :success
-    end
+  # users#logout のパスをテスト
+  test 'should successfully post to logout users path' do
+    post logout_users_path
+    assert_response :success
+  end
+
+  # users#reset_database のパスをテスト
+  test 'should successfully post to reset_database path' do
+    post reset_database_users_path
+    assert_response :success
+  end
 end
