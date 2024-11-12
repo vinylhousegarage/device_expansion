@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class PostsNewViewTest < ActionView::TestCase
+class UsersLogoutViewTest < ActionView::TestCase
   setup do
     @users = [users(:first_poster), users(:admin)]
   end
