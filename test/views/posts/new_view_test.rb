@@ -7,6 +7,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
 
   test 'renders user-info section with correct content' do
     @users.each do |user|
+      session[:id] = user.id
       get new_post_path
       assert_select 'div#user-info' do
         assert_select 'b', text: "#{user.name}さんの登録件数：#{user.posts.count}件"
@@ -16,6 +17,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'displays new registration form with correct fields' do
+    session[:id] = user.id
     get new_post_path
     assert_select 'h3', text: '新規登録'
     assert_select 'form' do
