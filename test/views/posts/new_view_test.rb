@@ -5,11 +5,9 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
     @users = [users(:first_poster), users(:admin)]
   end
 
-  test "show template displays user info and posts for different user roles" do
+  test 'displays correct form and button based on user role in show view' do
     @users.each do |user|
       sign_in_as(user)
-      get user_path(user)
-      user_posts = user.posts
 
       assert_select 'form' do
         assert_select 'input[type=text][name=?]', 'post[name]'
@@ -22,7 +20,7 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
 
       assert_select 'div#user-info'
 
-      if user.name == "集計担当"
+      if user.name == '集計担当'
         assert_select 'form[action=?][method=?]', users_path, 'get' do
           assert_select 'button', '登録状況へ戻る　'
         end
