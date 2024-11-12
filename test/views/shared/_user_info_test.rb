@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class PostsNewViewTest < ActionView::TestCase
+class UserInfoTest < ActionView::TestCase
   setup do
     @post = Post.new
     @user = users(:first_poster)
