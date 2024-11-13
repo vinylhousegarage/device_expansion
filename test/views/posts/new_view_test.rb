@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class PostsNewViewTest < ActionDispatch::IntegrationTest
+  include ActionView::Helpers::NumberHelper
+
   setup do
     @users = [users(:first_poster), users(:admin)]
   end
