@@ -11,7 +11,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @user = users(:first_poster)
     @admin_user = users(:admin)
     @posts = Post.where(user: @user)
-    json_sign_in_as(@user)
+    login_poster_as_json(@user)
   end
 
   # 管理者の"集計担当"ユーザーでログインするテスト

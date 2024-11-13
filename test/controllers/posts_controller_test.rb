@@ -8,7 +8,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   # セッションデータを設定
   setup do
     @user = users(:first_poster)
-    json_sign_in_as(@user)
+    login_poster_as_json(@user)
   end
 
   # newアクションをテスト
