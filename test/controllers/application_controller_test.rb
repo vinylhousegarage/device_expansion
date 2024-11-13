@@ -3,8 +3,7 @@ require 'test_helper'
 class ApplicationControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = users(:first_poster)
-    cookies[:user_id] = @user.id
-    json_sign_in_as(@user)
+    sign_in_as(@user, as: :json)
   end
 
   # current_user メソッドのテスト

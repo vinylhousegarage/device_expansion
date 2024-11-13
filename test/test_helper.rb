@@ -12,7 +12,7 @@ module ActiveSupport
     fixtures :all
 
     # Add more helper methods to be used by all tests here...
-    include JsonSignInHelper
     include SignInHelper
+    include UserInfoAssertions
   end
 end
