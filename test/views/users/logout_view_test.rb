@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class PostsNewViewTest < ActionView::TestCase
+class UsersLogoutViewTest < ActionView::TestCase
   setup do
     @users = [users(:first_poster), users(:admin)]
   end
@@ -12,7 +12,7 @@ class PostsNewViewTest < ActionView::TestCase
       render template: 'users/logout'
       assert_select 'h3', 'おつかれ様でした'
 
-      if @user.name == "集計担当"
+      if @user.name == '集計担当'
         assert_select 'form[action=?][method=?]', new_user_path, 'get' do
           assert_select 'button', '初期画面へ戻る'
         end

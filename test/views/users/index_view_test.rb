@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class UsersNewViewTest < ActionView::TestCase
+class UsersIndexViewTest < ActionView::TestCase
   fixtures :users
 
   test 'renders index form' do

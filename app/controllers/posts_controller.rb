@@ -3,6 +3,6 @@ class PostsController < ApplicationController
     $stdout.puts "Session user_id: #{session[:user_id]}"
     @user = current_user
     @post = Post.new
-    @user_posts = Post.by_user(@user.id)
+    @user_posts = @user.posts
   end
 end
