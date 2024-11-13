@@ -49,13 +49,12 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
         assert_select 'button', '新規登録へ戻る'
       end
 
-      if user.name == '集計担当'
-        assert_select 'form[action=?][method=?]', users_path, 'get' do
-          assert_select 'button', '登録状況へ戻る'
-        end
-        assert_select 'form[action=?][method=?]', new_user_path, 'get' do
-          assert_select 'button', '初期画面へ戻る'
-        end
+      next if user.name == '投稿者１'
+      assert_select 'form[action=?][method=?]', users_path, 'get' do
+        assert_select 'button', '登録状況へ戻る'
+      end
+      assert_select 'form[action=?][method=?]', new_user_path, 'get' do
+        assert_select 'button', '初期画面へ戻る'
       end
     end
   end
