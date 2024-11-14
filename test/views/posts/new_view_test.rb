@@ -23,7 +23,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     else
       assert_select 'table' do
         assert_select 'b', text: '作業を終了する　'
-        assert_select 'form[action=?][method=?]', logout_users_path, 'post' do
+        assert_select 'form[action=?][method=?]', logout_users_path, 'delete' do
           assert_select 'button', '終了'
         end
       end
