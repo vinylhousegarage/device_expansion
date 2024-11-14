@@ -83,6 +83,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     delete logout_users_path
     assert_response :redirect
     assert_redirected_to root_path
+    assert_flash :notice, 'ログアウトしました'
     follow_redirect!
     assert_response :success
     assert_flash :notice, 'データがリセットされました'
