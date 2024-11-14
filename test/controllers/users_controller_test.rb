@@ -81,7 +81,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # users#logout のパスをテスト
   test 'should successfully post to logout users path' do
     delete logout_users_path
-    assert_response :success
+    assert_response :redirect
+    assert_redirected_to root_path
   end
 
   # users#reset_database のパスをテスト
