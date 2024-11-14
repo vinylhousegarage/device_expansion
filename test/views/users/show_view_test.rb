@@ -50,6 +50,7 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
       end
 
       next if user.name == '投稿者１'
+
       assert_select 'form[action=?][method=?]', users_path, 'get' do
         assert_select 'button', '登録状況へ戻る'
       end
