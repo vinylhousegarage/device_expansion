@@ -14,5 +14,6 @@ module ActiveSupport
     # Add more helper methods to be used by all tests here...
     include SignInHelper
     include UserInfoAssertions
+    include FlashAssertions
   end
 end
