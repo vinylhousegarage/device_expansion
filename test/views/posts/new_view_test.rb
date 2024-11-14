@@ -14,19 +14,29 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
 
   def assert_navigation_buttons(user)
     if user.name == '集計担当'
-      assert_select 'table' do
-        assert_select 'b', text: '登録状況へ戻る　'
-        assert_select 'form[action=?][method=?]', users_path, 'get' do
-          assert_select 'button', '戻る'
-        end
-      end
+      assert_back_to_status_button
     else
-      assert_select 'table' do
-        assert_select 'b', text: '作業を終了する　'
-        assert_select 'form[action=?]', logout_users_path do
-          assert_select 'input[name="_method"][value="delete"]'
-          assert_select 'button', '終了'
-        end
+      assert_end_work_button
+    end
+  end
+
+  private
+
+  def assert_back_to_status_button
+    assert_select 'table' do
+      assert_select 'b', text: '登録状況へ戻る　'
+      assert_select 'form[action=?][method=?]', users_path, 'get' do
+        assert_select 'button', '戻る'
+      end
+    end
+  end
+
+  def assert_end_work_button
+    assert_select 'table' do
+      assert_select 'b', text: '作業を終了する　'
+      assert_select 'form[action=?]', logout_users_path do
+        assert_select 'input[name="_method"][value="delete"]'
+        assert_select 'button', '終了'
       end
     end
   end
