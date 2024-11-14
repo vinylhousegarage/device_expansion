@@ -49,6 +49,10 @@ class UsersController < ApplicationController
     render :logout
   end
 
+  def logout_poster
+    session[:user_id] = nil
+  end
+
   # データをリセット
   def reset_database
     Rails.application.load_seed
