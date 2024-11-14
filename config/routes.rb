@@ -12,6 +12,7 @@ Rails.application.routes.draw do
     collection do
       post 'login'
       delete 'logout'
+      delete 'logout_poster'
       post 'reset_database'
     end
   end
