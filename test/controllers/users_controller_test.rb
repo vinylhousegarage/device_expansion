@@ -89,4 +89,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     post reset_database_users_path
     assert_response :success
   end
+
+  # users#logout_poster のパスをテスト
+  test 'should successfully post to logout_poster path' do
+    delete logout_poster_users_path
+    assert_response :success
 end
