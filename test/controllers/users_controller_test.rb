@@ -78,11 +78,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_match user_posts_total_amount, response.body
   end
 
-  # users#logout のパスをテスト
+  # users#logout のパスとフラッシュをテスト
   test 'should successfully post to logout users path' do
     delete logout_users_path
     assert_response :redirect
     assert_redirected_to root_path
+    follow_redirect!
+    assert_response :success
+    assert_flash :notice, 'データがリセットされました'
   end
 
   # users#reset_database のパスをテスト
