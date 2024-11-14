@@ -15,6 +15,8 @@ class UsersController < ApplicationController
   def new
     session[:user_id] = nil
     @poster_users = User.poster_users
+    reset_database
+    flash[:notice] = 'データがリセットされました'
   end
 
   # 管理者のセッションを取得
@@ -45,7 +47,7 @@ class UsersController < ApplicationController
   # 管理者のログアウト
   def logout
     session[:user_id] = nil
-    redirect_to root_path
+    redirect_to root_path, notice: 'ログアウトしました'
   end
 
   # 投稿者のログアウト
