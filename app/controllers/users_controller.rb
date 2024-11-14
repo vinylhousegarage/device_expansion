@@ -42,13 +42,13 @@ class UsersController < ApplicationController
     @user = find_params_id
   end
 
-  # セッションをリセット
+  # 管理者のログアウト
   def logout
-    @user = current_user
     session[:user_id] = nil
-    render :logout
+    redirect_to root_path
   end
 
+  # 投稿者のログアウト
   def logout_poster
     session[:user_id] = nil
   end
