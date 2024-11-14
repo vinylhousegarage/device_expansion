@@ -94,4 +94,5 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test 'should successfully post to logout_poster path' do
     delete logout_poster_users_path
     assert_response :success
+  end
 end
