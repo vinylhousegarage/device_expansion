@@ -1,5 +1,11 @@
 <h3>みんなで香典集計</h3>
 
+<% if flash[:notice] %>
+  <div>
+    <%= flash[:notice] %>
+  </div>
+<% end %>
+
 <p></p>
 
 <% @poster_users.each do |poster_user| %>
