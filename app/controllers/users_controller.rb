@@ -13,7 +13,6 @@ class UsersController < ApplicationController
 
   # ルートのページでセッションを空にする
   def new
-    session[:user_id] = nil
     @poster_users = User.poster_users
   end
 
