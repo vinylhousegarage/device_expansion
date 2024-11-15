@@ -29,21 +29,21 @@
   </div>
 
   <div>
-　　　　<%= form.submit "　　　登　録　　　" %>
-  </div><br>
+　　　<%= form.submit "　　　登　　録　　　" %>
+  </div>
 
 <% end %>
 <table>
   <tr>
     <td><b><%= '集計を確認する' %></b></td>
     <td><%= button_to '確認', user_path(session[:user_id]), method: :get %></td>
-  </tr><br>
+  </tr>
 
   <% if @user.name == '集計担当' %>
     <tr>
       <td><b><%= '登録状況へ戻る　' %></b></td>
       <td><%= button_to "戻る", users_path, method: :get %></td>
-    </tr><br>
+    </tr>
   <% end %>
 
   <tr>
@@ -54,3 +54,8 @@
     </td>
   </tr>
 </table>
+
+<!-- logout_posterアクションを直接確認するリンクを追加 -->
+<div>
+  <%= link_to "logout_posterを直接確認", logout_poster_users_path, method: :delete %>
+</div>
