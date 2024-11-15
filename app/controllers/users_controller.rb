@@ -51,7 +51,6 @@ class UsersController < ApplicationController
   # 投稿者のログアウト
   def logout_poster
     session[:user_id] = nil
-    render
   end
 
   # データをリセット
