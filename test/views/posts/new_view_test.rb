@@ -25,19 +25,19 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
 
   def assert_back_to_status_button
     assert_select 'table' do
-      assert_select 'b', text: '登録状況へ戻る　'
+      assert_select 'td', text: '登録状況へ戻る　'
       assert_select 'form[action=?][method=?]', users_path, 'get' do
-        assert_select 'button', '戻る'
+        assert_select 'input[type=submit][value=?]', '戻る'
       end
     end
   end
 
   def assert_logout_button(path)
     assert_select 'table' do
-      assert_select 'b', text: '作業を終了する　'
-      assert_select 'form[action=?]', path do
-        assert_select 'input[name="_method"][value="delete"]'
-        assert_select 'button', '終了'
+      assert_select 'td', text: '作業を終了する　'
+      assert_select 'form[action=?][method=?]', path, 'post' do
+        assert_select 'input[name="_method"][value=?]', 'delete'
+        assert_select 'input[type=submit][value=?]', '終了'
       end
     end
   end
@@ -53,25 +53,39 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     access_new_post_page(users(:first_poster))
     assert_select 'h3', text: '新規登録'
     assert_select 'form' do
-      assert_select 'input[type=text][name=?]', 'post[name]'
-      assert_select 'input[type=number][name=?]', 'post[amount]'
-      assert_select 'input[type=text][name=?]', 'post[address]'
-      assert_select 'input[type=text][name=?]', 'post[tel]'
-      assert_select 'input[type=text][name=?]', 'post[others]'
-      assert_select 'input[type=submit][value=?]', '　　　登　録　　　'
+      assert_select 'div' do
+        assert_select 'label', text: '氏名'
+        assert_select 'input[type=text][name=?]', 'post[name]'
+      end
+      assert_select 'div' do
+        assert_select 'label', text: '金額'
+        assert_select 'input[type=number][name=?]', 'post[amount]'
+      end
+      assert_select 'div' do
+        assert_select 'label', text: '住所'
+        assert_select 'input[type=text][name=?]', 'post[address]'
+      end
+      assert_select 'div' do
+        assert_select 'label', text: '電話'
+        assert_select 'input[type=text][name=?]', 'post[tel]'
+      end
+      assert_select 'div' do
+        assert_select 'label', text: '備考'
+        assert_select 'input[type=text][name=?]', 'post[others]'
+      end
+      assert_select 'div' do
+        assert_select 'input[type=submit][value=?]', '　　　登　録　　　'
+      end
     end
   end
 
-  test 'renders session ID and confirmation button' do
+  test 'renders confirmation button' do
     @users.each do |user|
       access_new_post_page(user)
-      assert_select 'p', text: "sessionID: #{user.id}"
       assert_select 'table' do
         assert_select 'td', text: '集計を確認する'
-        assert_select 'td' do
-          assert_select 'form[action=?][method=?]', user_path(user), 'get' do
-            assert_select 'button', '確認'
-          end
+        assert_select 'form[action=?][method=?]', user_path(user), 'get' do
+          assert_select 'input[type=submit][value=?]', '確認'
         end
       end
     end
