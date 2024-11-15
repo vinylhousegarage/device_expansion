@@ -16,8 +16,8 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
 
       assert_select 'table' do
         assert_select 'th', text: 'No.'
-        assert_select 'th', text: '氏　名'
-        assert_select 'th', text: '金　額'
+        assert_select 'th', text: '氏名'
+        assert_select 'th', text: '金額'
       end
     end
   end
