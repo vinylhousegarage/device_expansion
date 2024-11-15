@@ -53,13 +53,18 @@
       <td><b><%= '登録状況へ戻る　' %></b></td>
       <td><%= button_to "戻る", users_path, method: :get %></td>
     </tr>
+  <%= "----------------------------------------" %>
+    <tr>
+      <td><b><%= '作業を終了する　' %></b></td>
+      <td><%= button_to "終了", logout_users_path, method: :delete %></td>
+    </tr>
   </table>
 <% else %>
   <table>
   <%= "----------------------------------------" %>
     <tr>
       <td><b><%= '作業を終了する　' %></b></td>
-      <td><%= button_to "終了", logout_users_path, method: :delete %></td>
+      <td><%= button_to "終了", logout_poster_users_path, method: :delete %></td>
     </tr>
   </table>
 <% end %>
