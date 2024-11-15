@@ -27,7 +27,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     assert_select 'table' do
       assert_select 'td', text: '登録状況へ戻る　'
       assert_select 'form[action=?][method=?]', users_path, 'get' do
-        assert_select 'input[type=submit][value=?]', '戻る'
+        assert_select 'button', text: '戻る'
       end
     end
   end
@@ -37,7 +37,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
       assert_select 'td', text: '作業を終了する　'
       assert_select 'form[action=?][method=?]', path, 'post' do
         assert_select 'input[name="_method"][value=?]', 'delete'
-        assert_select 'input[type=submit][value=?]', '終了'
+        assert_select 'button', text: '終了'
       end
     end
   end
@@ -85,7 +85,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
       assert_select 'table' do
         assert_select 'td', text: '集計を確認する'
         assert_select 'form[action=?][method=?]', user_path(user), 'get' do
-          assert_select 'input[type=submit][value=?]', '確認'
+          assert_select 'button', text: '確認'
         end
       end
     end
