@@ -74,7 +74,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
         assert_select 'input[type=text][name=?]', 'post[others]'
       end
       assert_select 'div' do
-        assert_select 'input[type=submit][value=?]', '　　　登　録　　　'
+        assert_select 'input[type=submit][value=?]', '　　　登　　録　　　'
       end
     end
   end
