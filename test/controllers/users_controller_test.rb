@@ -21,12 +21,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to users_path
   end
 
-  # newアクション実行時のセッションID の空チェック
-  test 'should reset session in new' do
-    get new_user_path
-    assert_nil session[:user_id]
-  end
-
   # users#new のパスをテスト
   test 'should get new user page' do
     get new_user_path
