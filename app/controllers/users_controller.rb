@@ -11,7 +11,7 @@ class UsersController < ApplicationController
     @user_posts = @user.posts
   end
 
-  # ルートのページでセッションを空にする
+  # 投稿者を招待
   def new
     @poster_users = User.poster_users
   end
