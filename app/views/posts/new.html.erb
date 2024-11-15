@@ -5,66 +5,51 @@
 <h3>新規登録</h3>
 
 <%= form_with model: @post, local: true do |form| %>
-
-  <table>
-    <tr>
-      <td><%= form.label :お名前 %></td>
-      <td><%= form.text_field :name %></td>
-      <td><%= form.label :円 %></td>
-    </tr>
-    <tr>
-      <td><%= form.label :金　額 %></td>
-      <td><%= form.number_field :amount %></td>
-      <td><%= form.label :円 %></td>
-    </tr>
-    <tr>
-      <td><%= form.label :住　所 %></td>
-      <td><%= form.text_field :address %></td>
-    </tr>
-    <tr>
-      <td><%= form.label :電　話 %></td>
-      <td><%= form.text_field :tel, pattern: '\d*', title: '―無し' %></td>
-      <td><%= form.label :―無し %></td>
-    </tr>
-    <tr>
-      <td><%= form.label :その他 %></td>
-      <td><%= form.text_field :others %></td>
-    </tr>
-  </table><br>
-  <p>sessionID: <%= session[:user_id] %></p>
+  <div>
+    <label><%= form.label :name, '氏名' %></label>
+    <%= form.text_field :name, class: 'form-control' %>
+  </div>
+  <div>
+    <label><%= form.label :amount, '金額' %></label>
+    <%= form.number_field :amount, class: 'form-control' %>
+    <span>円</span>
+  </div>
+  <div>
+    <label><%= form.label :address, '住所' %></label>
+    <%= form.text_field :address, class: 'form-control' %>
+  </div>
+  <div>
+    <label><%= form.label :tel, '電話' %></label>
+    <%= form.text_field :tel, pattern: '\d*', title: '―無し', class: 'form-control' %>
+  </div>
+  <div>
+    <label><%= form.label :others, '備考' %></label>
+    <%= form.text_field :others, class: 'form-control' %>
+  </div>
 
   <div>
 　　　　<%= form.submit "　　　登　録　　　" %>
   </div><br>
 
 <% end %>
-----------------------------------------
 <table>
   <tr>
     <td><b><%= '集計を確認する' %></b></td>
     <td><%= button_to '確認', user_path(session[:user_id]), method: :get %></td>
-  </tr>
-</table>
+  </tr><br>
 
-<% if @user.name == '集計担当' %>
-  <table>
-  <%= "----------------------------------------" %>
+  <% if @user.name == '集計担当' %>
     <tr>
       <td><b><%= '登録状況へ戻る　' %></b></td>
       <td><%= button_to "戻る", users_path, method: :get %></td>
-    </tr>
-  <%= "----------------------------------------" %>
-    <tr>
-      <td><b><%= '作業を終了する　' %></b></td>
-      <td><%= button_to "終了", logout_users_path, method: :delete %></td>
-    </tr>
-  </table>
-<% else %>
-  <table>
-  <%= "----------------------------------------" %>
-    <tr>
-      <td><b><%= '作業を終了する　' %></b></td>
-      <td><%= button_to "終了", logout_poster_users_path, method: :delete %></td>
-    </tr>
-  </table>
-<% end %>
+    </tr><br>
+  <% end %>
+
+  <tr>
+    <td><b><%= '作業を終了する　' %></b></td>
+    <td>
+      <% logout_path = @user.name == '集計担当' ? logout_users_path : logout_poster_users_path %>
+      <%= button_to "終了", logout_path, method: :delete %>
+    </td>
+  </tr>
+</table>
