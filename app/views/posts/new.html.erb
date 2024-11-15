@@ -1,30 +1,31 @@
 <div id="user-info">
   <%= render 'shared/user_info' %>
 </div>
-----------------------------------------
+<br>
 <h3>新規登録</h3>
 
 <%= form_with model: @post, local: true do |form| %>
   <div>
     <label><%= form.label :name, '氏名' %></label>
-    <%= form.text_field :name, class: 'form-control' %>
+    <%= form.text_field :name %>
   </div>
   <div>
     <label><%= form.label :amount, '金額' %></label>
-    <%= form.number_field :amount, class: 'form-control' %>
+    <%= form.number_field :amount %>
     <span>円</span>
   </div>
   <div>
     <label><%= form.label :address, '住所' %></label>
-    <%= form.text_field :address, class: 'form-control' %>
+    <%= form.text_field :address %>
   </div>
   <div>
     <label><%= form.label :tel, '電話' %></label>
-    <%= form.text_field :tel, pattern: '\d*', title: '―無し', class: 'form-control' %>
+    <%= form.text_field :tel, pattern: '\d*' %>
+    <span>ハイフン無し</span>
   </div>
   <div>
     <label><%= form.label :others, '備考' %></label>
-    <%= form.text_field :others, class: 'form-control' %>
+    <%= form.text_field :others %>
   </div>
 
   <div>
