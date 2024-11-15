@@ -21,10 +21,12 @@ class UsersIndexViewTest < ActionView::TestCase
       end
     end
     assert_select 'form[action=?][method=?]', new_post_path, 'get' do
-      assert_select 'button', '参加'
+      assert_select 'button', '　参加　'
     end
     assert_select 'form[action=?][method=?]', new_user_path, 'get' do
-      assert_select 'button', '戻る'
+      assert_select 'button', '　戻る　'
     end
+    assert_select 'form[action=?][method=?]', reset_database_users_path, 'post' do
+      assert_select 'button', 'リセット'
   end
 end
