@@ -1,8 +1,7 @@
 class UsersController < ApplicationController
   # 投稿者一覧を表示
   def index
-    @poster_users = User.poster_users
-    @admin_users = User.admin_users
+    @users = User.users
     @user_posts = Post.all
   end
 
