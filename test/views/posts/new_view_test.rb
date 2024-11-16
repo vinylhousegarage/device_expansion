@@ -53,29 +53,27 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     access_new_post_page(users(:first_poster))
     assert_select 'h3', text: '新規登録'
     assert_select 'form' do
-      assert_select 'div' do
-        assert_select 'label', text: '氏名'
-        assert_select 'input[type=text][name=?]', 'post[name]'
-      end
-      assert_select 'div' do
-        assert_select 'label', text: '金額'
-        assert_select 'input[type=number][name=?]', 'post[amount]'
-      end
-      assert_select 'div' do
-        assert_select 'label', text: '住所'
-        assert_select 'input[type=text][name=?]', 'post[address]'
-      end
-      assert_select 'div' do
-        assert_select 'label', text: '電話'
-        assert_select 'input[type=text][name=?]', 'post[tel]'
-      end
-      assert_select 'div' do
-        assert_select 'label', text: '備考'
-        assert_select 'input[type=text][name=?]', 'post[others]'
-      end
-      assert_select 'div' do
-        assert_select 'input[type=submit][value=?]', '　　　登　　録　　　'
-      end
+      assert_field_with_label('氏名', 'post[name]', 'text')
+      assert_field_with_label('金額', 'post[amount]', 'number')
+      assert_field_with_label('住所', 'post[address]', 'text')
+      assert_field_with_label('電話', 'post[tel]', 'text')
+      assert_field_with_label('備考', 'post[others]', 'text')
+      assert_submit_button('　　　登　　録　　　')
+    end
+  end
+
+  private
+
+  def assert_field_with_label(label_text, field_name, field_type)
+    assert_select 'div' do
+      assert_select 'label', text: label_text
+      assert_select "input[type=#{field_type}][name=?]", field_name
+    end
+  end
+
+  def assert_submit_button(button_text)
+    assert_select 'div' do
+      assert_select 'input[type=submit][value=?]', button_text
     end
   end
 
