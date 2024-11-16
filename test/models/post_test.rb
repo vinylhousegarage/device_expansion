@@ -18,7 +18,7 @@ class PostTest < ActiveSupport::TestCase
       @post.name = invalid_name
       assert_not @post.valid?, "Invalid name: '#{invalid_name}'"
       expected_message = I18n.t('activerecord.errors.models.post.attributes.name.blank')
-      assert_includes @post.errors[:amount], expected_message
+      assert_includes @post.errors[:name], expected_message
     end
   end
 
@@ -36,7 +36,6 @@ class PostTest < ActiveSupport::TestCase
       assert_includes @post.errors[:amount], expected_message, 'Amount validation failed'
     end
   end
-
 
   # Postインスタンスの新規生成テスト
   test 'creates post with valid attributes' do
