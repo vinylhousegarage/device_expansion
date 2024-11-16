@@ -44,8 +44,8 @@ class UsersIndexViewTest < ActionView::TestCase
       assert_user_index(user)
     end
 
-    assert_button('　参加　', new_post_path, 'get')
-    assert_button('　戻る　', new_user_path, 'get')
-    assert_button('リセット', reset_database_users_path, 'post')
+    assert_button('参加', new_post_path, 'get')
+    assert_button('戻る', new_user_path, 'get')
+    assert_button('消去', reset_database_users_path, 'post')
   end
 end
