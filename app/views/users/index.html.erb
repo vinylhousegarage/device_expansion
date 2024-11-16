@@ -1,6 +1,5 @@
-<h3>登録状況</h3>
-
 <table>
+<h3>登録状況</h3>
   <tr>
     <td><b>　合　　計　　</b></td>
     <td><b><%= @posts.count %>件　</b></td>
@@ -24,21 +23,21 @@
 <br>
 
   <tr>
-    <td><b>集計担当も数える　　</b></td>
-    <td><%= button_to '　参加　', new_post_path, method: :get %></td>
+    <td colspan="3"><b>集計担当も数える　　</b></td>
+    <td ><%= button_to '参加', new_post_path, method: :get %></td>
   </tr>
 
 <br>
 
   <tr>
-    <td><b>初期画面に戻る　　　</b></td>
-    <td><%= button_to '　戻る　', new_user_path, method: :get %></td>
+    <td colspan="3"><b>初期画面に戻る　　　</b></td>
+    <td><%= button_to '戻る', new_user_path, method: :get %></td>
   </tr>
 
 <br>
 
   <tr>
-    <td><b>データをリセットする</b></td>
-    <td><%= button_to 'リセット', reset_database_users_path, method: :post %></td>
+    <td colspan="3"><b>データをリセットする</b></td>
+    <td><%= button_to '消去', reset_database_users_path, method: :post %></td>
   </tr>
 </table>
