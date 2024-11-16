@@ -16,8 +16,9 @@ class PostTest < ActiveSupport::TestCase
     invalid_names = ['', ' ']
     invalid_names.each do |invalid_name|
       @post.name = invalid_name
-      assert_not @post.valid?, "Post with name '#{invalid_name}' should be invalid"
-      assert_includes @post.errors[:name], "can't be blank"
+      assert_not @post.valid?, "Invalid name: '#{invalid_name}'"
+      expected_message = I18n.t('activerecord.errors.models.post.attributes.name.blank')
+      assert_includes @post.errors[:name], expected_message
     end
   end
 
@@ -26,9 +27,13 @@ class PostTest < ActiveSupport::TestCase
     invalid_amounts = ['', ' ', -1000]
     invalid_amounts.each do |invalid_amount|
       @post.amount = invalid_amount
-      assert_not @post.valid?, "Post with amount '#{invalid_amount}' should be invalid"
-      message = invalid_amount.to_s.strip.empty? ? "can't be blank" : 'must be greater than or equal to 0'
-      assert_includes @post.errors[:amount], message, 'Amount validation failed'
+      assert_not @post.valid?, "Invalid amount: '#{invalid_amount}'"
+      expected_message = if invalid_amount.to_s.strip.empty?
+                           I18n.t('activerecord.errors.models.post.attributes.amount.blank')
+                         else
+                           I18n.t('activerecord.errors.models.post.attributes.amount.greater_than_or_equal_to')
+                         end
+      assert_includes @post.errors[:amount], expected_message, 'Amount validation failed'
     end
   end
 
