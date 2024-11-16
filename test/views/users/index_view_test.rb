@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class UsersIndexViewTest < ActionView::TestCase
-  def assert_user_data(user, user_posts)
+  def assert_user_data(user)
     assert_select 'td', text: "#{user.name}"
     assert_select 'td', text: "#{user.posts.count}件　"
     assert_select 'td', text: "#{number_with_delimiter(user.posts.sum(:amount))} 円　"
