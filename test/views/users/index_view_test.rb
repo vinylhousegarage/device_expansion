@@ -1,10 +1,29 @@
 require 'test_helper'
 
 class UsersIndexViewTest < ActionView::TestCase
-  def assert_user_data(user)
-    assert_select 'td', text: user.name
-    assert_select 'td', text: "#{user.posts.count}件　"
-    assert_select 'td', text: "#{number_with_delimiter(user.posts.sum(:amount))} 円　"
+  def assert_total_heading(posts)
+    assert_select 'table' do
+      assert_select 'td', text: '　合　　計　　'
+      assert_select 'td', text: "#{posts.count}件　"
+      assert_select 'td', text: "#{number_with_delimiter(posts.sum(:amount))} 円　"
+      assert_form_action(posts_path, 'get', '詳細')
+    end
+  end
+
+  def assert_user_index(user)
+    assert_select 'table' do
+      assert_select 'td', text: user.name
+      assert_select 'td', text: "#{user.posts.count}件　"
+      assert_select 'td', text: "#{number_with_delimiter(user.posts.sum(:amount))} 円　"
+      assert_form_action(user_path(user.id), 'get', '詳細')
+    end
+  end
+
+  def assert_button(button_text, path, method)
+    assert_select 'table' do
+      assert_select 'td', text: button_text
+      assert_form_action(path, method, button_text.strip)
+    end
   end
 
   def assert_form_action(action, method, button_text)
@@ -13,20 +32,20 @@ class UsersIndexViewTest < ActionView::TestCase
     end
   end
 
-  test 'renders index form' do
-    poster_user = users(:first_poster)
-    admin_user = users(:admin)
+  test 'renders index view with all elements' do
+    @users = User.all
+    @posts = Post.all
 
     render template: 'users/index'
 
-    assert_user_data(poster_user)
-    assert_form_action(user_path(poster_user.id), 'get', '詳細')
+    assert_total_heading(@posts)
 
-    assert_user_data(admin_user)
-    assert_form_action(user_path(admin_user.id), 'get', '詳細')
+    @users.each do |user|
+      assert_user_index(user)
+    end
 
-    assert_form_action(new_post_path, 'get', '　参加　')
-    assert_form_action(new_user_path, 'get', '　戻る　')
-    assert_form_action(reset_database_users_path, 'post', 'リセット')
+    assert_button('集計担当も数える　　', new_post_path, 'get')
+    assert_button('初期画面に戻る　　　', new_user_path, 'get')
+    assert_button('データをリセットする', reset_database_users_path, 'post')
   end
 end
