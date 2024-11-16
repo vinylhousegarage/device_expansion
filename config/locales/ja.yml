@@ -1,3 +1,14 @@
 ja:
+  activerecord:
+    errors:
+      models:
+        post:
+          attributes:
+            name:
+              blank: 名前を入力してください
+            amount:
+              blank: 金額を入力してください
+              greater_than_or_equal_to: 金額は0以上で入力してください
+
   notices:
     data_reset: データがリセットされました
