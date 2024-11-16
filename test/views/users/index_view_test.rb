@@ -31,4 +31,5 @@ class UsersIndexViewTest < ActionView::TestCase
     assert_form_action(new_post_path, 'get', '　参加　')
     assert_form_action(new_user_path, 'get', '　戻る　')
     assert_form_action(reset_database_users_path, 'post', 'リセット')
+  end
 end
