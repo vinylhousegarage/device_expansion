@@ -12,6 +12,19 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     get new_post_path
   end
 
+  def assert_field_with_label(label_text, field_name, field_type)
+    assert_select 'div' do
+      assert_select 'label', text: label_text
+      assert_select "input[type=#{field_type}][name=?]", field_name
+    end
+  end
+
+  def assert_submit_button(button_text)
+    assert_select 'div' do
+      assert_select 'input[type=submit][value=?]', button_text
+    end
+  end
+
   def assert_navigation_buttons(user)
     if user.name == '集計担当'
       assert_back_to_status_button
@@ -59,21 +72,6 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
       assert_field_with_label('電話', 'post[tel]', 'text')
       assert_field_with_label('備考', 'post[others]', 'text')
       assert_submit_button('　　　登　　録　　　')
-    end
-  end
-
-  private
-
-  def assert_field_with_label(label_text, field_name, field_type)
-    assert_select 'div' do
-      assert_select 'label', text: label_text
-      assert_select "input[type=#{field_type}][name=?]", field_name
-    end
-  end
-
-  def assert_submit_button(button_text)
-    assert_select 'div' do
-      assert_select 'input[type=submit][value=?]', button_text
     end
   end
 
