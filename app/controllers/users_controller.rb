@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   # 投稿者一覧を表示
   def index
     @users = User.users
-    @user_posts = Post.all
+    @posts = Post.all
   end
 
   # 個人別投稿一覧を表示
