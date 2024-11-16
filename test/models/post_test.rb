@@ -17,7 +17,7 @@ class PostTest < ActiveSupport::TestCase
     invalid_names.each do |invalid_name|
       @post.name = invalid_name
       assert_not @post.valid?, "Invalid name: '#{invalid_name}'"
-      expected_message = I18n.t('activerecord.errors.models.post.attributes.amount.blank')
+      expected_message = I18n.t('activerecord.errors.models.post.attributes.name.blank')
       assert_includes @post.errors[:amount], expected_message
     end
   end
