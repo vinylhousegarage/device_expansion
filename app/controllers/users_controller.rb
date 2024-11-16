@@ -3,7 +3,7 @@ class UsersController < ApplicationController
   def index
     @poster_users = User.poster_users
     @admin_users = User.admin_users
-    @user_posts = Post.by_user(session[:user_id])
+    @user_posts = Post.all
   end
 
   # 個人別投稿一覧を表示
