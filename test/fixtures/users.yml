@@ -2,19 +2,19 @@
 
 # 初期データの設定
 first_poster:
-  name: "投稿者１"
+  name: '投稿者１'
 
 second_poster:
-  name: "投稿者２"
+  name: '投稿者２'
 
 third_poster:
-  name: "投稿者３"
+  name: '投稿者３'
 
 fourth_poster:
-  name: "投稿者４"
+  name: '投稿者４'
 
 fifth_poster:
-  name: "投稿者５"
+  name: '投稿者５'
 
 admin:
-  name: "集計担当"
+  name: '集計担当'
