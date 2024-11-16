@@ -1,2 +1,2 @@
-<b><%= @user.name %>さんの登録件数：<%= @user_posts.count %>件</b><br>
-<b><%= @user.name %>さんの合計金額：<%= number_to_currency(@user_posts.sum(:amount), unit: '円', delimiter: ',', format: "%n%u", precision: 0) %></b>
+<b><%= @user.name %>さんの登録件数：<%= @user.posts.count %>件</b><br>
+<b><%= @user.name %>さんの合計金額：<%= number_to_currency(@user.posts.sum(:amount), unit: '円', delimiter: ',', format: "%n%u", precision: 0) %></b>
