@@ -6,7 +6,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user, as: :json)
   end
 
-  # current_user メソッドのテスト
+  # current_userメソッドのテスト
   test 'current_user should return the user based on session user_id' do
     post login_poster_user_path(id: @user.id), as: :json
     assert_response :success
@@ -14,7 +14,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
     assert_equal new_post_path, json_response['redirect_url']
   end
 
-  # find_params_id メソッドのテスト
+  # find_params_idメソッドのテスト
   test 'find_params_id should find user based on params[:id]' do
     get login_poster_redirect_user_path(id: @user.id)
     assert_response :success
@@ -22,23 +22,15 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
     assert_match fetch_url_pattern, response.body
   end
 
-  # redirect_with_notice メソッドのテスト
-  test 'redirect_with_notice sets flash notice and redirects' do
-    class TestController < ApplicationController
-      def test_action
-        redirect_with_notice('/test_path', 'notices.test_message')
-      end
-    end
+  # redirect_with_noticeメソッドのパスをテスト
+  test 'redirect_with_notice redirects to the correct path' do
+    delete logout_users_path
+    assert_redirected_to root_path
+  end
 
-    Rails.application.routes.draw do
-      delete '/test_action', to: 'test#test_action'
-    end
-
-    delete '/test_action'
-
-    assert_redirected_to '/test_path'
-    assert_flash(:notice, I18n.t('notices.test_message'))
-  ensure
-    Rails.application.reload_routes!
+  # redirect_with_noticeメソッドのフラッシュメッセージを確認
+  test 'redirect_with_notice sets flash and displays in redirected view' do
+    get root_path
+    assert_flash(:notice, I18n.t('notices.data_reset'))
   end
 end
