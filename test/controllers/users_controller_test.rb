@@ -84,7 +84,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # users#reset_database のパスをテスト
   test 'should successfully post to reset_database path' do
-    post reset_database_users_path
+    delete reset_database_users_path
     assert_response :success
   end
 
