@@ -36,7 +36,7 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     @users = User.all
     @posts = Post.all
 
-    render template: 'users/index'
+    get users_path
 
     assert_total_heading(@posts)
 
