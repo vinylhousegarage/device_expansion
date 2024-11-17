@@ -1,5 +1,10 @@
 <table>
 <h3>登録状況</h3>
+<% if flash[:notice] %>
+  <div>
+    <%= flash[:notice] %>
+  </div>
+<% end %>
   <tr>
     <td><b>　合　　計　　</b></td>
     <td><b><%= @posts.count %>件　</b></td>
@@ -19,17 +24,17 @@
     <td><p></p></td>
   </tr>
   <tr>
-    <td colspan="3"><b>集計担当も数える</b></td>
+    <td colspan='3'><b>集計担当も数える</b></td>
     <td><%= button_to '参加', new_post_path, method: :get %></td>
   </tr>
 
   <tr>
-    <td colspan="3"><b>初期画面に戻る</b></td>
+    <td colspan='3'><b>初期画面に戻る</b></td>
     <td><%= button_to '戻る', new_user_path, method: :get %></td>
   </tr>
 
   <tr>
-    <td colspan="3"><b>データをリセットする</b></td>
-    <td><%= button_to '消去', reset_database_users_path, method: :delete, data: { turbo: false } %></td>
+    <td colspan='3'><b>データをリセットする</b></td>
+    <td><%= button_to '削除', reset_database_users_path, method: :delete, data: { turbo: false } %></td>
   </tr>
 </table>
