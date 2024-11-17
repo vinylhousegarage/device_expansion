@@ -46,6 +46,13 @@ class UsersIndexViewTest < ActionView::TestCase
 
     assert_button('参加', new_post_path, 'get')
     assert_button('戻る', new_user_path, 'get')
-    assert_button('消去', reset_database_users_path, 'post')
+    assert_button('削除', reset_database_users_path, 'delete')
+  end
+
+  test "reset database from index view" do
+    delete reset_database_users_path
+    assert_flash(:notice, I18n.t('notices.data_reset'))
+    follow_redirect!
+    assert_select 'div', text: I18n.t('notices.data_reset')
   end
 end
