@@ -1,6 +1,7 @@
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
+require 'mocha/minitest'
 Rails.root.glob('test/support/**/*.rb').each { |f| require f }
 
 module ActiveSupport
