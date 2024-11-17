@@ -13,6 +13,8 @@ class ApplicationController < ActionController::Base
 
   # リダイレク後にフラッシュメッセージを表示
   def redirect_with_notice(path, message_key = 'notices.data_reset')
+    Rails.logger.info "Message Key: #{message_key}"
+    Rails.logger.info "Translated Message: #{I18n.t(message_key)}"
     redirect_to path, notice: I18n.t(message_key)
   end
 end
