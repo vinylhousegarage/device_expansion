@@ -25,12 +25,19 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
   # redirect_with_noticeメソッドのパスをテスト
   test 'redirect_with_notice redirects to the correct path' do
     delete reset_database_users_path
+    assert_response :redirect
     assert_redirected_to users_path
+    follow_redirect!
+    assert_response :success
   end
 
   # redirect_with_noticeメソッドのフラッシュメッセージを確認
   test 'redirect_with_notice sets flash and displays in redirected view' do
-    get users_path
+    delete reset_database_users_path
+    assert_response :redirect
+    assert_redirected_to users_path
+    follow_redirect!
+    assert_response :success
     assert_flash(:notice, I18n.t('notices.data_reset'))
   end
 end
