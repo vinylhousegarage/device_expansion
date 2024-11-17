@@ -45,6 +45,7 @@ class UsersController < ApplicationController
   def logout
     session[:user_id] = nil
     redirect_with_notice(root_path)
+  end
 
   # 投稿者のログアウト
   def logout_poster
