@@ -29,7 +29,8 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
   end
 
   def assert_form_action(action, method, button_text)
-    assert_select 'form[action=?][method=?]', action, method do
+    assert_select 'form[action=?]', action do
+      assert_select 'input[name=_method][value=?]', method if method != 'post'
       assert_select 'button', button_text
     end
   end
