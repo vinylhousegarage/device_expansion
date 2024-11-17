@@ -129,6 +129,8 @@ GEM
     method_source (1.1.0)
     mini_mime (1.1.5)
     minitest (5.25.1)
+    mocha (2.5.0)
+      ruby2_keywords (>= 0.0.5)
     msgpack (1.7.3)
     net-imap (0.4.16)
       date
@@ -214,6 +216,7 @@ GEM
       rubocop (>= 1.52.0, < 2.0)
       rubocop-ast (>= 1.31.1, < 2.0)
     ruby-progressbar (1.13.0)
+    ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
     selenium-webdriver (4.25.0)
       base64 (~> 0.2)
@@ -269,6 +272,7 @@ DEPENDENCIES
   esbuild-rails
   importmap-rails
   jbuilder
+  mocha
   pg (~> 1.1)
   puma (~> 5.0)
   rails (~> 7.0.8, >= 7.0.8.4)
