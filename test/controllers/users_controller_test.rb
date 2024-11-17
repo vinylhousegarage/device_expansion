@@ -79,7 +79,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
     follow_redirect!
     assert_response :success
-    assert_flash :notice, I18n.t('notices.data_reset')
+    assert_equal I18n.t('notices.data_reset'), flash[:notice]
   end
 
   # users#reset_database のパスをテスト
@@ -89,7 +89,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to users_path
     follow_redirect!
     assert_response :success
-    assert_flash :notice, I18n.t('notices.data_reset')
+    assert_equal I18n.t('notices.data_reset'), flash[:notice]
   end
 
   # users#logout_poster のパスをテスト
