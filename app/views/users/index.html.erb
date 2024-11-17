@@ -1,9 +1,7 @@
 <table>
+<h3>登録状況</h3>
   <tr>
-    <td colspan='4'><h3>登録状況</h3></td>
-  </tr>
-  <tr>
-    <th><b>　合　　計　　</b></th>
+    <td><b>　合　　計　　</b></td>
     <td><b><%= @posts.count %>件　</b></td>
     <td><b><%= number_with_delimiter(@posts.sum(:amount)) %> 円　</b></td>
     <td><%= button_to '詳細', posts_path, method: :get %></td>
