@@ -49,7 +49,7 @@ class UsersIndexViewTest < ActionView::TestCase
     assert_button('削除', reset_database_users_path, 'delete')
   end
 
-  test "reset database from index view" do
+  test 'reset database from index view' do
     delete reset_database_users_path
     assert_flash(:notice, I18n.t('notices.data_reset'))
     follow_redirect!
