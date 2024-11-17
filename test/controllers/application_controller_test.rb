@@ -21,4 +21,24 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
     fetch_url_pattern = %r{fetch\('/users/#{@user.id}/login_poster'}
     assert_match fetch_url_pattern, response.body
   end
+
+  # redirect_with_notice メソッドのテスト
+  test 'redirect_with_notice sets flash notice and redirects' do
+    class TestController < ApplicationController
+      def test_action
+        redirect_with_notice('/test_path', 'notices.test_message')
+      end
+    end
+
+    Rails.application.routes.draw do
+      delete '/test_action', to: 'test#test_action'
+    end
+
+    delete '/test_action'
+
+    assert_redirected_to '/test_path'
+    assert_flash(:notice, I18n.t('notices.test_message'))
+  ensure
+    Rails.application.reload_routes!
+  end
 end
