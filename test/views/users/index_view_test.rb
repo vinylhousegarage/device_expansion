@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class UsersIndexViewTest < ActionView::TestCase
+class UsersIndexViewTest < ActionDispatch::IntegrationTest
   def assert_total_heading(posts)
     assert_select 'table' do
       assert_select 'td', text: '　合　　計　　'
