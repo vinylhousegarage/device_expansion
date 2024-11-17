@@ -80,6 +80,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
     assert_flash(:notice, I18n.t('notices.data_reset'))
+  end
 
   # users#reset_database のパスをテスト
   test 'should successfully post to reset_database path' do
