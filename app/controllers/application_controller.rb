@@ -10,4 +10,9 @@ class ApplicationController < ActionController::Base
   def find_params_id
     User.find(params[:id])
   end
+
+  # リダイレク後にフラッシュメッセージを表示
+  def redirect_with_notice(path, message_key = 'notices.data_reset')
+    redirect_to path, notice: I18n.t(message_key)
+  end
 end
