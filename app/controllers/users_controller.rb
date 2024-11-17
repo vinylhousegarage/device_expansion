@@ -45,7 +45,7 @@ class UsersController < ApplicationController
   def logout
     session[:user_id] = nil
     reset_database
-    redirect_to root_path, notice: t('notices.data_reset')
+    redirect_to root_path
   end
 
   # 投稿者のログアウト
@@ -56,5 +56,7 @@ class UsersController < ApplicationController
   # データをリセット
   def reset_database
     Rails.application.load_seed
+    flash[:notice] = I18n.t('notices.data_reset')
+    redirect_to users_path
   end
 end
