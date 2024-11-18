@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class LoginPosterURLGeneratorTest < ActiveSupport::TestCase
+class LoginPosterURLGeneratorServiceTest < ActiveSupport::TestCase
   test 'should generate correct login poster redirect URL' do
     user = users(:first_poster)
     url = LoginPosterURLGenerator.generate_login_poster_url(user)
