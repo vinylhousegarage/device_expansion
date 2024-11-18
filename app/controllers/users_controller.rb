@@ -8,7 +8,6 @@ class UsersController < ApplicationController
   # 個人別投稿一覧を表示
   def show
     @user = find_params_id
-    @user_posts = @user.posts
   end
 
   # 投稿者を招待
