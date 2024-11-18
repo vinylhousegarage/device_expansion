@@ -9,7 +9,7 @@ class UsersController < ApplicationController
   def show
     @user = find_params_id
   end
-git 
+
   # 投稿者を招待
   def new
     @poster_users = User.poster_users
