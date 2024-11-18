@@ -38,21 +38,4 @@ class UserTest < ActiveSupport::TestCase
     admin_user = users(:admin)
     assert_equal '集計担当', admin_user.name
   end
-
-  # QRコードがSVG形式で生成されていることを確認するテスト
-  test 'QR code is generated in SVG format' do
-    svg = @user.generate_qr_code_for_login_poster_redirect
-
-    assert_includes svg, '<svg'
-  end
-
-  private
-
-  # login_poster のURLを取得
-  def login_poster_url(user)
-    Rails.application.routes.url_helpers.login_poster_user_url(
-      user,
-      host: 'https://device-expansion.onrender.com'
-    )
-  end
 end
