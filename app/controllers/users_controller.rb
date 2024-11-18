@@ -24,13 +24,13 @@ class UsersController < ApplicationController
   # QRコードを取得し@svgに格納
   def login_form
     @user = find_params_id
-    @svg = @user.generate_qr_code_for_login_poster_redirect
+    @url = LoginPosterUrlGeneratorService.generate_login_poster_url(@user)
+    @svg = QrCodeGeneratorService.generate_for_login_poster(@user)
   end
 
   # 投稿者のトップページを設定
   def login_poster
     session[:user_id] = params[:id]
-    $stdout.puts "Session user_id set to: #{session[:user_id]}"
     render json: { redirect_url: new_post_path }
   end
 
