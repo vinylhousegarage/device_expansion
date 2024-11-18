@@ -1,9 +1,9 @@
-QRコードを<br>
-読み取ってください<br>
+QRコードを読み取ってください<br>
+QRコードのタップでも進みます<br>
 <br>
-<%= link_to login_poster_redirect_user_path(user_id: @user.id) do %>
+<%= link_to login_poster_redirect_user_path(@user.id) do %>
   <%= raw @svg %>
 <% end %>
 <br>
 <br>
-<%= button_to "初期画面へ戻る", new_user_path, method: :get %>
+<%= button_to '初期画面へ戻る', new_user_path, method: :get %>
