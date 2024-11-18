@@ -4,7 +4,7 @@ class LoginFormViewTest < ActionDispatch::IntegrationTest
   test 'should display QR code and navigate correctly' do
     user = users(:first_poster)
 
-    get login_form_user_path(user_id: user.id)
+    post login_form_user_path(user_id: user.id)
     assert_response :success
 
     assert_select 'svg', true, 'QRコードが表示されていません'
