@@ -38,7 +38,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_select 'form[action=?]', login_form_user_path(users(:admin)), count: 0
   end
 
-  # QRコードの生成をテスト
+  # QRコードの表示をテスト
   test 'should post to login form and generate QR code' do
     svg_expected_count = 1
     post login_form_user_path(@user.id)
