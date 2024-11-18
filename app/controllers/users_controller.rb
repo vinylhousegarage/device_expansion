@@ -24,8 +24,8 @@ class UsersController < ApplicationController
   # QRコードを取得し@svgに格納
   def login_form
     @user = find_params_id
-    @url = LoginPosterURLGenerator.generate(@user)
-    @svg = QRCodeGenerator.generate_for_login_poster(@user)
+    @url = LoginPosterUrlGeneratorService.generate(@user)
+    @svg = QrCodeGeneratorService.generate_for_login_poster(@user)
   end
 
   # 投稿者のトップページを設定
