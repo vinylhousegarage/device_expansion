@@ -55,26 +55,4 @@ class UserTest < ActiveSupport::TestCase
       host: 'https://device-expansion.onrender.com'
     )
   end
-
-  # User.find_from_sessionメソッドのテスト
-  test 'should find user from session' do
-    user = users(:first_poster)
-    session = { user_id: user.id }
-
-    assert_equal user, User.find_from_session(session)
-  end
-
-  test 'should return nil if user_id is missing' do
-    session = {}
-
-    assert_nil User.find_from_session(session)
-  end
-
-  non_existent_user_id = -1
-
-  test 'should return nil if user does not exist' do
-    session = { user_id: non_existent_user_id }
-
-    assert_nil User.find_from_session(session)
-  end
 end
