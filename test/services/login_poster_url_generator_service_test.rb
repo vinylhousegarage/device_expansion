@@ -1,9 +1,9 @@
 require 'test_helper'
 
-class LoginPosterURLGeneratorServiceTest < ActiveSupport::TestCase
+class LoginPosterUrlGeneratorServiceTest < ActiveSupport::TestCase
   test 'should generate correct login poster redirect URL' do
     user = users(:first_poster)
-    url = LoginPosterURLGenerator.generate_login_poster_url(user)
+    url = LoginPosterUrlGenerator.generate_login_poster_url(user)
 
     expected_url = Rails.application.routes.url_helpers.login_poster_redirect_user_url(
       user,
