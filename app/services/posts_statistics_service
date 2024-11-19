@@ -15,6 +15,7 @@ class PostsStatisticsService
     @users.map do |user|
       {
         user: user,
+        user_name: user.name,
         post_count: user.posts.size,
         post_amount: user.posts.sum(:amount)
       }
