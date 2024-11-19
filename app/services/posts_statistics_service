@@ -1,0 +1,23 @@
+class PostsStatisticsService
+  def initialize(users = User.includes(:posts))
+    @users = users
+  end
+
+  def total_posts_count
+    Post.count
+  end
+
+  def total_posts_amount
+    Post.sum(:amount)
+  end
+
+  def user_statistics
+    @users.map do |user|
+      {
+        user: user,
+        post_count: user.posts.size,
+        post_amount: user.posts.sum(:amount)
+      }
+    end
+  end
+end
