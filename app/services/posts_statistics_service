@@ -3,22 +3,25 @@ class PostsStatisticsService
     @users = users
   end
 
-  def total_posts_count
-    Post.count
-  end
-
-  def total_posts_amount
-    Post.sum(:amount)
-  end
-
   def user_statistics
-    @users.map do |user|
-      {
-        user: user,
-        user_name: user.name,
-        post_count: user.posts.size,
-        post_amount: user.posts.sum(:amount)
-      }
-    end
+    @users.map { |user| build_statistics_for_user(user) }
+  end
+
+  def user_statistics_for_id(user_id)
+    user = @users.find { |u| u.id == user_id }
+    return nil unless user
+
+    build_statistics_for_user(user)
+  end
+
+  private
+
+  def build_statistics_for_user(user)
+    {
+      user: user,
+      user_name: user.name,
+      post_count: user.posts.size,
+      post_amount: user.posts.sum(:amount)
+    }
   end
 end
