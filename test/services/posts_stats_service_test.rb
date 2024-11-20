@@ -13,6 +13,6 @@ class PostsStatsServiceTest < ActiveSupport::TestCase
   end
 
   test 'total_posts_amount returns the total amount of all posts' do
-    assert_equal 58000, @posts_stats.total_posts_amount
+    assert_equal 58_000, @posts_stats.total_posts_amount
   end
 end
