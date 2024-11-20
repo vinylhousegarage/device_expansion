@@ -1,6 +1,7 @@
 class PostsController < ApplicationController
   def new
-    $stdout.puts "Session user_id: #{session[:user_id]}"
+    statistics_service = PostsStatisticsService.new
+    
     @user = current_user
     @post = Post.new
     @user_posts = @user.posts
