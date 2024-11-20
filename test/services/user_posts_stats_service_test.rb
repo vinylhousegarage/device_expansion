@@ -2,33 +2,28 @@ require 'test_helper'
 
 class UserPostsStatsServiceTest < ActiveSupport::TestCase
   def setup
-    @user1 = users(:first_poster)
-    @user2 = users(:second_poster)
-    @user3 = users(:admin)
-    @service = PostsStatisticsService.new
+    @users = [
+      users(:first_poster),
+      users(:second_poster),
+      users(:admin)
+    ]
+    @user_posts_stats = UserPostsStatsService.new
   end
 
-  test 'total_posts_count returns the total number of posts' do
-    assert_equal 4, @service.total_posts_count
-  end
+  test 'user_stats_for_id returns correct data for each user' do
+    expected_stats = {
+      first_poster: { post_count: 2, post_amount: 8000 },
+      second_poster: { post_count: 0, post_amount: 0 },
+      admin: { post_count: 2, post_amount: 50000 }
+    }
 
-  test 'total_posts_amount returns the total amount of all posts' do
-    assert_equal 58000, @service.total_posts_amount
-  end
+    @users.each do |user|
+      stats = @user_posts_stats.user_stats_for_id(user.id)
+      expected = expected_stats[user.name.parameterize.underscore.to_sym]
 
-  test 'user_statistics returns correct data for each user' do
-    stats = @service.user_statistics
-    user1_stat = stats.find { |s| s[:user] == @user1 }
-    user2_stat = stats.find { |s| s[:user] == @user2 }
-    user3_stat = stats.find { |s| s[:user] == @user3 }
-
-    assert_equal 2, user1_stat[:post_count]
-    assert_equal 8000, user1_stat[:post_amount]
-
-    assert_equal 0, user2_stat[:post_count]
-    assert_equal 0, user2_stat[:post_amount]
-
-    assert_equal 2, user3_stat[:post_count]
-    assert_equal 50000, user3_stat[:post_amount]
+      assert_equal user, stats[:user]
+      assert_equal expected[:post_count], stats[:post_count]
+      assert_equal expected[:post_amount], stats[:post_amount]
+    end
   end
 end
