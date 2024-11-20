@@ -12,9 +12,9 @@ class UserPostsStatsServiceTest < ActiveSupport::TestCase
 
   test 'user_stats_for_id returns correct data for each user' do
     expected_stats = {
-      first_poster: { post_count: 2, post_amount: 8000 },
+      first_poster: { post_count: 2, post_amount: 8_000 },
       second_poster: { post_count: 0, post_amount: 0 },
-      admin: { post_count: 2, post_amount: 50000 }
+      admin: { post_count: 2, post_amount: 50_000 }
     }
 
     @users.each do |user|
