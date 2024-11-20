@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class PostsStatisticsServiceTest < ActiveSupport::TestCase
+class UserPostsStatsServiceTest < ActiveSupport::TestCase
   def setup
     @user1 = users(:first_poster)
     @user2 = users(:second_poster)
