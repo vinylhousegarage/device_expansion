@@ -1,7 +1,7 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 first_post:
   name: 'テスト ネーム'
-  amount: 5000
+  amount: 5_000
   address: '地区'
   tel:
   others:
@@ -9,7 +9,7 @@ first_post:
 
 second_post:
   name: 'Test Name'
-  amount: 3000
+  amount: 3_000
   address: '屋号'
   tel:
   others:
@@ -17,7 +17,7 @@ second_post:
 
 third_post:
   name: '試験 氏名'
-  amount: 30000
+  amount: 30_000
   address: '市町村1丁目-nameⅡ'
   tel: '0123456789'
   others: '供花:20,000円(2段)'
@@ -25,7 +25,7 @@ third_post:
 
 fourth_post:
   name: 'しけん しめい'
-  amount: 20000
+  amount: 20_000
   address: '市町村1丁目-nameⅡ'
   tel: '0123456789'
   others: '供物:10,000円'
