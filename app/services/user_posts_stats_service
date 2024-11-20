@@ -1,4 +1,4 @@
-class PostsStatisticsService
+class UserPostsStatsService
   def initialize(users = User.includes(:posts))
     @users = users
   end

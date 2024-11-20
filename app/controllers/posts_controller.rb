@@ -1,6 +1,6 @@
 class PostsController < ApplicationController
   def new
-    statistics_service = PostsStatisticsService.new
+    statistics_service = UserPostsStatsService.new
     
     @user = current_user
     @post = Post.new
