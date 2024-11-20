@@ -7,7 +7,7 @@
     <td><%= button_to '詳細', posts_path, method: :get %></td>
   </tr>
 
-  <% @user_statistics.each do |stat| %>
+  <% @user_stats.each do |stat| %>
   <tr>
     <td><%= stat[:user_name] %></td>
     <td><%= stat[:post_count] %>件　</td>

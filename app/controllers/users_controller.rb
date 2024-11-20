@@ -1,10 +1,10 @@
 class UsersController < ApplicationController
   # 投稿者一覧を表示
   def index
-    statistics_service = UserPostsStatsService.new
-    @total_posts_count = statistics_service.total_posts_count
-    @total_posts_amount = statistics_service.total_posts_amount
-    @user_statistics = statistics_service.user_statistics
+    user_posts_stats = UserPostsStatsService.new
+    @user_stats = user_posts_stats.user_stats
+    @total_posts_count = stats_service.total_posts_count
+    @total_posts_amount = stats_service.total_posts_amount
   end
 
   # 個人別投稿一覧を表示
