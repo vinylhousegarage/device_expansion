@@ -19,7 +19,7 @@ class UserPostsStatsService
 
     def build_user_stats(user)
       {
-        user: user,
+        user:,
         user_name: user.name,
         post_count: user.posts.size,
         post_amount: user.posts.sum(:amount)
