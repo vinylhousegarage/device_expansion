@@ -48,7 +48,8 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   end
 
   def stub_services
-    UserPostsStatsService.stub(:new, user_stats_struct.new(@user_stats)) do
+    user_stats_stub = user_stats_struct.new(@user_stats)
+    UserPostsStatsService.stub(:new, user_stats_stub) do
       get new_post_path
     end
   end
