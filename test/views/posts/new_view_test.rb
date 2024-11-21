@@ -9,11 +9,6 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     stub_services
   end
 
-  def access_new_post_page(user)
-    sign_in_as(user)
-    get new_post_path
-  end
-
   def assert_field_with_label(label_text, field_name, field_type)
     assert_select 'div' do
       assert_select 'label', text: label_text
@@ -40,7 +35,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
 
   def initialize_user
     @user = users(:first_poster)
-    sign_in_as(@user, as: :json)
+    sign_in_as(@user)
   end
 
   def initialize_user_stats
@@ -53,6 +48,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   def stub_services
     user_stats_struct = Struct.new(:user_stats)
     UserPostsStatsService.stub :new, user_stats_struct.new(@user_stats) do
+      get new_post_path
     end
   end
 
@@ -77,13 +73,11 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
 
   test 'renders user-info section with correct content' do
     @users.each do |user|
-      access_new_post_page(user)
       assert_user_info(user)
     end
   end
 
   test 'displays new registration form with correct fields' do
-    access_new_post_page(users(:first_poster))
     assert_select 'h3', text: '新規登録'
     assert_select 'form' do
       assert_field_with_label('氏名', 'post[name]', 'text')
@@ -97,7 +91,6 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
 
   test 'renders confirmation button' do
     @users.each do |user|
-      access_new_post_page(user)
       assert_select 'table' do
         assert_select 'td', text: '集計を確認する'
         assert_select 'form[action=?][method=?]', user_path(user), 'get' do
@@ -109,7 +102,6 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
 
   test 'displays appropriate navigation buttons based on user role' do
     @users.each do |user|
-      access_new_post_page(user)
       assert_navigation_buttons(user)
     end
   end
