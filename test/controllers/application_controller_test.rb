@@ -10,8 +10,8 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
       { user_name: '投稿者２', post_count: 3, post_amount: 12_000 }
     ]
 
-    UserStats = Struct.new(:user_stats)
-    UserPostsStatsService.stub :new, UserStats.new(user_stats: @user_stats) do
+    user_stats_struct = Struct.new(:user_stats)
+    UserPostsStatsService.stub :new, user_stats_struct.new(user_stats: @user_stats) do
     end
   end
 
