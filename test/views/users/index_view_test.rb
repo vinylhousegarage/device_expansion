@@ -3,6 +3,9 @@ require 'test_helper'
 class UsersIndexViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
+  PostStats = Struct.new(:total_posts_count, :total_posts_amount)
+  UserStats = Struct.new(:user_stats)
+
   def setup
     @user = users(:first_poster)
     sign_in_as(@user)
@@ -13,6 +16,9 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     ]
     @total_posts_count = 4
     @total_posts_amount = 58_000
+
+    @post_stats_stub = PostStats.new(@total_posts_count, @total_posts_amount)
+    @user_stats_stub = UserStats.new(@user_stats)
   end
 
   def assert_total_heading(total_count, total_amount)
@@ -26,10 +32,10 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
 
   def assert_user_index(stat)
     assert_select 'table' do
-      assert_select 'td', text: stat[:user_name]
-      assert_select 'td', text: "#{stat[:post_count]}件　"
-      assert_select 'td', text: "#{number_with_delimiter(stat[:post_amount])} 円　"
-      assert_form_action(user_path(stat[:user_name]), 'get', '詳細')
+      assert_select 'td', text: stat.user_name
+      assert_select 'td', text: "#{stat.post_count}件　"
+      assert_select 'td', text: "#{number_with_delimiter(stat.post_amount)} 円　"
+      assert_form_action(user_path(stat.user_name), 'get', '詳細')
     end
   end
 
@@ -48,8 +54,8 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'renders index view with all elements' do
-    PostsStatsService.stub :new, OpenStruct.new(total_posts_count: @total_posts_count, total_posts_amount: @total_posts_amount) do
-      UserPostsStatsService.stub :new, OpenStruct.new(user_stats: @user_stats) do
+    PostsStatsService.stub :new, @post_stats_stub do
+      UserPostsStatsService.stub :new, @user_stats_stub do
         get users_path
 
         assert_total_heading(@total_posts_count, @total_posts_amount)
