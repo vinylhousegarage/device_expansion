@@ -51,8 +51,8 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   end
 
   def stub_services
-    UserStats = Struct.new(:user_stats)
-    UserPostsStatsService.stub :new, UserStats.new(@user_stats) do
+    user_stats_struct = Struct.new(:user_stats)
+    UserPostsStatsService.stub :new, user_stats_struct.new(@user_stats) do
     end
   end
 
