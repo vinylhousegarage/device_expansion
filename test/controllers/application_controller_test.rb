@@ -4,6 +4,13 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = users(:first_poster)
     sign_in_as(@user, as: :json)
+
+    @user_stats = [
+      { user_name: '投稿者１', post_count: 2, post_amount: 8000 },
+      { user_name: '投稿者２', post_count: 3, post_amount: 12000 }
+    ]
+
+    UserPostsStatsService.stub :new, OpenStruct.new(user_stats: @user_stats) do
   end
 
   # current_userメソッドのテスト
