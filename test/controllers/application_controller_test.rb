@@ -4,15 +4,6 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = users(:first_poster)
     sign_in_as(@user, as: :json)
-
-    @user_stats = [
-      { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
-      { user_name: '投稿者２', post_count: 3, post_amount: 12_000 }
-    ]
-
-    user_stats_struct = Struct.new(:user_stats)
-    UserPostsStatsService.stub :new, user_stats_struct.new(user_stats: @user_stats) do
-    end
   end
 
   # current_userメソッドのテスト
