@@ -3,8 +3,8 @@ require 'test_helper'
 class UsersIndexViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
-  PostStats = Struct.new(:total_posts_count, :total_posts_amount)
-  UserStats = Struct.new(:user_stats)
+  post_stats_struct = Struct.new(:total_posts_count, :total_posts_amount)
+  user_stats_struct = Struct.new(:user_stats)
 
   def setup
     @user = users(:first_poster)
@@ -17,8 +17,8 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     @total_posts_count = 4
     @total_posts_amount = 58_000
 
-    @post_stats_stub = PostStats.new(@total_posts_count, @total_posts_amount)
-    @user_stats_stub = UserStats.new(@user_stats)
+    @post_stats_stub = post_stats_struct.new(@total_posts_count, @total_posts_amount)
+    @user_stats_stub = user_stats_struct.new(@user_stats)
   end
 
   def assert_total_heading(total_count, total_amount)
