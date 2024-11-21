@@ -3,8 +3,8 @@ require 'test_helper'
 class UsersIndexViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
-  post_stats_struct = Struct.new(:total_posts_count, :total_posts_amount)
-  user_stats_struct = Struct.new(:user_stats)
+  POST_STATS_STRUCT = Struct.new(:total_posts_count, :total_posts_amount)
+  USER_STATS_STRUCT = Struct.new(:user_stats)
 
   def setup
     initialize_user
@@ -65,8 +65,8 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'renders index view with all elements' do
-    post_stats_stub = post_stats_struct.new(@total_posts_count, @total_posts_amount)
-    user_stats_stub = user_stats_struct.new(@user_stats)
+    post_stats_stub = POST_STATS_STRUCT.new(@total_posts_count, @total_posts_amount)
+    user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
 
     PostsStatsService.stub(:new, post_stats_stub) do
       UserPostsStatsService.stub(:new, user_stats_stub) do
