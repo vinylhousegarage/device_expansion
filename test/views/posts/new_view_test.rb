@@ -3,8 +3,20 @@ require 'test_helper'
 class PostsNewViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
-  setup do
+  def setup
+    @user = users(:first_poster)
+    sign_in_as(@user)
     @users = [users(:first_poster), users(:admin)]
+    @user_stats = [
+      { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
+      { user_name: '集計担当', post_count: 2, post_amount: 50_000 }
+    ]
+    @total_posts_count = 4
+    @total_posts_amount = 58_000
+
+    UserPostsStatsService.stub :new, OpenStruct.new(user_stats: @user_stats) do
+      get new_post_path
+    end
   end
 
   def access_new_post_page(user)
