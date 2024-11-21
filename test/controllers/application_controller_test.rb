@@ -11,6 +11,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
     ]
 
     UserPostsStatsService.stub :new, OpenStruct.new(user_stats: @user_stats) do
+    end
   end
 
   # current_userメソッドのテスト
