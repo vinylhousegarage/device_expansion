@@ -4,6 +4,8 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
   def setup
+    @user = users(:first_poster)
+    sign_in_as(@user)
     @users = [users(:first_poster), users(:admin)]
     @user_stats = [
       { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
