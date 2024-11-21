@@ -3,6 +3,8 @@ require 'test_helper'
 class PostsNewViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
+  user_stats_struct = Struct.new(:user_stats)
+
   def setup
     initialize_user
     initialize_user_stats
@@ -46,8 +48,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   end
 
   def stub_services
-    user_stats_struct = Struct.new(:user_stats)
-    UserPostsStatsService.stub :new, user_stats_struct.new(@user_stats) do
+    UserPostsStatsService.stub(:new, user_stats_struct.new(@user_stats)) do
       get new_post_path
     end
   end
