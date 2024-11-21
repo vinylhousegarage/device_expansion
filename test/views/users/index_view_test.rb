@@ -7,18 +7,9 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
   user_stats_struct = Struct.new(:user_stats)
 
   def setup
-    @user = users(:first_poster)
-    sign_in_as(@user)
-    @users = [users(:first_poster), users(:admin)]
-    @user_stats = [
-      { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
-      { user_name: '集計担当', post_count: 2, post_amount: 50_000 }
-    ]
-    @total_posts_count = 4
-    @total_posts_amount = 58_000
-
-    @post_stats_stub = post_stats_struct.new(@total_posts_count, @total_posts_amount)
-    @user_stats_stub = user_stats_struct.new(@user_stats)
+    initialize_user
+    initialize_user_stats
+    initialize_post_stats
   end
 
   def assert_total_heading(total_count, total_amount)
@@ -53,9 +44,32 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     end
   end
 
+  private
+
+  def initialize_user
+    @user = users(:first_poster)
+    sign_in_as(@user)
+    @users = [users(:first_poster), users(:admin)]
+  end
+
+  def initialize_user_stats
+    @user_stats = [
+      { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
+      { user_name: '集計担当', post_count: 2, post_amount: 50_000 }
+    ]
+  end
+
+  def initialize_post_stats
+    @total_posts_count = 4
+    @total_posts_amount = 58_000
+  end
+
   test 'renders index view with all elements' do
-    PostsStatsService.stub :new, @post_stats_stub do
-      UserPostsStatsService.stub :new, @user_stats_stub do
+    post_stats_stub = post_stats_struct.new(@total_posts_count, @total_posts_amount)
+    user_stats_stub = user_stats_struct.new(@user_stats)
+
+    PostsStatsService.stub :new, post_stats_stub do
+      UserPostsStatsService.stub :new, user_stats_stub do
         get users_path
 
         assert_total_heading(@total_posts_count, @total_posts_amount)
