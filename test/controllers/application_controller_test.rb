@@ -6,8 +6,8 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user, as: :json)
 
     @user_stats = [
-      { user_name: '投稿者１', post_count: 2, post_amount: 8000 },
-      { user_name: '投稿者２', post_count: 3, post_amount: 12000 }
+      { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
+      { user_name: '投稿者２', post_count: 3, post_amount: 12_000 }
     ]
 
     UserPostsStatsService.stub :new, OpenStruct.new(user_stats: @user_stats) do
