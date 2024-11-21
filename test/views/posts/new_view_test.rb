@@ -9,28 +9,6 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     stub_services
   end
 
-  private
-
-  def initialize_user
-    @user = users(:first_poster)
-    sign_in_as(@user, as: :json)
-  end
-
-  def initialize_user_stats
-    @user_stats = [
-      { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
-      { user_name: '投稿者２', post_count: 3, post_amount: 12_000 }
-    ]
-  end
-
-  def stub_services
-    UserStats = Struct.new(:user_stats)
-    UserPostsStatsService.stub :new, UserStats.new(@user_stats) do
-    end
-  end
-
-  public
-
   def access_new_post_page(user)
     sign_in_as(user)
     get new_post_path
@@ -59,6 +37,24 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  def initialize_user
+    @user = users(:first_poster)
+    sign_in_as(@user, as: :json)
+  end
+
+  def initialize_user_stats
+    @user_stats = [
+      { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
+      { user_name: '投稿者２', post_count: 3, post_amount: 12_000 }
+    ]
+  end
+
+  def stub_services
+    UserStats = Struct.new(:user_stats)
+    UserPostsStatsService.stub :new, UserStats.new(@user_stats) do
+    end
+  end
 
   def assert_back_to_status_button
     assert_select 'table' do
