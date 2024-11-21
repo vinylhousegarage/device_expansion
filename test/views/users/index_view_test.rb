@@ -68,8 +68,8 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     post_stats_stub = post_stats_struct.new(@total_posts_count, @total_posts_amount)
     user_stats_stub = user_stats_struct.new(@user_stats)
 
-    PostsStatsService.stub :new, post_stats_stub do
-      UserPostsStatsService.stub :new, user_stats_stub do
+    PostsStatsService.stub(:new, post_stats_stub) do
+      UserPostsStatsService.stub(:new, user_stats_stub) do
         get users_path
 
         assert_total_heading(@total_posts_count, @total_posts_amount)
