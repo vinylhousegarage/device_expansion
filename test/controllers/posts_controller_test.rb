@@ -39,6 +39,5 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
       assert_response :success
       user_posts_stats = UserPostsStatsService.new
       assert_equal @user_stats, user_posts_stats.user_stats
-    end
   end
 end
