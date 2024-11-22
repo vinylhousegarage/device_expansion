@@ -9,9 +9,9 @@
 
   <% @all_users_stats.each do |stats| %>
   <tr>
-    <td><%= stats[:user_name] %></td>
-    <td><%= stats[:post_count] %>件　</td>
-    <td><%= number_with_delimiter(stats[:post_amouunt]) %> 円　</td>
+    <td><%= stats.user_name %></td>
+    <td><%= stats.post_count %>件　</td>
+    <td><%= number_with_delimiter(stats.post_amouunt) %> 円　</td>
     <td><%= button_to '詳細', user_path(user.id), method: :get %></td>
   </tr>
   <% end %>
