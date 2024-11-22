@@ -28,7 +28,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
   # current_userメソッドのテスト
   test 'current_user should return the user based on session user_id' do
-    users_stats_stubs = USERS_STATS_STRUCT.new(@users_stats)
+    users_stats_stubs = USERS_STATS_STRUCT.new(@all_users_stats)
     UserPostsStatsService.stubs(:new).returns(users_stats_stubs)
     get new_post_path
     assert_response :success
