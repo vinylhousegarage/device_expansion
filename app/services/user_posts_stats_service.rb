@@ -11,13 +11,13 @@ class UserPostsStatsService
     user = @users.find { |u| u.id == user_id }
     return nil unless user
 
-    build_user_stats(user)
+    self.class._build_user_stats(user)
   end
 
   class << self
     private
 
-    def build_user_stats(user)
+    def _build_user_stats(user)
       {
         user:,
         user_name: user.name,
