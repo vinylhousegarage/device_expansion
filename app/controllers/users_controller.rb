@@ -11,6 +11,8 @@ class UsersController < ApplicationController
   # 個人別投稿一覧を表示
   def show
     @user = find_params_id
+    user_posts_stats = UserPostsStatsService.new
+    @user_stats = user_posts_stats.user_stats_for_id(params[:id])
   end
 
   # 投稿者を招待
