@@ -3,6 +3,8 @@ require 'test_helper'
 class UsersShowViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
+  USER_STATS_STRUCT = Struct.new(:user_stats)
+
   def setup
     @users = [users(:first_poster), users(:admin)]
     initialize_user
