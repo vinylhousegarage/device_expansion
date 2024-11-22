@@ -58,7 +58,7 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
   end
 
   def initialize_all_users_stats
-    @user_stats = [
+    @all_users_stats = [
       { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
       { user_name: '集計担当', post_count: 2, post_amount: 50_000 }
     ]
@@ -73,7 +73,7 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
 
     assert_total_heading(@total_posts_count, @total_posts_amount)
 
-    @all_user_stats.each do |stats|
+    @all_users_stats.each do |stats|
       assert_user_index(stats)
     end
 
