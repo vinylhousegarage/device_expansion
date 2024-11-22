@@ -12,7 +12,6 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   def setup
     initialize_user
     initialize_user_stats
-    stub_services
   end
 
   private
