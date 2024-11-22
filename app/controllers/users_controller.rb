@@ -5,15 +5,15 @@ class UsersController < ApplicationController
     @total_posts_count = posts_stats.total_posts_count
     @total_posts_amount = posts_stats.total_posts_amount
     user_posts_stats = UserPostsStatsService.new
-    @user_stats = user_posts_stats.user_stats
+    @all_users_stats = user_posts_stats.all_users_stats
   end
 
   # 個人別投稿一覧を表示
   def show
     @user = find_params_id
     user_posts_stats = UserPostsStatsService.new
-    @user_stats = user_posts_stats.user_stats
-    @user_stat = user_posts_stats.user_stats_for_id(params[:id])
+    @all_users_stats = user_posts_stats.all_users_stats
+    @user_stats_by_id = user_posts_stats.user_stats_by_id(params[:id])
   end
 
   # 投稿者を招待
