@@ -3,11 +3,11 @@ class UserPostsStatsService
     @users = users
   end
 
-  def user_stats
+  def users_stats
     @users.map { |user| build_user_stats(user) }
   end
 
-  def user_stats_for_id(user_id)
+  def user_stats(user_id)
     user = @users.find { |u| u.id == user_id }
     return nil unless user
 
