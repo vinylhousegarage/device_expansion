@@ -94,12 +94,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
         get users_path
         assert_response :success
 
-    User.find_each do |user|
-      assert_match user.name, response.body
-    end
+        User.find_each do |user|
+          assert_match user.name, response.body
+        end
 
-    user_posts_total_amount = "#{number_with_delimiter(Post.where(user_id: @user.id).sum(:amount))} 円"
-    assert_match user_posts_total_amount, response.body
+        user_posts_total_amount = "#{number_with_delimiter(Post.where(user_id: @user.id).sum(:amount))} 円"
+        assert_match user_posts_total_amount, response.body
+      end
+    end
   end
 
   # users#logout のパスとフラッシュをテスト
