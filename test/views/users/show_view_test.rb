@@ -3,12 +3,11 @@ require 'test_helper'
 class UsersShowViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
-  USER_STATS_STRUCT = Struct.new(:user_stats)
+  USERS_STATS_STRUCT = Struct.new(:user_stats)
 
   def setup
-    @users = [users(:first_poster), users(:admin)]
     initialize_user
-    initialize_user_stats
+    initialize_all_users_stats
     stub_services
   end
 
@@ -16,19 +15,20 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
 
   def initialize_user
     @user = users(:first_poster)
+    @users = [users(:first_poster), users(:admin)]
     sign_in_as(@user)
   end
 
-  def initialize_user_stats
-    @user_stats = [
+  def initialize_all_users_stats
+    @all_users_stats = [
       { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
       { user_name: '投稿者２', post_count: 3, post_amount: 12_000 }
     ]
   end
 
   def stub_services
-    user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
-    UserPostsStatsService.stubs(:new).returns(user_stats_stub)
+    users_stats_stub = USERS_STATS_STRUCT.new(@all_users_stats)
+    UserPostsStatsService.stubs(:new).returns(users_stats_stub)
     get user_path
   end
 
