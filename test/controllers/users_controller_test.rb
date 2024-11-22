@@ -88,20 +88,17 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test 'should display all users and their posts on index page' do
     post_stats_stub = POST_STATS_STRUCT.new(@total_posts_count, @total_posts_amount)
     user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
+    PostsStatsService.stubs(:new).returns(post_stats_stub)
+    UserPostsStatsService.stubs(:new).returns(user_stats_stub)
+    get users_path
+    assert_response :success
 
-    PostsStatsService.stubs(:new, post_stats_stub) do
-      UserPostsStatsService.stubs(:new, user_stats_stub) do
-        get users_path
-        assert_response :success
-
-        User.find_each do |user|
-          assert_match user.name, response.body
-        end
-
-        user_posts_total_amount = "#{number_with_delimiter(Post.where(user_id: @user.id).sum(:amount))} 円"
-        assert_match user_posts_total_amount, response.body
-      end
+    User.find_each do |user|
+      assert_match user.name, response.body
     end
+
+    user_posts_total_amount = "#{number_with_delimiter(Post.where(user_id: @user.id).sum(:amount))} 円"
+    assert_match user_posts_total_amount, response.body
   end
 
   # users#logout のパスとフラッシュをテスト
