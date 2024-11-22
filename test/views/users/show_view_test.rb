@@ -29,7 +29,7 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
   def stub_services
     user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
     UserPostsStatsService.stub(:new, user_stats_stub) do
-      get new_post_path
+      get user_path
     end
   end
 
@@ -41,8 +41,6 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
 
   test 'displays headers in show template for different user roles' do
     @users.each do |user|
-      sign_in_as(user)
-      get user_path(user)
 
       assert_select 'h3', text: "#{user.name}さんの登録一覧"
 
@@ -56,8 +54,6 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
 
   test 'displays user posts with correct details in show template' do
     @users.each do |user|
-      sign_in_as(user)
-      get user_path(user)
 
       user.posts.each_with_index do |user_post, index|
         assert_select 'tr' do
@@ -74,8 +70,6 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
 
   test 'displays navigation buttons based on user role in show template' do
     @users.each do |user|
-      sign_in_as(user)
-      get user_path(user)
 
       assert_select 'form[action=?][method=?]', new_post_path, 'get' do
         assert_select 'button', '新規登録へ戻る'
