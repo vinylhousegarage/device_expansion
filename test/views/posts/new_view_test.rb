@@ -40,7 +40,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
   end
 
-  def initialize_user_stats
+  def initialize_all_users_stats
     @all_users_stats = [
       { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
       { user_name: '投稿者２', post_count: 3, post_amount: 12_000 }
