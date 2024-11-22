@@ -28,7 +28,7 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
 
   def stub_services
     user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
-    UserPostsStatsService.stub(:new, user_stats_stub) do
+    UserPostsStatsService.stubs(:new, user_stats_stub) do
       get user_path
     end
   end
