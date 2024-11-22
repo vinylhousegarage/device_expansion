@@ -67,22 +67,19 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
   test 'renders index view with all elements' do
     post_stats_stub = POST_STATS_STRUCT.new(@total_posts_count, @total_posts_amount)
     user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
+    PostsStatsService.stubs(:new).returns(post_stats_stub)
+    UserPostsStatsService.stubs(:new).returns(user_stats_stub)
+    get users_path
 
-    PostsStatsService.stubs(:new, post_stats_stub) do
-      UserPostsStatsService.stubs(:new, user_stats_stub) do
-        get users_path
+    assert_total_heading(@total_posts_count, @total_posts_amount)
 
-        assert_total_heading(@total_posts_count, @total_posts_amount)
-
-        @user_stats.each do |stat|
-          assert_user_index(stat)
-        end
-
-        assert_button('参加', new_post_path, 'get')
-        assert_button('戻る', new_user_path, 'get')
-        assert_button('削除', reset_database_users_path, 'delete')
-      end
+    @user_stats.each do |stat|
+      assert_user_index(stat)
     end
+
+    assert_button('参加', new_post_path, 'get')
+    assert_button('戻る', new_user_path, 'get')
+    assert_button('削除', reset_database_users_path, 'delete')
   end
 
   test 'reset database from index view' do
