@@ -2,12 +2,12 @@ require 'test_helper'
 
 class ApplicationControllerTest < ActionDispatch::IntegrationTest
   # Structを定数に定義
-  USER_STATS_STRUCT = Struct.new(:user_stats)
+  USERS_STATS_STRUCT = Struct.new(:user_stats)
 
   # セッションデータを設定
   def setup
     initialize_user
-    initialize_user_stats
+    initialize_users_stats
   end
 
   private
@@ -19,8 +19,8 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
   end
 
   # ユーザーのスタブデータを設定
-  def initialize_user_stats
-    @user_stats = [
+  def initialize_users_stats
+    @users_stats = [
       { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
       { user_name: '投稿者２', post_count: 3, post_amount: 12_000 }
     ]
@@ -28,8 +28,8 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
   # current_userメソッドのテスト
   test 'current_user should return the user based on session user_id' do
-    user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
-    UserPostsStatsService.stubs(:new).returns(user_stats_stub)
+    users_stats_stubs = USERS_STATS_STRUCT.new(@users_stats)
+    UserPostsStatsService.stubs(:new).returns(users_stats_stubs)
     get new_post_path
     assert_response :success
     assert_equal @user.id, @controller.current_user
