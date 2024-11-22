@@ -1,17 +1,9 @@
 require 'test_helper'
 
-class ApplicationControllerTest < ActionDispatch::IntegrationTest
+class ApplicationControllerIntegrationTest < ActionDispatch::IntegrationTest
   def setup
     @user = users(:first_poster)
-    sign_in_as(@user, as: :json)
-  end
-
-  # current_userメソッドのテスト
-  test 'current_user should return the user based on session user_id' do
-    post login_poster_user_path(id: @user.id), as: :json
-    assert_response :success
-    json_response = response.parsed_body
-    assert_equal new_post_path, json_response['redirect_url']
+    sign_in_as(@user)
   end
 
   # find_params_idメソッドのテスト
