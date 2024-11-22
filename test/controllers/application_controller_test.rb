@@ -27,16 +27,10 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
     ]
   end
 
-  # 投稿のスタブデータを設定
-  def stub_services
-    user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
-    UserPostsStatsService.stubs(:new, user_stats_stub) do
-      get new_post_path
-    end
-  end
-
   # current_userメソッドのテスト
   test 'current_user should return the user based on session user_id' do
+    user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
+    UserPostsStatsService.stubs(:new).returns(user_stats_stub)
     get new_post_path
     assert_response :success
     assert_equal @user.id, @controller.current_user
