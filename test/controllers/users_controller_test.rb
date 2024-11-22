@@ -7,14 +7,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # end
 
   # Structを定数に定義
-  POST_STATS_STRUCT = Struct.new(:total_posts_count, :total_posts_amount)
-  USER_STATS_STRUCT = Struct.new(:user_stats)
+  POSTS_STATS_STRUCT = Struct.new(:total_posts_count, :total_posts_amount)
+  USERS_STATS_STRUCT = Struct.new(:user_stats)
 
   # セッションデータを設定
   setup do
     initialize_user
-    initialize_post_stats
-    initialize_user_stats
+    initialize_posts_stats
+    initialize_all_user_stats
   end
 
   private
@@ -29,14 +29,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   # 合計のスタブデータを設定
-  def initialize_post_stats
+  def initialize_posts_stats
     @total_posts_count = 4
     @total_posts_amount = 58_000
   end
 
   # ユーザーのスタブデータを設定
-  def initialize_user_stats
-    @user_stats = [
+  def initialize_all_user_stats
+    @all_user_stats = [
       { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
       { user_name: '集計担当', post_count: 2, post_amount: 50_000 }
     ]
@@ -86,10 +86,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # indexルートと一覧表示を確認
   test 'should display all users and their posts on index page' do
-    post_stats_stub = POST_STATS_STRUCT.new(@total_posts_count, @total_posts_amount)
-    user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
-    PostsStatsService.stubs(:new).returns(post_stats_stub)
-    UserPostsStatsService.stubs(:new).returns(user_stats_stub)
+    posts_stats_stub = POSTS_STATS_STRUCT.new(@total_posts_count, @total_posts_amount)
+    users_stats_stub = USERS_STATS_STRUCT.new(@all_users_stats)
+    PostsStatsService.stubs(:new).returns(posts_stats_stub)
+    UserPostsStatsService.stubs(:new).returns(users_stats_stub)
     get users_path
     assert_response :success
 
