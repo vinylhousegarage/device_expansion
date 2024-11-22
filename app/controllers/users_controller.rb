@@ -12,7 +12,8 @@ class UsersController < ApplicationController
   def show
     @user = find_params_id
     user_posts_stats = UserPostsStatsService.new
-    @user_stats = user_posts_stats.user_stats_for_id(params[:id])
+    @user_stats = user_posts_stats.user_stats
+    @user_stat = user_posts_stats.user_stats_for_id(params[:id])
   end
 
   # 投稿者を招待
