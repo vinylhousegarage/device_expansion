@@ -6,12 +6,40 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   #   assert true
   # end
 
-  # 投稿者を設定
+  # Structを定数に定義
+  POST_STATS_STRUCT = Struct.new(:total_posts_count, :total_posts_amount)
+  USER_STATS_STRUCT = Struct.new(:user_stats)
+
+  # セッションデータを設定
   setup do
+    initialize_user
+    initialize_post_stats
+    initialize_user_stats
+  end
+
+  private
+
+  # 初期化を設定
+  def initialize_user
     @user = users(:first_poster)
+    @users = [users(:first_poster), users(:admin)]
     @admin_user = users(:admin)
     @posts = Post.where(user: @user)
     sign_in_as(@user, as: :json)
+  end
+
+  # 合計のスタブデータを設定
+  def initialize_post_stats
+    @total_posts_count = 4
+    @total_posts_amount = 58_000
+  end
+
+  # ユーザーのスタブデータを設定
+  def initialize_user_stats
+    @user_stats = [
+      { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
+      { user_name: '集計担当', post_count: 2, post_amount: 50_000 }
+    ]
   end
 
   # 管理者の"集計担当"ユーザーでログインするテスト
@@ -26,9 +54,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     get new_user_path
     assert_response :success
   end
-
-  # users.yml からフィクスチャをロード
-  fixtures :users
 
   # スコープ poster_users の参照をテスト
   test 'should display poster users in new action' do
@@ -61,8 +86,13 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # indexルートと一覧表示を確認
   test 'should display all users and their posts on index page' do
-    get users_path
-    assert_response :success
+    post_stats_stub = POST_STATS_STRUCT.new(@total_posts_count, @total_posts_amount)
+    user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
+
+    PostsStatsService.stubs(:new, post_stats_stub) do
+      UserPostsStatsService.stubs(:new, user_stats_stub) do
+        get users_path
+        assert_response :success
 
     User.find_each do |user|
       assert_match user.name, response.body
