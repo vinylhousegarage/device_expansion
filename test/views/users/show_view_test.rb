@@ -41,7 +41,6 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
 
   test 'displays headers in show template for different user roles' do
     @users.each do |user|
-
       assert_select 'h3', text: "#{user.name}さんの登録一覧"
 
       assert_select 'table' do
@@ -54,7 +53,6 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
 
   test 'displays user posts with correct details in show template' do
     @users.each do |user|
-
       user.posts.each_with_index do |user_post, index|
         assert_select 'tr' do
           assert_select 'td', text: (index + 1).to_s
@@ -70,7 +68,6 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
 
   test 'displays navigation buttons based on user role in show template' do
     @users.each do |user|
-
       assert_select 'form[action=?][method=?]', new_post_path, 'get' do
         assert_select 'button', '新規登録へ戻る'
       end
