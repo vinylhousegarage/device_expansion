@@ -8,8 +8,8 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
 
   def setup
     initialize_user
-    initialize_user_stats
     initialize_post_stats
+    initialize_user_stats
   end
 
   def assert_total_heading(total_count, total_amount)
@@ -52,16 +52,16 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     @users = [users(:first_poster), users(:admin)]
   end
 
+  def initialize_post_stats
+    @total_posts_count = 4
+    @total_posts_amount = 58_000
+  end
+
   def initialize_user_stats
     @user_stats = [
       { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
       { user_name: '集計担当', post_count: 2, post_amount: 50_000 }
     ]
-  end
-
-  def initialize_post_stats
-    @total_posts_count = 4
-    @total_posts_amount = 58_000
   end
 
   test 'renders index view with all elements' do
