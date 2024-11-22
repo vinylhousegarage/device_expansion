@@ -1,5 +1,5 @@
 <%= render 'shared/user_info' %><br>
-<h3><%= @user_stats[:user_name] %>さんの登録一覧</h3>
+<h3><%= @user_stat[:user_name] %>さんの登録一覧</h3>
 <table>
   <tr>
     <th>No.</th>
@@ -8,18 +8,16 @@
   </tr>
 
   <% @user_stats.each_with_index do |user_stat, index| %>
-
   <tr>
     <td><%= index + 1 %></td>
     <td><%= user_stat[:user_name] %></td>
     <td><%= '　' %><%= number_with_delimiter(user_stat[:post_amount]) %><%= ' 円　' %></td>
     <td><%= button_to '詳細', post_path(user_stat[:user_id]), method: :get %></td>
   </tr>
-
   <% end %>
 </table>
 <br>
-<% if @user_stats[:user_name] == "集計担当" %>
+<% if @user_stat[:user_name] == "集計担当" %>
   <%= button_to '新規登録へ戻る', new_post_path, method: :get %>
   <br>
   <%= button_to '登録状況へ戻る', users_path, method: :get %>
