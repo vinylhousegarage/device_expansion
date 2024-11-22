@@ -31,17 +31,14 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     ]
   end
 
-  # サービスクラスをスタブ化
-  def stub_services
-    user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
-    UserPostsStatsService.stubs(:new, user_stats_stub) do
-      get new_post_path
-    end
-  end
-
   # newアクションをテスト
   test 'should get new post form' do
-    get new_post_path
-    assert_response :success
+    user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
+    UserPostsStatsService.stubs(:new).returns(user_stats_stub)
+      get new_post_path
+      assert_response :success
+      user_posts_stats = UserPostsStatsService.new
+      assert_equal @user_stats, user_posts_stats.user_stats
+    end
   end
 end
