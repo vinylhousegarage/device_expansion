@@ -28,9 +28,8 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
 
   def stub_services
     user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
-    UserPostsStatsService.stubs(:new, user_stats_stub) do
-      get user_path
-    end
+    UserPostsStatsService.stubs(:new).returns(user_stats_stub)
+    get user_path
   end
 
   test 'renders user-info section with correct content' do
