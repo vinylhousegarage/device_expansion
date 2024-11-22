@@ -51,7 +51,6 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     user_stats_stub = USER_STATS_STRUCT.new(@user_stats)
     UserPostsStatsService.stubs(:new).returns(user_stats_stub)
     get new_post_path
-    end
   end
 
   def assert_back_to_status_button
