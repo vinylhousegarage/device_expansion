@@ -7,6 +7,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     @user = users(:first_poster)
     @admin_user = users(:admin)
     @users = [users(:first_poster), users(:admin)]
+    user_posts_stats = UserPostsStatsService.new
     @all_users_stats = user_posts_stats.all_users_stats
     @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
     sign_in_as(@user)
