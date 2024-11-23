@@ -12,7 +12,7 @@ module StatsMockSetupHelper
       user_id: user.id,
       user_name: user.name,
       post_count: 3,
-      post_amount: 13_000
+      post_amount: 9_000
     )
   end
 
