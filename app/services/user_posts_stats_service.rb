@@ -20,7 +20,7 @@ class UserPostsStatsService
 
   def build_user_stat(user)
     UserStat.new(
-      user: user,
+      user:,
       user_id: user.id,
       user_name: user.name,
       post_count: user.posts.size,
