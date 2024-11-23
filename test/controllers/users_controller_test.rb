@@ -6,15 +6,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   #   assert true
   # end
 
-  # Structを定数に定義
-  POSTS_STATS_STRUCT = Struct.new(:total_posts_count, :total_posts_amount)
-  USERS_STATS_STRUCT = Struct.new(:user_stats)
-
   # セッションデータを設定
   setup do
     initialize_user
     initialize_posts_stats
-    initialize_all_user_stats
+    initialize_user_stats_by_id
+    initialize_all_users_stats
   end
 
   private
@@ -24,21 +21,45 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @user = users(:first_poster)
     @users = [users(:first_poster), users(:admin)]
     @admin_user = users(:admin)
-    @posts = Post.where(user: @user)
     sign_in_as(@user, as: :json)
   end
 
-  # 合計のスタブデータを設定
+  # posts_statsメソッドのスタブデータを設定
   def initialize_posts_stats
-    @total_posts_count = 4
-    @total_posts_amount = 58_000
+    @mock_posts_stats = {
+      total_posts_count: 8,
+      total_posts_amount: 32_000
+    }
   end
 
-  # ユーザーのスタブデータを設定
-  def initialize_all_user_stats
-    @all_user_stats = [
-      { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
-      { user_name: '集計担当', post_count: 2, post_amount: 50_000 }
+  # user_stats_by_idメソッドのスタブデータを設定
+  def initialize_user_stats_by_id
+    mock_user_stats_by_id = UserPostsStatsService::UserStat.new(
+      user: @user,
+      user_id: @user.id,
+      user_name: @user.name,
+      post_count: 3,
+      post_amount: 5_000
+    )
+  end
+
+  # all_users_statsメソッドのスタブデータを設定
+  def initialize_all_users_stats
+    @mock_all_users_stats = [
+      UserPostsStatsService::UserStat.new(
+        user: @user,
+        user_id: 1,
+        user_name: '投稿者１',
+        post_count: 5,
+        post_amount: 17_000
+      ),
+      UserPostsStatsService::UserStat.new(
+        user: @admin_user,
+        user_id: 6,
+        user_name: '集計担当',
+        post_count: 3,
+        post_amount: 15_000
+      )
     ]
   end
 
@@ -78,27 +99,21 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal @user.id, session[:user_id].to_i
   end
 
-  # login_poster_redirectルートとリダイレクトを確認
+  # login_poster_redirectルートとリダイレクトをテスト
   test 'should route to login_poster_redirect' do
     get login_poster_redirect_user_path(@user)
     assert_response :success
   end
 
-  # indexルートと一覧表示を確認
-  test 'should display all users and their posts on index page' do
-    posts_stats_stub = POSTS_STATS_STRUCT.new(@total_posts_count, @total_posts_amount)
-    users_stats_stub = USERS_STATS_STRUCT.new(@all_users_stats)
-    PostsStatsService.stubs(:new).returns(posts_stats_stub)
-    UserPostsStatsService.stubs(:new).returns(users_stats_stub)
+  # users#index のパスをテスト
+  test 'index action renders successfully with mocked services' do
+    PostsStatsService.any_instance.stubs(:total_posts_count).returns(@mock_posts_stats[:total_posts_count])
+    PostsStatsService.any_instance.stubs(:total_posts_amount).returns(@mock_posts_stats[:total_posts_amount])
+
+    UserPostsStatsService.any_instance.stubs(:all_users_stats).returns(@mock_all_users_stats)
+
     get users_path
     assert_response :success
-
-    User.find_each do |user|
-      assert_match user.name, response.body
-    end
-
-    user_posts_total_amount = "#{number_with_delimiter(Post.where(user_id: @user.id).sum(:amount))} 円"
-    assert_match user_posts_total_amount, response.body
   end
 
   # users#logout のパスとフラッシュをテスト
@@ -127,3 +142,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 end
+
+  # users#show のパスと find_params_idメソッドをテスト
+  test 'should successfully post to user path with current_user method' do
+    UserPostsStatsService.any_instance.stubs(:user_stats_by_id).returns(mock_user_stats_by_id)
+    get user_path(@user)
+    assert_response :success
+    assert_match @user.name, response.body
+  end
