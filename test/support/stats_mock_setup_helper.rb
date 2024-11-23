@@ -22,7 +22,7 @@ module StatsMockSetupHelper
   private
   def build_user_stat(user)
     UserPostsStatsService::UserStat.new(
-      user: user,
+      user:,
       user_id: user.id,
       user_name: user.name,
       post_count: user.posts.size,
