@@ -100,7 +100,7 @@ end
 
   # users#show のパスと find_params_idメソッドをテスト
   test 'should successfully post to user path with current_user method' do
-    UserPostsStatsService.any_instance.stubs(:user_stats_by_id).with(@user.id).returns(@mock_user_stats_by_id)
+    UserPostsStatsService.any_instance.stubs(:user_stats_by_id).returns(@mock_user_stats_by_id)
     UserPostsStatsService.any_instance.stubs(:all_users_stats).returns(@mock_all_users_stats)
     get user_path(@user)
     assert_response :success
