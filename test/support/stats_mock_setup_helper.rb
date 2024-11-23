@@ -1,8 +1,8 @@
 module StatsMockSetupHelper
   def mock_posts_stats
     PostsStatsService::UserStat.new(
-      total_posts_count: 7,
-      total_posts_amount: 35_000
+      total_posts_count: 4,
+      total_posts_amount: 58_000
     )
   end
 
@@ -16,14 +16,14 @@ module StatsMockSetupHelper
     )
   end
 
-  def mock_all_users_stats(user, admin_user)
+  def mock_all_users_stats(poster_user, admin_user)
     [
       UserPostsStatsService::UserStat.new(
-        user: user,
-        user_id: user.id,
-        user_name: user.name,
-        post_count: user.posts.size,
-        post_amount: user.posts.sum(:amount)
+        user: poster_user,
+        user_id: poster_user.id,
+        user_name: poster_user.name,
+        post_count: poster_user.posts.size,
+        post_amount: poster_user.posts.sum(:amount)
       ),
       UserPostsStatsService::UserStat.new(
         user: admin_user,
