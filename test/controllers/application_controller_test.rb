@@ -1,6 +1,8 @@
 class ApplicationControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = users(:first_poster)
+    user_posts_stats = UserPostsStatsService.new
+    @user_stats_by_id = user_posts_stats.user_stats_by_id(@user)
     @mock_user_stats_by_id = mock_user_stats_by_id(@user)
     sign_in_as(@user)
   end
