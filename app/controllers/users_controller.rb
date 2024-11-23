@@ -13,7 +13,7 @@ class UsersController < ApplicationController
     @user = find_params_id
     user_posts_stats = UserPostsStatsService.new
     @all_users_stats = user_posts_stats.all_users_stats
-    @user_stats_by_id = user_posts_stats.user_stats_by_id(params[:id])
+    @user_stats_by_id = user_posts_stats.user_stats_by_id(params[:id].to_i)
   end
 
   # 投稿者を招待
