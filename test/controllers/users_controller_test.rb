@@ -96,7 +96,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     delete logout_poster_users_path
     assert_response :success
   end
-end
 
   # users#show のパスと find_params_idメソッドをテスト
   test 'should successfully post to user path with current_user method' do
@@ -106,3 +105,5 @@ end
     assert_response :success
     assert_match @user.name, response.body
   end
+end
+
