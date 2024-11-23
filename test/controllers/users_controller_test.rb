@@ -6,64 +6,18 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   #   assert true
   # end
 
-  # セッションデータを設定
+  # テスト用の初期データを設定
   setup do
-    initialize_user
-    initialize_posts_stats
-    initialize_user_stats_by_id
-    initialize_all_users_stats
-  end
-
-  private
-
-  # 初期化を設定
-  def initialize_user
     @user = users(:first_poster)
     @users = [users(:first_poster), users(:admin)]
     @admin_user = users(:admin)
+    @mock_posts_stats = mock_posts_stats
+    @mock_user_stats_by_id = mock_user_stats_by_id(@user)
+    @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
     sign_in_as(@user, as: :json)
   end
 
-  # posts_statsメソッドのスタブデータを設定
-  def initialize_posts_stats
-    @mock_posts_stats = {
-      total_posts_count: 8,
-      total_posts_amount: 32_000
-    }
-  end
-
-  # user_stats_by_idメソッドのスタブデータを設定
-  def initialize_user_stats_by_id
-    mock_user_stats_by_id = UserPostsStatsService::UserStat.new(
-      user: @user,
-      user_id: @user.id,
-      user_name: @user.name,
-      post_count: 3,
-      post_amount: 5_000
-    )
-  end
-
-  # all_users_statsメソッドのスタブデータを設定
-  def initialize_all_users_stats
-    @mock_all_users_stats = [
-      UserPostsStatsService::UserStat.new(
-        user: @user,
-        user_id: 1,
-        user_name: '投稿者１',
-        post_count: 5,
-        post_amount: 17_000
-      ),
-      UserPostsStatsService::UserStat.new(
-        user: @admin_user,
-        user_id: 6,
-        user_name: '集計担当',
-        post_count: 3,
-        post_amount: 15_000
-      )
-    ]
-  end
-
-  # 管理者の"集計担当"ユーザーでログインするテスト
+  # 管理者の'集計担当'ユーザーでログインするテスト
   test 'should log in admin user and redirect to users path' do
     post login_users_path
     assert_equal @admin_user.id, session[:user_id]
@@ -92,7 +46,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_select 'svg', svg_expected_count
   end
 
-  # "投稿者１"でのログインをテスト
+  # '投稿者１'でのログインをテスト
   test 'should log in first_poster user' do
     post login_poster_user_path(@user), params: { id: @user.id }, as: :json
     assert_response :success
