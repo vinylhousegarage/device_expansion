@@ -16,5 +16,6 @@ module ActiveSupport
     include SignInHelper
     include UserInfoAssertions
     include FlashAssertions
+    include StatsMockSetupHelper
   end
 end
