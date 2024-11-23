@@ -1,13 +1,13 @@
 module UserInfoAssertions
   def assert_user_info(user)
-    user_stat = @user_stats.find { |stat| stat.user_name == user.name }
+    user_stats = @all_users_stats.find { |stats| stats.user_name == user.name }
     raise "User stats not found for user: #{user.name}" unless user_stat
 
     assert_select 'div#user-info' do
-      assert_select 'b', text: "#{user_stat.user_name}さんの登録件数：#{user_stat.post_count}件"
+      assert_select 'b', text: "#{user_stats.user_name}さんの登録件数：#{user_stats.post_count}件"
 
-      total_amount = formatted_total_amount(user_stat.post_amount)
-      assert_select 'b', text: "#{user_stat.user_name}さんの合計金額：#{total_amount}"
+      total_amount = formatted_total_amount(user_stats.post_amount)
+      assert_select 'b', text: "#{user_stats.user_name}さんの合計金額：#{total_amount}"
     end
   end
 
