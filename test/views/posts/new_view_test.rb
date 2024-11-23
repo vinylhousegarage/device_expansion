@@ -3,12 +3,13 @@ require 'test_helper'
 class PostsNewViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
-  USERS_STATS_STRUCT = Struct.new(:user_stats)
-
   def setup
-    initialize_user
-    initialize_all_users_stats
-    stub_services
+    @user = users(:first_poster)
+    @users = [users(:first_poster), users(:admin)]
+    mock_user_posts_stats = UserPostsStatsService.new
+    @mock_user_stats_by_id = mock_user_posts_stats.user_stats_by_id(@user.id)
+    sign_in_as(@user)
+    get new_post_path
   end
 
   def assert_field_with_label(label_text, field_name, field_type)
@@ -34,24 +35,6 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   end
 
   private
-
-  def initialize_user
-    @user = users(:first_poster)
-    sign_in_as(@user)
-  end
-
-  def initialize_all_users_stats
-    @all_users_stats = [
-      { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
-      { user_name: '投稿者２', post_count: 3, post_amount: 12_000 }
-    ]
-  end
-
-  def stub_services
-    users_stats_stub = USERS_STATS_STRUCT.new(@all_users_stats)
-    UserPostsStatsService.stubs(:new).returns(users_stats_stub)
-    get new_post_path
-  end
 
   def assert_back_to_status_button
     assert_select 'table' do
