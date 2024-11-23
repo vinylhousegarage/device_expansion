@@ -12,7 +12,7 @@
     <td><%= stats.user_name %></td>
     <td><%= stats.post_count %>件　</td>
     <td><%= number_with_delimiter(stats.post_amount) %> 円　</td>
-    <td><%= button_to '詳細', user_path(user.id), method: :get %></td>
+    <td><%= button_to '詳細', user_path(stats.user_id), method: :get %></td>
   </tr>
   <% end %>
   <tr>
