@@ -8,7 +8,7 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     @users = [users(:first_poster), users(:admin)]
     @admin_user = users(:admin)
     @total_posts_count = mock_posts_stats.total_posts_count
-    @total_amount_count = mock_posts_stats.total_amount_count
+    @total_posts_amount = mock_posts_stats.total_posts_amount
     @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
     sign_in_as(@user)
     get users_path
