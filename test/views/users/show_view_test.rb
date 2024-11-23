@@ -7,7 +7,6 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
     @user = users(:first_poster)
     @admin_user = users(:admin)
     @users = [@user, @admin_user]
-    @all_users_stats = user_posts_stats.all_users_stats
     @mock_user_stats_by_id = mock_user_stats_by_id(@user)
     @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
   end
