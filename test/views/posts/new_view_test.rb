@@ -73,8 +73,10 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'renders confirmation button' do
+  test 'renders confirmation button for all users' do
     @users.each do |user|
+      sign_in_as(user)
+      get new_post_path
       assert_select 'table' do
         assert_select 'td', text: '集計を確認する'
         assert_select 'form[action=?][method=?]', user_path(user), 'get' do
