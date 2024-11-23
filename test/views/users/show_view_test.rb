@@ -56,10 +56,7 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
       assert_select 'form[action=?][method=?]', new_post_path, 'get' do
         assert_select 'button', '新規登録へ戻る'
       end
-
-      if user.name == '集計担当'
-        assert_buttons_for_admin
-      end
+      assert_buttons_for_admin if user.name == '集計担当'
     end
   end
 
