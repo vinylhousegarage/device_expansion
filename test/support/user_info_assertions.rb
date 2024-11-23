@@ -1,6 +1,6 @@
 module UserInfoAssertions
   def assert_user_info(user)
-    user_stats = @all_users_stats.find { |stats| stats.user_name == user.name }
+    user_stats = @mock_all_users_stats.find { |stats| stats.user_name == user.name }
     raise "User stats not found for user: #{user.name}" unless user_stats
 
     assert_select 'div#user-info' do
