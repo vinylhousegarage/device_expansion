@@ -8,7 +8,7 @@ module StatsMockSetupHelper
 
   def mock_user_stats_by_id(user)
     UserPostsStatsService::UserStat.new(
-      user: user,
+      user:,
       user_id: user.id,
       user_name: user.name,
       post_count: user.posts.size,
@@ -19,7 +19,7 @@ module StatsMockSetupHelper
   def mock_all_users_stats(user, admin_user)
     [
       UserPostsStatsService::UserStat.new(
-        user: user,
+        user:,
         user_id: user.id,
         user_name: user.name,
         post_count: user.posts.size,
