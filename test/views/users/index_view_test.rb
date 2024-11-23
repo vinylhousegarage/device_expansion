@@ -3,13 +3,15 @@ require 'test_helper'
 class UsersIndexViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
-  POSTS_STATS_STRUCT = Struct.new(:total_posts_count, :total_posts_amount)
-  USERS_STATS_STRUCT = Struct.new(:user_stats)
-
   def setup
-    initialize_user
-    initialize_posts_stats
-    initialize_all_users_stats
+    @user = users(:first_poster)
+    @users = [users(:first_poster), users(:admin)]
+    @admin_user = users(:admin)
+    @total_posts_count = mock_posts_stats.total_posts_count
+    @total_amount_count = mock_posts_stats.total_amount_count
+    @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
+    sign_in_as(@user)
+    get users_path
   end
 
   def assert_total_heading(total_count, total_amount)
@@ -44,35 +46,10 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     end
   end
 
-  private
-
-  def initialize_user
-    @user = users(:first_poster)
-    sign_in_as(@user)
-    @users = [users(:first_poster), users(:admin)]
-  end
-
-  def initialize_posts_stats
-    @total_posts_count = 4
-    @total_posts_amount = 58_000
-  end
-
-  def initialize_all_users_stats
-    @all_users_stats = [
-      { user_name: '投稿者１', post_count: 2, post_amount: 8_000 },
-      { user_name: '集計担当', post_count: 2, post_amount: 50_000 }
-    ]
-  end
-
   test 'renders index view with all elements' do
-    posts_stats_stub = POSTS_STATS_STRUCT.new(@total_posts_count, @total_posts_amount)
-    users_stats_stub = USERS_STATS_STRUCT.new(@all_users_stats)
-    PostsStatsService.stubs(:new).returns(posts_stats_stub)
-    UserPostsStatsService.stubs(:new).returns(users_stats_stub)
-    get users_path
-
     assert_total_heading(@total_posts_count, @total_posts_amount)
 
+    @all_users_stats = UserPostsStatsService.stubs(:new).returns(@mock_all_users_stats)
     @all_users_stats.each do |stats|
       assert_user_index(stats)
     end
