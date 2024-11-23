@@ -5,9 +5,9 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
 
   def setup
     @user = users(:first_poster)
+    @admin_user = users(:admin)
     @users = [users(:first_poster), users(:admin)]
-    mock_user_posts_stats = UserPostsStatsService.new
-    @mock_user_stats_by_id = mock_user_posts_stats.user_stats_by_id(@user.id)
+    @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
     sign_in_as(@user)
     get new_post_path
   end
@@ -85,8 +85,8 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'displays appropriate navigation buttons based on user role' do
-    @users.each do |user|
-      assert_navigation_buttons(user)
+    @mock_all_users_stats.each do |stats|
+      assert_navigation_buttons(stats)
     end
   end
 end
