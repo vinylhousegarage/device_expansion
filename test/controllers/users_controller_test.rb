@@ -12,7 +12,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @users = [users(:first_poster), users(:admin)]
     @admin_user = users(:admin)
     @total_posts_count = mock_posts_stats.total_posts_count
-    @total_amount_count = mock_posts_stats.total_amount_count
+    @total_posts_amount = mock_posts_stats.total_posts_amount
     @mock_user_stats_by_id = mock_user_stats_by_id(@user)
     @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
     sign_in_as(@user, as: :json)
@@ -63,7 +63,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # users#index のパスをテスト
   test 'index action renders successfully with mocked services' do
     PostsStatsService.any_instance.stubs(:total_posts_count).returns(@total_posts_count)
-    PostsStatsService.any_instance.stubs(:total_posts_amount).returns(@total_amount_count)
+    PostsStatsService.any_instance.stubs(:total_posts_amount).returns(@total_posts_amount)
 
     UserPostsStatsService.any_instance.stubs(:all_users_stats).returns(@mock_all_users_stats)
 
