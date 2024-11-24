@@ -7,12 +7,12 @@
     <td><%= button_to '詳細', posts_path, method: :get %></td>
   </tr>
 
-  <% @all_users_stats.each do |stats| %>
+  <% @all_users_stats.each do |stat| %>
   <tr>
-    <td><%= stats.user_name %></td>
-    <td><%= stats.post_count %>件　</td>
-    <td><%= number_with_delimiter(stats.post_amount) %> 円　</td>
-    <td><%= button_to '詳細', user_path(stats.user_id), method: :get %></td>
+    <td><%= stat.user_name %></td>
+    <td><%= stat.post_count %>件　</td>
+    <td><%= number_with_delimiter(stat.post_amount) %> 円　</td>
+    <td><%= button_to '詳細', user_path(stat.user_id), method: :get %></td>
   </tr>
   <% end %>
   <tr>
