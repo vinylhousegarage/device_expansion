@@ -1,8 +1,8 @@
 module StatsMockSetupHelper
   def mock_posts_stats
     PostsStatsService::UserStat.new(
-      total_posts_count: 4,
-      total_posts_amount: 58_000
+      total_posts_count: 5,
+      total_posts_amount: 68_000
     )
   end
 
