@@ -19,7 +19,9 @@ module StatsMockSetupHelper
   def mock_all_users_stats(user, admin_user)
     [build_user_stat(user), build_user_stat(admin_user)]
   end
+
   private
+
   def build_user_stat(user)
     UserPostsStatsService::UserStat.new(
       user:,
