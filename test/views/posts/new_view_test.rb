@@ -8,8 +8,6 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     @admin_user = users(:admin)
     @users = [users(:first_poster), users(:admin)]
     @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
-    sign_in_as(@user)
-    get new_post_path
   end
 
   def assert_field_with_label(label_text, field_name, field_type)
@@ -59,11 +57,15 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
 
   test 'renders user-info section with correct content' do
     @users.each do |user|
+      sign_in_as(user)
+      get new_post_path
       assert_user_info(user)
     end
   end
 
   test 'displays new registration form with correct fields' do
+    sign_in_as(@user)
+    get new_post_path
     assert_select 'h3', text: '新規登録'
     assert_select 'form' do
       assert_field_with_label('氏名', 'post[name]', 'text')
