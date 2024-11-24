@@ -36,12 +36,12 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
     get user_path(@user)
 
-    @mock_all_users_stats.each_with_index do |stats, index|
+    @mock_all_users_stats.each_with_index do |stat, index|
       assert_select 'tr' do
         assert_select 'td', text: (index + 1).to_s
-        assert_select 'td', text: stats.user_name
-        assert_select 'td', text: "　#{number_with_delimiter(stats.post_amount)} 円　"
-        assert_select 'form[action=?][method=?]', post_path(stats.user_id), 'get' do
+        assert_select 'td', text: stat.user_name
+        assert_select 'td', text: "　#{number_with_delimiter(stat.post_amount)} 円　"
+        assert_select 'form[action=?][method=?]', post_path(stat.user_id), 'get' do
           assert_select 'button', '詳細'
         end
       end
