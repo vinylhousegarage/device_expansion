@@ -26,6 +26,8 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   end
 
   def assert_navigation_buttons(user)
+    sign_in_as(user)
+    get new_post_path
     if user.name == '集計担当'
       assert_back_to_status_button
       assert_logout_button(logout_users_path)
