@@ -25,7 +25,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     end
   end
 
-  def assert_navigation_buttons(stats)
+  def assert_navigation_buttons(stat)
     if stats.user_name == '集計担当'
       assert_back_to_status_button
       assert_logout_button(logout_users_path)
@@ -87,8 +87,8 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'displays appropriate navigation buttons based on user role' do
-    @mock_all_users_stats.each do |stats|
-      assert_navigation_buttons(stats)
+    @mock_all_users_stats.each do |stat|
+      assert_navigation_buttons(stat)
     end
   end
 end
