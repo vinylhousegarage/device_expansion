@@ -30,3 +30,11 @@ fourth_post:
   tel: '0123456789'
   others: '供物:10,000円'
   user: admin
+
+fifth_post:
+  name: '(株) TESTNAME'
+  amount: 10_000
+  address: '市町村1丁目-nameⅡ'
+  tel:
+  others:
+  user: admin
