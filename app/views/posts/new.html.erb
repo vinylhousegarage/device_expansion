@@ -1,7 +1,4 @@
-<div id="user-info">
-  <%= render 'shared/user_info' %>
-</div>
-<br>
+<%= render 'shared/user_info' %><br>
 <h3>新規登録</h3>
 
 <%= form_with model: @post, local: true do |form| %>
@@ -39,7 +36,7 @@
     <td><%= button_to '確認', user_path(session[:user_id]), method: :get %></td>
   </tr>
   <br>
-  <% if @user.name == '集計担当' %>
+  <% if @user_stats_by_id.user_name == '集計担当' %>
     <tr>
       <td><b><%= '登録状況へ戻る　' %></b></td>
       <td><%= button_to "戻る", users_path, method: :get %></td>
@@ -49,8 +46,8 @@
   <tr>
     <td><b><%= '作業を終了する　' %></b></td>
     <td>
-      <% logout_path = @user.name == '集計担当' ? logout_users_path : logout_poster_users_path %>
-      <%= button_to "終了", logout_path, method: :delete, data: { turbo: false } %>
+      <% logout_path = @user_stats_by_id.user_name == '集計担当' ? logout_users_path : logout_poster_users_path %>
+      <%= button_to '終了', logout_path, method: :delete, data: { turbo: false } %>
     </td>
   </tr>
 </table>

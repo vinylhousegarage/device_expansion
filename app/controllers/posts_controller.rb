@@ -1,8 +1,8 @@
 class PostsController < ApplicationController
   def new
-    $stdout.puts "Session user_id: #{session[:user_id]}"
-    @user = current_user
+    @current_user = current_user
     @post = Post.new
-    @user_posts = @user.posts
+    user_posts_stats = UserPostsStatsService.new
+    @user_stats_by_id = user_posts_stats.user_stats_by_id(session[:user_id].to_i)
   end
 end

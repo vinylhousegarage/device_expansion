@@ -2,17 +2,17 @@
 <h3>登録状況</h3>
   <tr>
     <td><b>　合　　計　　</b></td>
-    <td><b><%= @posts.count %>件　</b></td>
-    <td><b><%= number_with_delimiter(@posts.sum(:amount)) %> 円　</b></td>
+    <td><b><%= @total_posts_count %>件　</b></td>
+    <td><b><%= number_with_delimiter(@total_posts_amount) %> 円　</b></td>
     <td><%= button_to '詳細', posts_path, method: :get %></td>
   </tr>
 
-  <% @users.each do |user| %>
+  <% @all_users_stats.each do |stat| %>
   <tr>
-    <td><%= user.name %></td>
-    <td><%= user.posts.count %>件　</td>
-    <td><%= number_with_delimiter(user.posts.sum(:amount)) %> 円　</td>
-    <td><%= button_to '詳細', user_path(user.id), method: :get %></td>
+    <td><%= stat.user_name %></td>
+    <td><%= stat.post_count %>件　</td>
+    <td><%= number_with_delimiter(stat.post_amount) %> 円　</td>
+    <td><%= button_to '詳細', user_path(stat.user_id), method: :get %></td>
   </tr>
   <% end %>
   <tr>

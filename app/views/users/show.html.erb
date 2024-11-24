@@ -1,5 +1,5 @@
 <%= render 'shared/user_info' %><br>
-<h3><%= @user.name %>さんの登録一覧</h3>
+<h3><%= @user_stats_by_id.user_name %>さんの登録一覧</h3>
 <table>
   <tr>
     <th>No.</th>
@@ -7,19 +7,17 @@
     <th>金額</th>
   </tr>
 
-  <% @user.posts.each_with_index do |user_post, index| %>
-
+  <% @all_users_stats.each_with_index do |stat, index| %>
   <tr>
     <td><%= index + 1 %></td>
-    <td><%= user_post.name %></td>
-    <td><%= '　' %><%= number_with_delimiter(user_post.amount) %><%= ' 円　' %></td>
-    <td><%= button_to '詳細', post_path(user_post), method: :get %></td>
+    <td><%= stat.user_name %></td>
+    <td><%= '　' %><%= number_with_delimiter(stat.post_amount) %><%= ' 円　' %></td>
+    <td><%= button_to '詳細', post_path(stat.user_id), method: :get %></td>
   </tr>
-
   <% end %>
 </table>
 <br>
-<% if @user.name == "集計担当" %>
+<% if @user_stats_by_id.user_name == '集計担当' %>
   <%= button_to '新規登録へ戻る', new_post_path, method: :get %>
   <br>
   <%= button_to '登録状況へ戻る', users_path, method: :get %>

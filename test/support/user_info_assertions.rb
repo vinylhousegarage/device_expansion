@@ -1,9 +1,11 @@
 module UserInfoAssertions
   def assert_user_info(user)
-    assert_select 'div#user-info' do
-      assert_select 'b', text: user.name + "さんの登録件数：#{user.posts.count}件"
-      total_amount = formatted_total_amount(user.posts.sum(:amount))
-      assert_select 'b', text: user.name + "さんの合計金額：#{total_amount}"
+    user_stats = @mock_all_users_stats.find { |stat| stat.user_name == user.name }
+    raise "User stats not found for user: #{user.name}" unless user_stats
+    assert_select 'div#_user_info' do
+      assert_select 'b', text: "#{user_stats.user_name}さんの登録件数：#{user_stats.post_count}件"
+      total_amount = formatted_total_amount(user_stats.post_amount)
+      assert_select 'b', text: "#{user_stats.user_name}さんの合計金額：#{total_amount}"
     end
   end
 
