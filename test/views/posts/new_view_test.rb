@@ -88,6 +88,8 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
 
   test 'displays appropriate navigation buttons based on user role' do
     @mock_all_users_stats.each do |stat|
+      sign_in_as(stat.user)
+      get new_post_path
       assert_navigation_buttons(stat)
     end
   end
