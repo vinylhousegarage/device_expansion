@@ -106,4 +106,3 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_match @user.name, response.body
   end
 end
-
