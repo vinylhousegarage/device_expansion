@@ -47,10 +47,7 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'renders index view with all elements' do
-    mock_service = mock('UserPostsStatsService')
-    mock_service.stubs(:all_users_stats).returns(@mock_all_users_stats)
-
-    UserPostsStatsService.stubs(:new).returns(mock_service)
+    UserPostsStatsService.any_instance.stubs(:new).returns(@mock_all_users_stats)
 
     assert_total_heading(@total_posts_count, @total_posts_amount)
 
