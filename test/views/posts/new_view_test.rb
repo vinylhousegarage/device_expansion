@@ -3,13 +3,11 @@ require 'test_helper'
 class PostsNewViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
-  setup do
+  def setup
+    @user = users(:first_poster)
+    @admin_user = users(:admin)
     @users = [users(:first_poster), users(:admin)]
-  end
-
-  def access_new_post_page(user)
-    sign_in_as(user)
-    get new_post_path
+    @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
   end
 
   def assert_field_with_label(label_text, field_name, field_type)
@@ -26,6 +24,8 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   end
 
   def assert_navigation_buttons(user)
+    sign_in_as(user)
+    get new_post_path
     if user.name == '集計担当'
       assert_back_to_status_button
       assert_logout_button(logout_users_path)
@@ -57,13 +57,15 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
 
   test 'renders user-info section with correct content' do
     @users.each do |user|
-      access_new_post_page(user)
+      sign_in_as(user)
+      get new_post_path
       assert_user_info(user)
     end
   end
 
   test 'displays new registration form with correct fields' do
-    access_new_post_page(users(:first_poster))
+    sign_in_as(@user)
+    get new_post_path
     assert_select 'h3', text: '新規登録'
     assert_select 'form' do
       assert_field_with_label('氏名', 'post[name]', 'text')
@@ -75,9 +77,10 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'renders confirmation button' do
+  test 'renders confirmation button for all users' do
     @users.each do |user|
-      access_new_post_page(user)
+      sign_in_as(user)
+      get new_post_path
       assert_select 'table' do
         assert_select 'td', text: '集計を確認する'
         assert_select 'form[action=?][method=?]', user_path(user), 'get' do
@@ -89,7 +92,6 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
 
   test 'displays appropriate navigation buttons based on user role' do
     @users.each do |user|
-      access_new_post_page(user)
       assert_navigation_buttons(user)
     end
   end
