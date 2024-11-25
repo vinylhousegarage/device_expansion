@@ -7,7 +7,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # end
 
   # テスト用の初期データを設定
-  setup do
+  def setup
     @user = users(:first_poster)
     @users = [users(:first_poster), users(:admin)]
     @admin_user = users(:admin)
