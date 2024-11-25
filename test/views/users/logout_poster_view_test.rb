@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class UsersLogoutPosterViewTest < ActionView::TestCase
-  setup do
+  def setup
     @user = users(:first_poster)
   end
 

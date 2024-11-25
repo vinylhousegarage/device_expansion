@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class LoginFormViewTest < ActionDispatch::IntegrationTest
-  setup do
+  def setup
     @user = users(:first_poster)
     post login_form_user_path(@user.id)
     assert_response :success
