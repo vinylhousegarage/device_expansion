@@ -71,9 +71,9 @@ class PostTest < ActiveSupport::TestCase
     assert_equal 1, @admin_post2.user_post_index, 'Post 2 should move to index 1 after Post 1 is deleted'
   end
 
-  # post = nil をテスト
+  # 投稿が空の場合をテスト
   test 'user_post_index returns nil if user.posts is nil' do
-    user = User.new # posts が未設定のユーザー
+    user = User.new
     post = Post.new(user: user)
     assert_nil post.user_post_index, 'user_post_index should return nil if user.posts is nil'
   end
