@@ -6,7 +6,9 @@ class Post < ApplicationRecord
   before_validation :normalize_amount
 
   def user_post_index
-    user.posts.order(:created_at).pluck(:id).index(self.id) + 1
+    return nil unless user&.posts&.exists?
+    index = user.posts.order(:created_at).pluck(:id).index(self.id)
+    index.nil? ? nil : index + 1
   end
 
   private
