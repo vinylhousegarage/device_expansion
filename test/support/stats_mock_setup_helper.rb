@@ -22,13 +22,13 @@ module StatsMockSetupHelper
 
   private
 
-  def build_user_stat(user)
+  def mock_user_stats_by_id(user, post_count: nil, post_amount: nil)
     UserPostsStatsService::UserStat.new(
       user:,
       user_id: user.id,
       user_name: user.name,
-      post_count: user.posts.size,
-      post_amount: user.posts.sum(:amount)
+      post_count: post_count || user.posts.size,
+      post_amount: post_amount || user.posts.sum(:amount)
     )
   end
 end
