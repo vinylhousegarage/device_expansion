@@ -6,9 +6,12 @@ class PostTest < ActiveSupport::TestCase
   # end
 
   # 初期データを挿入しユーザーを取得
-  setup do
+  def setup
     @user = users(:first_poster)
+    @admin_user = users(:admin)
     @post = posts(:first_post)
+    @admin_post1 = posts(:third_post)
+    @admin_post2 = posts(:fourth_post)
   end
 
   # name属性のバリデーションをテスト
@@ -42,7 +45,7 @@ class PostTest < ActiveSupport::TestCase
     assert_difference('Post.count', 1) do
       Post.create!(
         name: '新しい氏名',
-        amount: 5000,
+        amount: 5_000,
         address: '新しい市町村1丁目',
         tel: '0987654321',
         others: '新しい供花:10,000円',
@@ -56,17 +59,22 @@ class PostTest < ActiveSupport::TestCase
     assert_equal @user, @post.user, "Post's user should be the user with name '投稿者１'"
   end
 
-  # Post model のスコープのテスト
-  test 'only posts of user' do
-    posts = Post.by_user(@user.id)
-    assert_includes posts, @post
+  # user_post_indexメソッドをテスト
+  test 'user_post_index returns correct position within user posts' do
+    assert_equal 1, @admin_post1.user_post_index, 'Post 1 should have index 1 for the user'
+    assert_equal 2, @admin_post2.user_post_index, 'Post 2 should have index 2 for the user'
   end
 
-  # 存在しないユーザーの投稿を取得した場合は空の結果を返す
-  non_existent_user_id = -1
+  # user_post_indexメソッドの破壊的変更後をテスト
+  test 'user_post_index adjusts when posts are deleted' do
+    @admin_post1.destroy
+    assert_equal 1, @admin_post2.user_post_index, 'Post 2 should move to index 1 after Post 1 is deleted'
+  end
 
-  test 'empty for non-existent user' do
-    posts = Post.by_user(non_existent_user_id)
-    assert_empty posts
+  # 投稿が空の場合をテスト
+  test 'user_post_index returns nil if user.posts is nil' do
+    user = User.new
+    post = Post.new(user: user)
+    assert_nil post.user_post_index, 'user_post_index should return nil if user.posts is nil'
   end
 end

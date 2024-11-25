@@ -5,11 +5,15 @@ class Post < ApplicationRecord
   validates :amount, presence: true, numericality: { greater_than_or_equal_to: 0 }
   before_validation :normalize_amount
 
+  def user_post_index
+    return nil unless user&.posts&.exists?
+    index = user.posts.order(:created_at).pluck(:id).index(self.id)
+    index.nil? ? nil : index + 1
+  end
+
   private
 
   def normalize_amount
     self.amount = nil if amount.to_s.strip.empty?
   end
-
-  scope :by_user, ->(user_id) { where(user_id:) }
 end
