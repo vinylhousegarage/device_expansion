@@ -2,8 +2,8 @@ require 'test_helper'
 
 class PostDestroyServiceTest < ActiveSupport::TestCase
   def setup
-    @user = users(:second_poster)
-    @post = posts(:sixth_post)
+    @user = users(:first_poster)
+    @post = posts(:first_post)
     @service = PostDestroyService.new(@post)
   end
 
