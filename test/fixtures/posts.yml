@@ -38,11 +38,3 @@ fifth_post:
   tel:
   others:
   user: admin
-
-sixth_post:
-  name: '試験氏名'
-  amount: 25_000
-  address:
-  tel:
-  others: '供物:5,000円'
-  user: second_poster
