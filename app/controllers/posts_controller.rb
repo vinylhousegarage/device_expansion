@@ -10,4 +10,5 @@ class PostsController < ApplicationController
     @user = find_user_by_params
     @post = find_post_by_params
     redirect_to user_path(@user)
+  end
 end
