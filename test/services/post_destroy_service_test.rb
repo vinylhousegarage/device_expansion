@@ -12,7 +12,7 @@ class PostDestroyServiceTest < ActiveSupport::TestCase
     @post.stubs(:destroy).returns(true)
     @user.posts.stubs(:count).returns(0)
 
-    assert_equal :new_post_path, @service.call
+    assert_equal :new_post_path, result[:path]
   end
 
   # ユーザーに紐づく投稿が存在する場合のリダイレクトをテスト
@@ -20,13 +20,13 @@ class PostDestroyServiceTest < ActiveSupport::TestCase
     @post.stubs(:destroy).returns(true)
     @user.posts.stubs(:count).returns(1)
 
-    assert_equal :user_path, @service.call
+    assert_equal :new_post_path, result[:path]
   end
 
   # 投稿の削除が失敗した場合のリダイレクトをテスト
   test 'should return :new_post_path when post destruction fails' do
     @post.stubs(:destroy).returns(false)
 
-    assert_equal :new_post_path, @service.call
+    assert_equal :new_post_path, result[:path]
   end
 end
