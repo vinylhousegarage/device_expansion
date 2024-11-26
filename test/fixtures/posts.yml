@@ -38,3 +38,11 @@ fifth_post:
   tel:
   others:
   user: admin
+
+sixth_post:
+  name: '氏　名'
+  amount: 50_000
+  address:
+  tel:
+  others: '供花:20,000円(2段)'
+  user: second_poster
