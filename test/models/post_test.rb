@@ -74,7 +74,7 @@ class PostTest < ActiveSupport::TestCase
   # 投稿が空の場合をテスト
   test 'user_post_index returns nil if user.posts is nil' do
     user = User.new
-    post = Post.new(user: user)
+    post = Post.new(user:)
     assert_nil post.user_post_index, 'user_post_index should return nil if user.posts is nil'
   end
 end
