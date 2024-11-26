@@ -9,6 +9,6 @@ class PostsController < ApplicationController
   def destroy
     @post = find_post_by_params
     result = PostDestroyService.new(@post).call
-    redirect_to send(redirect_to_path[:path], @post.user)
+    redirect_to send(result[:path], @post.user)
   end
 end
