@@ -9,7 +9,7 @@ class UserPostsStatsServiceTest < ActiveSupport::TestCase
   end
 
   # all_users_statsメソッドのテスト
-  test "all_users_stats returns stats for all users" do
+  test 'all_users_stats returns stats for all users' do
     stats = @service.all_users_stats
 
     # @user のデータを確認
