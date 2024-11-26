@@ -5,4 +5,9 @@ class PostsController < ApplicationController
     user_posts_stats = UserPostsStatsService.new
     @user_stats_by_id = user_posts_stats.user_stats_by_id(session[:user_id].to_i)
   end
+
+  def destroy
+    @user = find_user_by_params
+    @post = find_post_by_params
+    redirect_to user_path(@user)
 end
