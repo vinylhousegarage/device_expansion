@@ -10,7 +10,7 @@ class UsersController < ApplicationController
 
   # 個人別投稿一覧を表示
   def show
-    @user = find_params_id
+    @user = find_user_by_params
     user_posts_stats = UserPostsStatsService.new
     @all_users_stats = user_posts_stats.all_users_stats
     @user_stats_by_id = user_posts_stats.user_stats_by_id(params[:id].to_i)
@@ -29,7 +29,7 @@ class UsersController < ApplicationController
 
   # QRコードを取得し@svgに格納
   def login_form
-    @user = find_params_id
+    @user = find_user_by_params
     @url = LoginPosterUrlGeneratorService.generate_login_poster_url(@user)
     @svg = QrCodeGeneratorService.generate_for_login_poster(@user)
   end
@@ -42,7 +42,7 @@ class UsersController < ApplicationController
 
   # GETルートで受けたQRコードのパスをPOSTルートに変換
   def login_poster_redirect
-    @user = find_params_id
+    @user = find_user_by_params
   end
 
   # 管理者のログアウト
