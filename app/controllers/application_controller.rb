@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   end
 
   # params[:id] に基づいてユーザーを取得
-  def find_params_id
+  def find_user_by_params
     User.find(params[:id])
   end
 
