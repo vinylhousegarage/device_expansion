@@ -25,7 +25,7 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
 
   def assert_user_index(stat)
     assert_select 'table' do
-      assert_select 'td', text: "#{stat.user_name}"
+      assert_select 'td', text: stat.user_name
       assert_select 'td', text: "#{stat.post_count}件　"
       assert_select 'td', text: "#{number_with_delimiter(stat.post_amount)} 円　"
       assert_form_action(user_path(stat.user_id), 'get', '詳細')
