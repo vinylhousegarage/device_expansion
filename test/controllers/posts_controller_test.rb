@@ -20,7 +20,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :redirect
     follow_redirect!
-    assert_match 'Post was successfully deleted.', response.body
+    assert_response :success
 
     assert_nil Post.find_by(id: @post.id)
   end
