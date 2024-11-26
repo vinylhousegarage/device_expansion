@@ -6,6 +6,7 @@ class PostDestroyService
 
   def call
     if @post.destroy
+      @user.posts.reload
       if @user.posts.count.zero?
         { path: :new_post_path }
       else
