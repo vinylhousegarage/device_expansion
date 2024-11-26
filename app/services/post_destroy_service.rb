@@ -1,6 +1,7 @@
 class PostDestroyService
   def initialize(post)
     @post = post
+    @user = post.user
   end
 
   def call
