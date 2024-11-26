@@ -26,7 +26,7 @@ class UserPostsStatsServiceTest < ActiveSupport::TestCase
   end
 
   # user_stats_by_idメソッドのテスト
-  test "user_stats_by_id returns stats for a specific user" do
+  test 'user_stats_by_id returns stats for a specific user' do
     stat = @service.user_stats_by_id(@user.id)
 
     # ユーザー1の統計が正しいか確認
@@ -37,7 +37,7 @@ class UserPostsStatsServiceTest < ActiveSupport::TestCase
   end
 
   # user_stats_by_idメソッドで無効なIDを渡した場合のテスト
-  test "user_stats_by_id returns nil for an invalid user_id" do
+  test 'user_stats_by_id returns nil for an invalid user_id' do
     stat = @service.user_stats_by_id(-1)
     assert_nil stat
   end
