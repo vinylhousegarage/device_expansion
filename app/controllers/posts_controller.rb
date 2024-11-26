@@ -9,6 +9,7 @@ class PostsController < ApplicationController
   def destroy
     @post = find_post_by_params
     @user = @post.user
+    @post.destroy
     redirect_to user_path(@user)
   end
 end
