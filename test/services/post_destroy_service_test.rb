@@ -20,7 +20,7 @@ class PostDestroyServiceTest < ActiveSupport::TestCase
     @post.stubs(:destroy).returns(true)
     @user.posts.stubs(:count).returns(1)
     result = PostDestroyService.new(@post).call
-    assert_equal :new_post_path, result[:path]
+    assert_equal :user_path, result[:path]
   end
 
   # 投稿の削除が失敗した場合のリダイレクトをテスト
