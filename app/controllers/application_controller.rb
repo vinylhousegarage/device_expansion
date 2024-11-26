@@ -11,6 +11,11 @@ class ApplicationController < ActionController::Base
     User.find(params[:id])
   end
 
+  # params[:id] に基づいて投稿を取得
+  def find_post_by_params
+    Post.find(params[:id])
+  end
+
   # リダイレク後にフラッシュメッセージを表示
   def redirect_with_notice(path, message_key = 'notices.data_reset')
     redirect_to path, notice: I18n.t(message_key)
