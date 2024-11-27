@@ -10,7 +10,7 @@ module Admin
 
     private
 
-    # 管理者権限チェック
+    # 管理者の権限を確認
     def ensure_admin_user
       unless User.admin_users.pluck(:id).include?(session[:user_id])
         redirect_with_alert(root_path, 'alerts.unauthorized_access')
