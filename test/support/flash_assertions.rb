@@ -1,5 +1,5 @@
 module FlashAssertions
-  def assert_flash_set(expected_message, key: 'notice')
+  def assert_flash_set(expected_message, key)
     assert flash[key], "flash[:#{key}] not set"
     assert_equal expected_message, flash[key], "flash[:#{key}] mismatch"
   end
