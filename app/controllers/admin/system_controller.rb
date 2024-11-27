@@ -5,19 +5,19 @@ module Admin
     # 管理者ログイン
     def login
       session[:user_id] = User.admin_users.first&.id
-      redirect_to admin_dashboard_path
+      redirect_to users_path
     end
 
     # 管理者ログアウト
     def logout
       session[:user_id] = nil
-      redirect_with_notice(root_path, 'notices.logged_out')
+      redirect_with_notice(root_path, 'notices.data_reset')
     end
 
     # データベースリセット
     def reset_database
       DataResetService.call
-      redirect_with_notice(admin_dashboard_path, 'notices.data_reset')
+      redirect_with_notice(users_path, 'notices.data_reset')
     end
 
     private
