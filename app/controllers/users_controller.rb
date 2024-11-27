@@ -48,7 +48,7 @@ class UsersController < ApplicationController
   # 管理者のログアウト
   def logout
     session[:user_id] = nil
-    redirect_with_flash(root_path, 'notices.data_reset')
+    redirect_with_notice(root_path, 'notices.data_reset')
   end
 
   # 投稿者のログアウト
