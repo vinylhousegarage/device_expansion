@@ -1,8 +1,8 @@
 module Admin
   class SystemController < ApplicationController
-    before_action :ensure_admin_user, except: :login
+    before_action :ensure_admin_user
 
-    # データベースリセット
+    # データベースをリセット
     def reset_database
       DataResetService.call
       redirect_with_notice(users_path, 'notices.data_reset')
