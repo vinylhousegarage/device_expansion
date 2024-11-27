@@ -1,6 +1,6 @@
 module Admin
   class SystemController < ApplicationController
-    before_action :ensure_admin_user
+    before_action :ensure_admin_user, except: :login
 
     # 管理者ログイン
     def login
