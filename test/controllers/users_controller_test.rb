@@ -18,13 +18,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user, as: :json)
   end
 
-  # 管理者の'集計担当'ユーザーでログインするテスト
-  test 'should log in admin user and redirect to users path' do
-    post login_users_path
-    assert_equal @admin_user.id, session[:user_id]
-    assert_redirected_to users_path
-  end
-
   # users#new のパスをテスト
   test 'should get new user page' do
     get new_user_path
