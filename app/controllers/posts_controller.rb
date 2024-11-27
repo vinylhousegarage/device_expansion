@@ -10,6 +10,6 @@ class PostsController < ApplicationController
     @post = find_post_by_params
     @user = @post.user
     result = PostDestroyService.new(@post).call
-    redirect_to send(result[:path], @post.user)
+    redirect_with_flash(send(result[:path], *Array(result[:params])), result[:type], result[:message_key])
   end
 end
