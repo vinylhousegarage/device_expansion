@@ -21,12 +21,6 @@ class UsersController < ApplicationController
     @poster_users = User.poster_users
   end
 
-  # 管理者のセッションを取得
-  def login
-    session[:user_id] = User.admin_users.first&.id
-    redirect_to users_path
-  end
-
   # QRコードを取得し@svgに格納
   def login_form
     @user = find_user_by_params
@@ -45,19 +39,8 @@ class UsersController < ApplicationController
     @user = find_user_by_params
   end
 
-  # 管理者のログアウト
-  def logout
-    session[:user_id] = nil
-    redirect_with_notice(root_path, 'notices.data_reset')
-  end
-
   # 投稿者のログアウト
   def logout_poster
     session[:user_id] = nil
-  end
-
-  # データをリセット
-  def reset_database
-    redirect_with_notice(users_path, 'notices.data_reset')
   end
 end
