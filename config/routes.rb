@@ -10,12 +10,15 @@ Rails.application.routes.draw do
       get 'login_poster_redirect'
     end
     collection do
-      post 'login'
-      delete 'logout'
       delete 'logout_poster'
-      delete 'reset_database'
     end
   end
 
   resources :posts
+
+  namespace :admin do
+    post 'login', to: 'system#login'
+    delete 'logout', to: 'system#logout'
+    delete 'reset_database', to: 'system#reset_database'
+  end
 end

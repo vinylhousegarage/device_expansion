@@ -12,3 +12,7 @@ ja:
 
   notices:
     data_reset: データがリセットされました
+
+  alerts:
+    unauthorized_access: 不正なアクセスです
+    delete_failed: 削除に失敗しました
