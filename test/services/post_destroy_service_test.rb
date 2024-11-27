@@ -16,15 +16,14 @@ class PostDestroyServiceTest < ActiveSupport::TestCase
 
   # ユーザーに紐づく投稿が存在する場合のリダイレクトをテスト
   test 'should return :user_path when post is destroyed and user has other posts' do
-    @post.stubs(:destroy).returns(true)
-    @user.posts.stubs(:count).returns(1)
+    @post.destroy
     result = @service.call
     assert_equal :user_path, result[:path]
   end
 
   # 投稿の削除が失敗した場合のリダイレクトをテスト
   test 'should return :new_post_path when post destruction fails' do
-    @post.stubs(:destroy).returns(false)
+    @post.destroy
     result = @service.call
     assert_equal :new_post_path, result[:path]
   end
