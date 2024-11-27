@@ -9,8 +9,7 @@ class PostDestroyServiceTest < ActiveSupport::TestCase
 
   # ユーザーに紐づく全ての投稿が削除された場合のリダイレクトをテスト
   test 'should return :new_post_path when post is destroyed and user has no posts left' do
-    @post.stubs(:destroy).returns(true)
-    @user.posts.stubs(:count).returns(0)
+    @post.destroy
     result = @service.call
     assert_equal :new_post_path, result[:path]
   end
