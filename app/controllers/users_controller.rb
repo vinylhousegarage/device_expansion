@@ -58,6 +58,6 @@ class UsersController < ApplicationController
 
   # データをリセット
   def reset_database
-    redirect_with_flash(users_path, 'notices.data_reset')
+    redirect_with_notice(users_path, 'notices.data_reset')
   end
 end
