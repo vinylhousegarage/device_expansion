@@ -2,18 +2,6 @@ module Admin
   class SystemController < ApplicationController
     before_action :ensure_admin_user, except: :login
 
-    # 管理者ログイン
-    def login
-      session[:user_id] = User.admin_users.first&.id
-      redirect_to users_path
-    end
-
-    # 管理者ログアウト
-    def logout
-      session[:user_id] = nil
-      redirect_with_notice(root_path, 'notices.data_reset')
-    end
-
     # データベースリセット
     def reset_database
       DataResetService.call
