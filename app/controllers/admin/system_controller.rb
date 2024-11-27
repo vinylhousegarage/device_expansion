@@ -25,7 +25,7 @@ module Admin
     # 管理者権限チェック
     def ensure_admin_user
       unless User.admin_users.pluck(:id).include?(session[:user_id])
-        redirect_with_alert(root_path, 'errors.unauthorized_access')
+        redirect_with_alert(root_path, 'alerts.unauthorized_access')
       end
     end
   end
