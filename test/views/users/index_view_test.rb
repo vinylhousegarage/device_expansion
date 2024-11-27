@@ -61,7 +61,7 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
 
   test 'reset database from index view' do
     delete admin_reset_database_path
-    assert_flash_set(I18n.t('notices.data_reset'))
+    assert_flash_set(I18n.t('notices.data_reset'), 'notice')
     follow_redirect!
     assert_select 'div', text: I18n.t('notices.data_reset')
   end
