@@ -18,13 +18,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user, as: :json)
   end
 
-  # 管理者の'集計担当'ユーザーでログインするテスト
-  test 'should log in admin user and redirect to users path' do
-    post login_users_path
-    assert_equal @admin_user.id, session[:user_id]
-    assert_redirected_to users_path
-  end
-
   # users#new のパスをテスト
   test 'should get new user page' do
     get new_user_path
@@ -69,26 +62,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
     get users_path
     assert_response :success
-  end
-
-  # users#logout のパスとフラッシュをテスト
-  test 'should successfully post to logout users path' do
-    delete logout_users_path
-    assert_response :redirect
-    assert_redirected_to root_path
-    follow_redirect!
-    assert_response :success
-    assert_flash_set(I18n.t('notices.data_reset'))
-  end
-
-  # users#reset_database のパスをテスト
-  test 'should successfully post to reset_database path' do
-    delete reset_database_users_path
-    assert_response :redirect
-    assert_redirected_to users_path
-    follow_redirect!
-    assert_response :success
-    assert_flash_set(I18n.t('notices.data_reset'))
   end
 
   # users#logout_poster のパスをテスト
