@@ -16,8 +16,13 @@ class ApplicationController < ActionController::Base
     Post.find(params[:id])
   end
 
-  # リダイレク後にフラッシュメッセージを表示
-  def redirect_with_notice(path, message_key = 'notices.data_reset')
+  # リダイレクト後に notice のフラッシュメッセージを表示
+  def redirect_with_notice(path, message_key)
     redirect_to path, notice: I18n.t(message_key)
+  end
+
+  # リダイレクト後に alert のフラッシュメッセージを表示
+  def redirect_with_alert(path, message_key)
+    redirect_to path, alert: I18n.t(message_key)
   end
 end
