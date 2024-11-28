@@ -22,7 +22,7 @@ Rails.application.routes.draw do
 
   resource :system, only: [] do
     collection do
-      delete 'reset_database', to: 'system#reset_database'
+      post 'reset_database', to: 'system#reset_database'
     end
   end
 end
