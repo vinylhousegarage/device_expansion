@@ -15,10 +15,4 @@ Rails.application.routes.draw do
   end
 
   resources :posts
-
-  namespace :admin do
-    post 'login', to: 'system#login'
-    delete 'logout', to: 'system#logout'
-    delete 'reset_database', to: 'system#reset_database'
-  end
 end
