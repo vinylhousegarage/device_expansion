@@ -15,4 +15,19 @@ Rails.application.routes.draw do
   end
 
   resources :posts
+
+  namespace :admin do
+    resource :session, only: [:create, :destroy] do
+      collection do
+        post 'login', to: 'sessions#new', as: :sign_in
+        delete 'logout', to: 'sessions#destroy', as: :sign_out
+      end
+    end
+
+    resource :system, only: [] do
+      collection do
+        delete 'reset_database', to: 'system#reset_database', as: :reset_database
+      end
+    end
+  end
 end
