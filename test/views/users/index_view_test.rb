@@ -56,7 +56,7 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     end
     assert_button('参加', new_post_path, 'get')
     assert_button('戻る', new_user_path, 'get')
-    assert_button('削除', areset_database_admin_system_path, 'delete')
+    assert_button('削除', reset_database_admin_system_path, 'post')
   end
 
   test 'reset database from index view' do
