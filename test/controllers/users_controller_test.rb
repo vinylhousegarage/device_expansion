@@ -24,6 +24,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  # スコープ poster_users の参照をテスト
+  test 'should display poster users in new action' do
+    get new_user_path
+    assert_select 'form[action=?]', login_form_qr_code_path(users(:first_poster)), text: '投稿者１さんを招待する'
+    assert_select 'form[action=?]', login_form_qr_code_path(users(:second_poster)), text: '投稿者２さんを招待する'
+    assert_select 'form[action=?]', login_form_qr_code_path(users(:admin)), count: 0
+  end
+
   # users#index のパスをテスト
   test 'index action renders successfully with mocked services' do
     PostsStatsService.any_instance.stubs(:total_posts_count).returns(@total_posts_count)
