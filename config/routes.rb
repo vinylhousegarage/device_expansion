@@ -17,17 +17,12 @@ Rails.application.routes.draw do
   resources :posts
 
   namespace :admin do
-    resource :session, only: [:create, :destroy] do
-      collection do
-        post 'login', to: 'sessions#create'
-        delete 'logout', to: 'sessions#destroy'
-      end
-    end
+    resource :session, only: [:create, :destroy]
+  end
 
-    resource :system, only: [] do
-      collection do
-        delete 'reset_database', to: 'system#reset_database'
-      end
+  resource :system, only: [] do
+    collection do
+      delete 'reset_database', to: 'system#reset_database'
     end
   end
 end
