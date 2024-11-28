@@ -3,7 +3,11 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root 'users#new'
-  resources :users do
+  resources :users
+
+  resources :posts
+
+  resources :qr_code do
     member do
       post 'login_form'
       post 'login_poster'
@@ -13,8 +17,6 @@ Rails.application.routes.draw do
       delete 'logout_poster'
     end
   end
-
-  resources :posts
 
   namespace :admin do
     resource :session, only: [:create, :destroy]
