@@ -9,7 +9,7 @@ class Admin::SystemControllerTest < ActionDispatch::IntegrationTest
 
   # admin/system#reset_database のパスとフラッシュをテスト
   test 'should successfully post to reset_database path' do
-    delete admin_reset_database_path
+    post admin_reset_database_path
     assert_response :redirect
     assert_redirected_to users_path
     follow_redirect!
