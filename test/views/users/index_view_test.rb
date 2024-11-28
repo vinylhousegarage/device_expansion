@@ -56,15 +56,15 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     end
     assert_button('参加', new_post_path, 'get')
     assert_button('戻る', new_user_path, 'get')
-    assert_button('削除', admin_reset_database_path, 'delete')
+    assert_button('削除', areset_database_admin_system_path, 'delete')
   end
 
   test 'reset database from index view' do
-    post admin_login_path
+    post admin_session_path
     assert_response :redirect
     assert_redirected_to users_path
 
-    delete admin_reset_database_path
+    delete reset_database_admin_system_path
     assert_response :redirect
     assert_redirected_to users_path
     assert_flash_set(I18n.t('notices.data_reset'))
