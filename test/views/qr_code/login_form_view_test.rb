@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class LoginFormViewTest < ActionDispatch::IntegrationTest
+class QrCodeLoginFormViewTest < ActionDispatch::IntegrationTest
   def setup
     @user = users(:first_poster)
     post login_form_qr_code_path(@user.id)
