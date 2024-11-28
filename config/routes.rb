@@ -19,7 +19,7 @@ Rails.application.routes.draw do
   namespace :admin do
     resource :session, only: [:create, :destroy] do
       collection do
-        post 'login', to: 'sessions#new'
+        post 'login', to: 'sessions#create'
         delete 'logout', to: 'sessions#destroy'
       end
     end
