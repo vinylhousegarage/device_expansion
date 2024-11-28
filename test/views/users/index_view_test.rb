@@ -47,6 +47,10 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'renders index view with all elements' do
+    post admin_session_path
+    assert_response :redirect
+    assert_redirected_to users_path
+
     UserPostsStatsService.any_instance.stubs(:new).returns(@mock_all_users_stats)
 
     assert_total_heading(@total_posts_count, @total_posts_amount)
