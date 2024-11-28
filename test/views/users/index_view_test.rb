@@ -11,7 +11,6 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     @total_posts_amount = mock_posts_stats.total_posts_amount
     @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
     sign_in_as(@user)
-    admin_sign_in_as(@admin_user)
     get users_path
   end
 
@@ -47,7 +46,7 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'renders index view with all elements' do
+  test 'renders index view with elements except delete button' do
     UserPostsStatsService.any_instance.stubs(:new).returns(@mock_all_users_stats)
 
     assert_total_heading(@total_posts_count, @total_posts_amount)
@@ -57,10 +56,21 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     end
     assert_button('参加', new_post_path, 'get')
     assert_button('戻る', new_user_path, 'get')
+  end
+
+  test 'renders delete button with correct attributes' do
+    post admin_session_path
+    follow_redirect!
+    assert_response :success
+
     assert_button('削除', reset_database_admin_system_path, 'post')
   end
 
-  test 'reset database from index view' do
+  test 'successfully resets database and redirects with flash message' do
+    post admin_session_path
+    follow_redirect!
+    assert_response :success
+
     post reset_database_admin_system_path
     assert_response :redirect
     assert_redirected_to users_path
