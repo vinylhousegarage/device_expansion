@@ -12,6 +12,7 @@ ja:
 
   notices:
     data_reset: データがリセットされました
+    logged_out: ログアウトしました
 
   alerts:
     unauthorized_access: 不正なアクセスです
