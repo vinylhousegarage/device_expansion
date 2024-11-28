@@ -58,7 +58,6 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_response :success
 
-    get users_path
     assert_button('削除', reset_database_admin_system_path, 'post')
   end
 
