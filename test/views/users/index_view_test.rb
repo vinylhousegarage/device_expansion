@@ -41,12 +41,14 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
 
   def assert_form_action(action, method, button_text)
     assert_select 'form[action=?]', action do
-      assert_select 'input[name=_method][value=?]', method if method != 'get'
+      if method == 'post'
+        assert_select 'input[name=_method]', false
+      end
       assert_select 'button', button_text
     end
   end
 
-  test 'renders index view with all elements' do
+  test 'renders index view with elements except delete button' do
     UserPostsStatsService.any_instance.stubs(:new).returns(@mock_all_users_stats)
 
     assert_total_heading(@total_posts_count, @total_posts_amount)
@@ -56,15 +58,22 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     end
     assert_button('参加', new_post_path, 'get')
     assert_button('戻る', new_user_path, 'get')
-    assert_button('削除', admin_reset_database_path, 'delete')
   end
 
-  test 'reset database from index view' do
-    post admin_login_path
-    assert_response :redirect
-    assert_redirected_to users_path
+  test 'renders delete button with correct attributes' do
+    post admin_session_path
+    follow_redirect!
+    assert_response :success
 
-    delete admin_reset_database_path
+    assert_button('削除', reset_database_admin_system_path, 'post')
+  end
+
+  test 'successfully resets database and redirects with flash message' do
+    post admin_session_path
+    follow_redirect!
+    assert_response :success
+
+    post reset_database_admin_system_path
     assert_response :redirect
     assert_redirected_to users_path
     assert_flash_set(I18n.t('notices.data_reset'))
