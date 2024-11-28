@@ -5,9 +5,9 @@
 <p></p>
 
 <% @poster_users.each do |poster_user| %>
-  <%= button_to poster_user.name + "さんを招待する", login_form_user_path(poster_user), method: :post, data: { turbo: false }, id: "invite-button-#[poster_user.id]" %>
+  <%= button_to poster_user.name + 'さんを招待する', login_form_user_path(poster_user), method: :post, data: { turbo: false }, id: "invite-button-#[poster_user.id]" %>
 
   <br>
 <% end %>
 
-<%= button_to "集計の状況を確認する　", admin_login_path, method: :post %>
+<%= button_to '集計の状況を確認する　', admin_session_path, method: :post %>

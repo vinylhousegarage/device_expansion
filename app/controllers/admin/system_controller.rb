@@ -1,20 +1,8 @@
 module Admin
   class SystemController < ApplicationController
-    before_action :ensure_admin_user, except: :login
+    before_action :ensure_admin_user
 
-    # 管理者ログイン
-    def login
-      session[:user_id] = User.admin_users.first&.id
-      redirect_to users_path
-    end
-
-    # 管理者ログアウト
-    def logout
-      session[:user_id] = nil
-      redirect_with_notice(root_path, 'notices.data_reset')
-    end
-
-    # データベースリセット
+    # データベースをリセット
     def reset_database
       DataResetService.call
       redirect_with_notice(users_path, 'notices.data_reset')
@@ -22,7 +10,7 @@ module Admin
 
     private
 
-    # 管理者権限チェック
+    # 管理者の権限を確認
     def ensure_admin_user
       unless User.admin_users.pluck(:id).include?(session[:user_id])
         redirect_with_alert(root_path, 'alerts.unauthorized_access')
