@@ -3,7 +3,7 @@ module Admin
     before_action :ensure_admin_user
 
     # データベースをリセット
-    def destroy
+    def reset_database
       DataResetService.call
       redirect_with_notice(users_path, 'notices.data_reset')
     end
