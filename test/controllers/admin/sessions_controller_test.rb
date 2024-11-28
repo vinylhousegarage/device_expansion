@@ -14,6 +14,6 @@ class Admin::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
     follow_redirect!
     assert_response :success
-    assert_flash_set(I18n.t('notices.data_reset'))
+    assert_flash_set(I18n.t('notices.logged_out'))
   end
 end
