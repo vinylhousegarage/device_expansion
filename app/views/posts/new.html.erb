@@ -46,7 +46,7 @@
   <tr>
     <td><b><%= '作業を終了する　' %></b></td>
     <td>
-      <% logout_path = @user_stats_by_id.user_name == '集計担当' ? admin_logout_path : logout_poster_users_path %>
+      <% logout_path = @user_stats_by_id.user_name == '集計担当' ? logout_admin_session_path : logout_poster_users_path %>
       <%= button_to '終了', logout_path, method: :delete, data: { turbo: false } %>
     </td>
   </tr>
