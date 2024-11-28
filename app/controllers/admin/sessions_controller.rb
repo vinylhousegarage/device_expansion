@@ -9,7 +9,7 @@ module Admin
     # 管理者のログアウト
     def destroy
       session[:user_id] = nil
-      redirect_with_notice(root_path, t('notices.data_reset'))
+      redirect_with_notice(root_path, t('notices.logged_out'))
     end
   end
 end
