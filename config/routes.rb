@@ -18,11 +18,11 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resource :session, only: [:create, :destroy]
-  end
 
-  resource :system, only: [] do
-    collection do
-      post 'reset_database', to: 'system#reset_database'
+    resource :system, only: [] do
+      collection do
+        post 'reset_database', to: 'system#reset_database'
+      end
     end
   end
 end
