@@ -64,7 +64,7 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_redirected_to users_path
 
-    delete reset_database_admin_system_path
+    post reset_database_admin_system_path
     assert_response :redirect
     assert_redirected_to users_path
     assert_flash_set(I18n.t('notices.data_reset'))
