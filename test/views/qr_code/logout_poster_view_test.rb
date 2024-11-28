@@ -6,7 +6,7 @@ class UsersLogoutPosterViewTest < ActionView::TestCase
   end
 
   test 'renders logout_poster page with farewell message' do
-    render template: 'users/logout_poster'
+    render template: 'qr_code#logout_poster'
     assert_select 'h3', 'おつかれ様でした'
   end
 end
