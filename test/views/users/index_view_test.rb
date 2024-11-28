@@ -11,6 +11,7 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     @total_posts_amount = mock_posts_stats.total_posts_amount
     @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
     sign_in_as(@user)
+    admin_sign_in_as(@admin_user)
     get users_path
   end
 
@@ -51,10 +52,6 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
 
     assert_total_heading(@total_posts_count, @total_posts_amount)
 
-    post admin_session_path
-    assert_response :redirect
-    assert_redirected_to users_path
-
     @mock_all_users_stats.each do |stat|
       assert_user_index(stat)
     end
@@ -64,10 +61,6 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'reset database from index view' do
-    post admin_session_path
-    assert_response :redirect
-    assert_redirected_to users_path
-
     post reset_database_admin_system_path
     assert_response :redirect
     assert_redirected_to users_path
