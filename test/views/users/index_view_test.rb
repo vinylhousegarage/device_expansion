@@ -32,7 +32,7 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     end
   end
 
-  def assert_button(button_text, path)
+  def assert_button(button_text, path, method)
     assert_select 'table' do
       assert_select 'td', text: button_text
       assert_select 'form[action=?]', path do
