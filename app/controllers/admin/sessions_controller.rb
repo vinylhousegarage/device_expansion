@@ -1,7 +1,7 @@
 module Admin
   class SessionsController < ApplicationController
     # 管理者のログイン
-    def login
+    def create
       session[:user_id] = User.admin_users.first&.id
       redirect_to users_path
     end
