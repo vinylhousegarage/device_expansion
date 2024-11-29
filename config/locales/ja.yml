@@ -1,20 +1,26 @@
 ja:
   activerecord:
+    attributes:
+      post:
+        name: "名前"
+        amount: "金額"
+
     errors:
+      format: "%{attribute}%{message}"
       models:
         post:
           attributes:
             name:
-              blank: 名前を入力してください
+              blank: "を入力してください"
             amount:
-              blank: 金額を入力してください
-              not_a_number: 金額は数値で入力してください
-              greater_than_or_equal_to: 金額は0以上で入力してください
+              blank: "を入力してください"
+              not_a_number: "を数値で入力してください"
+              greater_than_or_equal_to: "は0以上で入力してください"
 
   notices:
-    data_reset: データがリセットされました
-    logged_out: ログアウトしました
+    data_reset: "データがリセットされました"
+    logged_out: "ログアウトしました"
 
   alerts:
-    unauthorized_access: 不正なアクセスです
-    delete_failed: 削除に失敗しました
+    unauthorized_access: "不正なアクセスです"
+    delete_failed: "削除に失敗しました"

@@ -6,8 +6,9 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   def setup
     @user = users(:first_poster)
     @admin_user = users(:admin)
-    @users = [users(:first_poster), users(:admin)]
+    @users = [@user, @admin_user]
     @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
+    sign_in_as(@user)
   end
 
   def assert_field_with_label(label_text, field_name, field_type)
@@ -93,6 +94,19 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   test 'displays appropriate navigation buttons based on user role' do
     @users.each do |user|
       assert_navigation_buttons(user)
+    end
+  end
+
+  test 'displays error messages' do
+    post posts_path, params: { post: { name: '', amount: -1 } }
+    assert_response :unprocessable_entity
+
+    assert_select 'div#error_explanation' do
+      assert_select 'h3', text: '2 エラーが発生しました:'
+      assert_select 'ul' do
+        assert_select 'li', text: '名前 を入力してください'
+        assert_select 'li', text: '金額 は0以上で入力してください'
+      end
     end
   end
 end
