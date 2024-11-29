@@ -27,6 +27,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # createアクションの正常時をテスト
   test 'should create post successfully' do
+    get login_poster_qr_code_path(@user)
+    assert_response :success
     assert_difference 'Post.count', 1 do
       post posts_path, params: { post: { name: 'テストユーザー', amount: 3_000, address: '東京都', tel: '08012345678', others: '備考' } }
     end
@@ -35,6 +37,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # createアクションの異常時をテスト
   test 'should not create post with invalid attributes' do
+    get login_poster_qr_code_path(@user)
+    assert_response :success
     assert_no_difference 'Post.count' do
       post posts_path, params: { post: { name: '', amount: nil, address: '', tel: 'abc123', others: '' } }
     end
