@@ -7,6 +7,9 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     @user = users(:first_poster)
     @admin_user = users(:admin)
     @users = [users(:first_poster), users(:admin)]
+    @post = Post.new
+    @post.errors.add(:title, 'を入力してください')
+    @post.errors.add(:content, 'は10文字以上で入力してください')
     @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
   end
 
@@ -93,6 +96,18 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   test 'displays appropriate navigation buttons based on user role' do
     @users.each do |user|
       assert_navigation_buttons(user)
+    end
+  end
+
+  test 'displays error messages' do
+    render template: 'posts/new', locals: { post: @post }
+
+    assert_select 'div#error_explanation' do
+      assert_select 'h3', text: '2 エラーが発生しました:'
+      assert_select 'ul' do
+        assert_select 'li', text: 'タイトルを入力してください'
+        assert_select 'li', text: '内容は10文字以上で入力してください'
+      end
     end
   end
 end
