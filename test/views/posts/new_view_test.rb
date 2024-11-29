@@ -8,8 +8,6 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     @admin_user = users(:admin)
     @users = [@user, @admin_user]
     @post = Post.new(user: @user, name: '', amount: -1)
-    @post.errors.add(:name, 'を入力してください')
-    @post.errors.add(:amount, 'は0以上で入力してください')
     @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
     sign_in_as(@user)
   end
