@@ -2,6 +2,16 @@
 <h3>新規登録</h3>
 
 <%= form_with model: @post, local: true do |form| %>
+  <% if @post.errors.any? %>
+    <div id="error_explanation">
+      <h3><%= pluralize(@post.errors.count, "エラー") %>が発生しました:</h3>
+      <ul>
+        <% @post.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
   <div>
     <label><%= form.label :name, '氏名' %></label>
     <%= form.text_field :name %>
@@ -24,7 +34,6 @@
     <label><%= form.label :others, '備考' %></label>
     <%= form.text_field :others %>
   </div>
-
   <div>
 　　　<%= form.submit "　　　登　　録　　　" %>
   </div>
