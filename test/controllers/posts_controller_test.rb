@@ -32,7 +32,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @user.id.to_s, session[:user_id], 'Session user_id is not correctly set'
 
     assert_difference 'Post.count', 1 do
-      post posts_path, params: { post: { name: 'テストユーザー', amount: 3_000, address: '東京都', tel: '08012345678', others: '備考' } }
+      post posts_path, params: { post: { name: 'テストユーザー', amount: 3000, address: '東京都', tel: '08012345678', others: '備考' } }
     end
     assert_redirected_to new_post_path
   end
