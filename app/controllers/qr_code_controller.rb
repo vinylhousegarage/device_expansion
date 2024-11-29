@@ -20,6 +20,5 @@ class QrCodeController < ApplicationController
   # 投稿者のログアウト
   def logout_poster
     session[:user_id] = nil
-    render template: 'qr_code/logout_poster'
   end
 end
