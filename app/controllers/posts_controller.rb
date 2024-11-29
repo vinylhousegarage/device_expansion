@@ -3,15 +3,16 @@ class PostsController < ApplicationController
 
   def new
     @post = Post.new
-    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(session[:user_id].to_i)
+    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
   end
 
   def create
     @post = Post.new(post_params)
-    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(session[:user_id].to_i)
+    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
     if @post.save
       redirect_to new_post_path
     else
+      Rails.logger.debug "Validation errors: #{@post.errors.full_messages}"
       render :new, status: :unprocessable_entity
     end
   end
