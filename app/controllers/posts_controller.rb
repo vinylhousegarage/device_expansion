@@ -3,12 +3,12 @@ class PostsController < ApplicationController
 
   def new
     @post = Post.new
-    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
+    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id.to_i)
   end
 
   def create
     @post = Post.new(post_params)
-    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
+    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id.to_i)
     if @post.save
       redirect_to new_post_path
     else
