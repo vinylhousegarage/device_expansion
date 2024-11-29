@@ -3,6 +3,7 @@ require 'test_helper'
 class QrCodeLogoutPosterViewTest < ActionView::TestCase
   def setup
     @user = users(:first_poster)
+    sign_in_as(@user)
   end
 
   test 'renders logout_poster page with farewell message' do
