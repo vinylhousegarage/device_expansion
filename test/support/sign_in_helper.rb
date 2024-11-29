@@ -1,12 +1,11 @@
 module SignInHelper
-  def sign_in_as(user, path = login_poster_qr_code_path(user.id), params: { id: user.id }, as: :html, method: :post)
-    send(method, path, params:, as:)
+  def sign_in_as(user)
+    post login_poster_qr_code_path, params: { session: { user_id: user.id } }
     assert_response :success
   end
 
-  def admin_sign_in_as(user, path = admin_session_path(user.id), params: { id: user.id }, as: :html, method: :post)
-  send(method, path, params:, as:)
-  follow_redirect!
-  assert_response :success
+  def admin_sign_in_as(user)
+    post admin_session_path, params: { session: { user_id: user.id } }
+    assert_response :success
   end
 end
