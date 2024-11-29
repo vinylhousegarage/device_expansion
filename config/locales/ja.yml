@@ -6,16 +6,16 @@ ja:
         amount: "金額"
 
     errors:
-      format: "%{attribute}%{message}"
+      format: "%{message}"
       models:
         post:
           attributes:
             name:
-              blank: "を入力してください"
+              blank: "名前を入力してください"
             amount:
-              blank: "を入力してください"
-              not_a_number: "を数値で入力してください"
-              greater_than_or_equal_to: "は0以上で入力してください"
+              blank: "金額を入力してください"
+              not_a_number: "金額を数値で入力してください"
+              greater_than_or_equal_to: "金額は0以上で入力してください"
 
   notices:
     data_reset: "データがリセットされました"
