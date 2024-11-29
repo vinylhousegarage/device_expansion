@@ -11,6 +11,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     @post.errors.add(:title, 'を入力してください')
     @post.errors.add(:content, 'は10文字以上で入力してください')
     @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
+    sign_in_as(@user)
   end
 
   def assert_field_with_label(label_text, field_name, field_type)
