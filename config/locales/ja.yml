@@ -6,7 +6,7 @@ ja:
         amount: "金額"
 
     errors:
-      format: "%{message}"
+      format: "%{attribute}%{message}"
       models:
         post:
           attributes:
