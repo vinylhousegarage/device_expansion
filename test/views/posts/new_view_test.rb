@@ -6,10 +6,10 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   def setup
     @user = users(:first_poster)
     @admin_user = users(:admin)
-    @users = [users(:first_poster), users(:admin)]
-    @post = Post.new
-    @post.errors.add(:title, 'を入力してください')
-    @post.errors.add(:content, 'は10文字以上で入力してください')
+    @users = [@user, @admin_user]
+    @post = Post.new(user: @user, name: '', amount: -1)
+    @post.errors.add(:name, 'を入力してください')
+    @post.errors.add(:amount, 'は0以上で入力してください')
     @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
     sign_in_as(@user)
   end
@@ -101,15 +101,15 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'displays error messages' do
-    get new_post_path
     post posts_path, params: { post: { title: '', content: '' } }
     assert_response :unprocessable_entity
 
+    puts @post.errors.full_messages
     assert_select 'div#error_explanation' do
-      assert_select 'h3', text: '2 エラーが発生しました:'
+      assert_select 'h3', text: '3 エラーが発生しました:'
       assert_select 'ul' do
-        assert_select 'li', text: 'タイトルを入力してください'
-        assert_select 'li', text: '内容は10文字以上で入力してください'
+        assert_select 'li', text: '名前を入力してください'
+        assert_select 'li', text: 'は0以上で入力してください'
       end
     end
   end
