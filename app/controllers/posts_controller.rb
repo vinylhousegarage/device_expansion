@@ -1,13 +1,14 @@
 class PostsController < ApplicationController
+  before_action :set_current_user, oexcept: [:destroy]
+
   def new
-    @current_user = current_user
     @post = Post.new
-    user_posts_stats = UserPostsStatsService.new
-    @user_stats_by_id = user_posts_stats.user_stats_by_id(session[:user_id].to_i)
+    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(session[:user_id].to_i)
   end
 
   def create
     @post = Post.new(post_params)
+    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(session[:user_id].to_i)
     if @post.save
       redirect_to new_post_path
     else
