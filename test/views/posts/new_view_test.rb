@@ -100,7 +100,9 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'displays error messages' do
-    render template: 'posts/new', locals: { post: @post }
+    get new_post_path
+    post posts_path, params: { post: { title: '', content: '' } }
+    assert_response :unprocessable_entity
 
     assert_select 'div#error_explanation' do
       assert_select 'h3', text: '2 エラーが発生しました:'
