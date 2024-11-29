@@ -104,8 +104,8 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     assert_select 'div#error_explanation' do
       assert_select 'h3', text: '2 エラーが発生しました:'
       assert_select 'ul' do
-        assert_select 'li', text: '名前を入力してください'
-        assert_select 'li', text: '金額は0以上で入力してください'
+        assert_select 'li', text: '名前 を入力してください'
+        assert_select 'li', text: '金額 は0以上で入力してください'
       end
     end
   end
