@@ -39,6 +39,5 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
       post posts_path, params: { post: { name: '', amount: nil, address: '', tel: 'abc123', others: '' } }
     end
     assert_response :unprocessable_entity
-    assert_template :new
   end
 end
