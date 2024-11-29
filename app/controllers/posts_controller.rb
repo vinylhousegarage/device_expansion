@@ -7,7 +7,7 @@ class PostsController < ApplicationController
   end
 
   def create
-    @post = Post.new(post_params)
+    @post = @current_user.posts.build(post_params)
     @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
     if @post.save
       redirect_to new_post_path
