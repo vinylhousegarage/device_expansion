@@ -12,7 +12,6 @@ class PostsController < ApplicationController
     if @post.save
       redirect_to new_post_path
     else
-      Rails.logger.debug "Validation errors: #{@post.errors.full_messages}"
       render :new, status: :unprocessable_entity
     end
   end
