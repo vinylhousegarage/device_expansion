@@ -101,7 +101,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'displays error messages' do
-    post posts_path, params: { post: { title: '', content: '' } }
+    post posts_path, params: { post: { name: '', amount: -1 } }
     assert_response :unprocessable_entity
 
     puts @post.errors.full_messages
