@@ -7,7 +7,6 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     @user = users(:first_poster)
     @admin_user = users(:admin)
     @users = [@user, @admin_user]
-    @post = Post.new(user: @user, name: '', amount: -1)
     @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
     sign_in_as(@user)
   end
@@ -102,7 +101,6 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     post posts_path, params: { post: { name: '', amount: -1 } }
     assert_response :unprocessable_entity
 
-    puts @post.errors.full_messages
     assert_select 'div#error_explanation' do
       assert_select 'h3', text: '2 エラーが発生しました:'
       assert_select 'ul' do
