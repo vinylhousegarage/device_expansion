@@ -5,8 +5,7 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
     @user = users(:first_poster)
     @admin_user = users(:admin)
     @post = posts(:second_post)
-    @mock_user_post_index = @post.user_post_index
-    @mock_user_stats_by_id = mock_user_stats_by_id(@user)
+    @user_stats_by_id = mock_user_stats_by_id(@user)
     sign_in_as(@user)
   end
 
