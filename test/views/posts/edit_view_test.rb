@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class PostsEditViewTest < ActionDispatch::IntegrationTest
+  include ActionView::Helpers::NumberHelper
+
   setup do
     @user = users(:first_poster)
     @admin_user = users(:admin)
