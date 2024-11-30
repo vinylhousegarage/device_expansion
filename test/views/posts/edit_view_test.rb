@@ -36,6 +36,7 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'edit view renders additional button for aggregation user' do
+    @post = posts(:third_post)
     get edit_post_path(@post)
     assert_response :success
 
