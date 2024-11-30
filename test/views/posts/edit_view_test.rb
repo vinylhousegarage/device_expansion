@@ -5,14 +5,15 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
     @user = users(:first_poster)
     @admin_user = users(:admin)
     @post = posts(:second_post)
-    @mock_user_stats_by_id = mock_user_stats_by_id(@user)
+    @post_count = mock_user_stats_by_id(@user).post_count
+    @post_amount = mock_user_stats_by_id(@user).post_amount
     sign_in_as(@user)
   end
 
   test 'edit view renders correctly for general user' do
     get edit_post_path(@post)
-
     assert_response :success
+
     assert_select 'div', text: @mock_user_stats_by_id
 
     assert_select 'form' do
@@ -23,7 +24,9 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
       assert_select 'input[name=?]', 'post[others]'
     end
 
-    assert_select 'p', text: "登録No. #{@mock_user_post_index}"
+    assert_select 'div#_user_info', text: /#{@user.name}さんの登録件数：#{@post_count}件/
+    formatted_post_amount = number_to_currency(@post_amount, unit: '円', delimiter: ',', format: "%n%u", precision: 0)
+    assert_select 'div#_user_info', text: /#{@user.name}さんの合計金額：#{formatted_post_amount}/
 
     assert_select 'form[action=?][method=?]', new_post_path, 'post'
   end
