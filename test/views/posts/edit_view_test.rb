@@ -30,7 +30,7 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
     formatted_post_amount = number_to_currency(@post_amount, unit: '円', delimiter: ',', format: "%n%u", precision: 0)
     assert_select 'div#_user_info', text: /#{@user.name}さんの合計金額：#{formatted_post_amount}/
 
-    assert_select 'form[action=?][method=?]', new_post_path, 'post'
+    assert_select 'form[action=?][method=?]', new_post_path, 'get'
   end
 
   test 'edit view renders additional button for aggregation user' do
