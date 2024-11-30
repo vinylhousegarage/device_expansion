@@ -10,7 +10,7 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'edit view renders correctly for general user' do
-    get edit_post_path(@post), params: { user_post_index: @user_post_index }
+    get edit_post_path(@post)
 
     assert_response :success
     assert_select 'div', text: /ユーザー情報/
