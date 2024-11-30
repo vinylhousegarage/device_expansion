@@ -10,6 +10,7 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
     @admin_post = (:third_post)
     @post_count = mock_user_stats_by_id(@user).post_count
     @post_amount = mock_user_stats_by_id(@user).post_amount
+    @user_stats_by_id = mock_user_stats_by_id(@admin_user)
     sign_in_as(@user)
   end
 
@@ -35,8 +36,6 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'edit view renders additional button for aggregation user' do
-    @user_stats_by_id.user_name = mock_user_stats_by_id(@admin_user).user_name
-    @post = posts(:third_post)
     get edit_post_path(@post)
     assert_response :success
 
