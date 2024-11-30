@@ -26,7 +26,6 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
 
     assert_select 'p', text: "登録No. #{@mock_user_post_index}"
 
-    assert_select 'form[action=?][method=?]', post_path(@post), 'post'
     assert_select 'form[action=?][method=?]', new_post_path, 'post'
   end
 

@@ -1,0 +1,61 @@
+<%= render 'shared/user_info' %>
+
+<%= form_with model: @post do |form| %>
+
+  <div>
+    <b><p>登録No. <%= @user_post_index %></p></b>
+  </div>
+
+  <table>
+    <tr>
+      <td><%= form.label :お名前 %></td>
+      <td><%= form.text_field :name %></td>
+      <td><%= form.label :円 %></td>
+    </tr>
+    <tr>
+      <td><%= form.label :金　額 %></td>
+      <td><%= form.number_field :amount %></td>
+      <td><%= form.label :円 %></td>
+    </tr>
+    <tr>
+      <td><%= form.label :住　所 %></td>
+      <td><%= form.text_field :address %></td>
+    </tr>
+    <tr>
+      <td><%= form.label :電　話 %></td>
+      <td><%= form.text_field :tel, pattern: '\d*', title: 'ハイフン無し' %></td>
+      <td><%= form.label :―無し %></td>
+    </tr>
+    <tr>
+      <td><%= form.label :その他 %></td>
+      <td><%= form.text_field :others %></td>
+    </tr>
+  </table><br>
+
+  <div>
+　　　　<%= form.submit '　　　登　録　　　' %>
+  </div><br>
+
+<% end %>
+
+<table>
+  <tr>
+    <td><b>詳細へ戻る</b></td>
+    <td><%= button_to '戻る', post_path(@post), method: :get %></td>
+  </tr>
+
+  <tr>
+    <td><b>新規登録へ戻る　</b></td>
+    <td><%= button_to '戻る', new_post_path, method: :get %></td>
+  </tr>
+</table>
+
+<% if @user_stats_by_id.user_name == '集計担当' %>
+
+<table>
+  <tr>
+    <td><b>'登録状況へ戻る　'</b></td>
+    <td><%= button_to '戻る', users_path, method: :get %></td>
+  </tr>
+</table>
+<% end %>
