@@ -34,11 +34,11 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'edit view renders additional button for aggregation user' do
+    get edit_post_path(@post)
+    assert_response :success
     @adimin_user = users(:admin)
     sign_in_as(@admin_user)
     @post = posts(:third_post)
-    get edit_post_path(@post)
-    assert_response :success
 
     assert_select 'form[action=?][method=?]', users_path, 'post'
     assert_select 'td', text: /登録状況へ戻る/
