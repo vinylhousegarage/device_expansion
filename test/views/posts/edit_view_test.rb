@@ -35,6 +35,7 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'edit view renders additional button for aggregation user' do
+    admin_sign_in_as(@admin_user)
     @user_stats_by_id = mock_user_stats_by_id(@admin_user)
     @post = posts(:third_post)
     get edit_post_path(@post)
