@@ -5,6 +5,7 @@ first_post:
   address: '地区'
   tel:
   others:
+  created_at: '2024-11-30 00:00:01'
   user: first_poster
 
 second_post:
@@ -13,6 +14,7 @@ second_post:
   address: '屋号'
   tel:
   others:
+  created_at: '2024-11-30 00:00:04'
   user: first_poster
 
 third_post:
@@ -21,6 +23,7 @@ third_post:
   address: '市町村1丁目-nameⅡ'
   tel: '0123456789'
   others: '供花:20,000円(2段)'
+  created_at: '2024-11-01 00:00:02'
   user: admin
 
 fourth_post:
@@ -29,6 +32,7 @@ fourth_post:
   address: '市町村1丁目-nameⅡ'
   tel: '0123456789'
   others: '供物:10,000円'
+  created_at: '2024-11-30 00:00:05'
   user: admin
 
 fifth_post:
@@ -37,6 +41,7 @@ fifth_post:
   address: '市町村1丁目-nameⅡ'
   tel:
   others:
+  created_at: '2024-11-30 00:00:06'
   user: admin
 
 sixth_post:
@@ -45,4 +50,5 @@ sixth_post:
   address:
   tel:
   others: '供花:20,000円(2段)'
+  created_at: '2024-11-30 0:00:03'
   user: second_poster
