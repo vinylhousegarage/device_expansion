@@ -31,14 +31,14 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal @user.id.to_s, session[:user_id], 'Session user_id is not correctly set'
 
-    Rails.logger.debug "Validation errors: #{@post.errors.full_messages}"
+    Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
 
     assert_difference 'Post.count', 1 do
       post posts_path, params: { post: { name: 'テストユーザー', amount: 3000, address: '東京都', tel: '08012345678', others: '備考' } }
     end
     assert_redirected_to new_post_path
 
-    Rails.logger.debug "Validation errors: #{@post.errors.full_messages}"
+    Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
   end
 
   # createアクションの異常時をテスト
@@ -47,13 +47,13 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal @user.id.to_s, session[:user_id], 'Session user_id is not correctly set'
 
-    Rails.logger.debug "Validation errors: #{@post.errors.full_messages}"
+    Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
 
     assert_no_difference 'Post.count' do
       post posts_path, params: { post: { name: '', amount: nil, address: '', tel: 'abc123', others: '' } }
     end
     assert_response :unprocessable_entity
 
-    Rails.logger.debug "Validation errors: #{@post.errors.full_messages}"
+    Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
   end
 end
