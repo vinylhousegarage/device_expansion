@@ -14,8 +14,7 @@ module Admin
     def ensure_admin_user
       return if User.admin_users.pluck(:id).include?(session[:user_id])
 
-        redirect_with_alert(root_path, 'alerts.unauthorized_access')
-      end
+      redirect_with_alert(root_path, 'alerts.unauthorized_access')
     end
   end
 end
