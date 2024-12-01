@@ -26,7 +26,8 @@ module FlashAssertions
       if elements.present?
         rendered_messages = elements.map { |el| el.text.strip }
         assert_not rendered_messages.include?(unexpected_message),
-                   "Unexpected message '#{unexpected_message}' found in flash. Rendered messages: #{rendered_messages.join(', ')}"
+                   "Unexpected message '#{unexpected_message}' " \
+                   "found in flash. Rendered messages: #{rendered_messages.join(', ')}"
       end
     end
   end
