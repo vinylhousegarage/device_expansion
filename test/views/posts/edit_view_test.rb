@@ -5,11 +5,10 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
 
   setup do
     @user = users(:first_poster)
-    @admin_user = users(:admin)
-    @users = [@user, @admin_user]
+    @post = posts(:second_post)
     @post_count = mock_user_stats_by_id(@user).post_count
     @post_amount = mock_user_stats_by_id(@user).post_amount
-    @user_stats_by_id = mock_user_stats_by_id(@admin_user)
+    @user_stats_by_id = mock_user_stats_by_id(@user)
     sign_in_as(@user)
   end
 
@@ -35,14 +34,17 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'edit view renders additional button for aggregation user' do
-    @post = posts(:third_post)
-    @users.each do |user|
-      sign_in_as(user)
-      get edit_post_path(@post)
-      assert_response :success
+    @admin_user = users(:admin)
+    post admin_session
+    assert_response :success
 
-      assert_select 'form[action=?][method=?]', users_path, 'post'
-      assert_select 'td', text: /登録状況へ戻る/
+    @post = posts(:third_poste)
+    @user_stats_by_id = mock_user_stats_by_id(@admin_user)
+    get edit_post_path(@post)
+    assert_response :success
+
+    assert_select 'form[action=?][method=?]', users_path, 'post'
+    assert_select 'td', text: /登録状況へ戻る/
     end
   end
 end
