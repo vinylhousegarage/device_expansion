@@ -3,6 +3,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root 'users#new'
+
   resources :users
 
   resources :posts
@@ -19,7 +20,7 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
-    resource :session, only: [:create, :destroy]
+    resource :session, only: %i[create destroy]
 
     resource :system, only: [] do
       collection do
