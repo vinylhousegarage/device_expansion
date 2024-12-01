@@ -45,6 +45,5 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
 
     assert_select 'form[action=?][method=?]', users_path, 'post'
     assert_select 'td', text: /登録状況へ戻る/
-    end
   end
 end
