@@ -6,6 +6,12 @@ class PostsController < ApplicationController
     @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
   end
 
+  def edit
+    @post = find_post_by_params
+    @user_post_index = @post.user_post_index
+    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
+  end
+
   def create
     @post = @current_user.posts.build(post_params)
     @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
