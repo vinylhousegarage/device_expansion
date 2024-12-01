@@ -36,13 +36,14 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
   test 'edit view renders additional button for aggregation user' do
     @admin_user = users(:admin)
     post admin_session_path
-    puts session[:user_id]
+    puts "Session user ID: #{session[:user_id]}"
     assert_response :redirect
 
     @post = posts(:third_post)
     @user_stats_by_id = mock_user_stats_by_id(@admin_user)
-    puts @user_stats_by_id.user_name
+    puts "User stats by ID user_name: #{@user_stats_by_id.user_name}"
     get edit_post_path(@post)
+    puts @response.body
     assert_response :success
 
     assert_select 'form[action=?][method=?]', users_path, 'post'
