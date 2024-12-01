@@ -46,7 +46,7 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
     puts @response.body
     assert_response :success
 
-    assert_select 'form[action=?][method=?]', users_path, 'post'
+    assert_select 'form[action=?][method=?]', users_path, 'get'
     assert_select 'td', text: /登録状況へ戻る/
   end
 end
