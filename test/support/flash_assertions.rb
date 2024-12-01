@@ -15,7 +15,8 @@ module FlashAssertions
   def assert_flash_rendered_by_message(expected_message, key: nil)
     selector = key ? "div##{key}" : "div[id^='flash-']"
     assert_select selector, text: expected_message do |elements|
-      assert elements.present?, "Expected flash with message '#{expected_message}' to be rendered, but it was not found."
+      assert elements.present?,
+             "Expected flash with message '#{expected_message}' to be rendered, but it was not found."
     end
   end
 
@@ -25,7 +26,8 @@ module FlashAssertions
       if elements.present?
         rendered_messages = elements.map { |el| el.text.strip }
         assert_not rendered_messages.include?(unexpected_message),
-                   "Unexpected message '#{unexpected_message}' found in flash. Rendered messages: #{rendered_messages.join(', ')}"
+                   "Unexpected message '#{unexpected_message}' " \
+                   "found in flash. Rendered messages: #{rendered_messages.join(', ')}"
       end
     end
   end

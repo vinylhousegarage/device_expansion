@@ -5,8 +5,8 @@ module StatsMockSetupHelper
     total_posts_amount = total_posts.sum(&:amount)
 
     PostsStatsService::UserStat.new(
-      total_posts_count: total_posts_count,
-      total_posts_amount: total_posts_amount
+      total_posts_count:,
+      total_posts_amount:
     )
   end
 
