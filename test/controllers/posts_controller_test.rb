@@ -34,7 +34,15 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
 
     assert_difference 'Post.count', 1 do
-      post posts_path, params: { post: { name: 'テストユーザー', amount: 3000, address: '東京都', tel: '08012345678', others: '備考' } }
+      post posts_path, params: {
+        post: {
+          name: 'テストユーザー',
+          amount: 3000,
+          address: '東京都',
+          tel: '08012345678',
+          others: '備考'
+        }
+      }
     end
     assert_redirected_to new_post_path
 
