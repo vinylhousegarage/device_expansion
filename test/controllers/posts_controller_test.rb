@@ -64,4 +64,20 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
   end
+
+  # updateアクションの更新をテスト
+  test 'updates the record successfully' do
+    post login_poster_qr_code_path(@user)
+    assert_response :success
+
+    patch_params = { post: { amount: '3_000' } }
+    Rails.logger.debug("Test Params: #{patch_params.inspect}")
+
+    patch post_path(@post), params: { post: { amount: '3000' } }
+    assert_response :redirect
+
+    Rails.logger.debug("Response Body: #{response.body}")
+    post.reload
+    assert_equal '3000', @post.amount
+  end
 end
