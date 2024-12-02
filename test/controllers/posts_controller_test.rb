@@ -9,6 +9,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = users(:first_poster)
     @post = posts(:first_post)
+    @second_user = users(:second_user)
     post login_poster_qr_code_path(@user)
   end
 
@@ -80,6 +81,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # updateアクションにおける無効データの非更新を確認
   test 'does not update the record with invalid data' do
+    @all_users_stats = mock_all_users_stats(@user, @second_user)
+    @user_stats_by_id = mock_user_stats_by_id(@user)
     original_amount = @post.amount
     Rails.logger.debug("Original amount before patch: #{original_amount}")
 
