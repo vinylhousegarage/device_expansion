@@ -22,6 +22,15 @@ class PostsController < ApplicationController
     end
   end
 
+  def update
+    @post = find_post_by_params
+    if @post.update(post_params)
+      redirect_to user_path(@current_user)
+    else
+      render :edit
+    end
+  end
+
   def destroy
     @post = find_post_by_params
     @user = @post.user
