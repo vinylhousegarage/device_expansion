@@ -83,6 +83,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   test 'does not update the record with invalid data' do
     @admin_user = users(:admin)
     post admin_session_path
+    @user_post_index = @post.user_post_index
     @all_users_stats = mock_all_users_stats(@user, @second_user)
     @user_stats_by_id = mock_user_stats_by_id(@admin_user)
     original_amount = @post.amount
