@@ -70,10 +70,10 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     post login_poster_qr_code_path(@user)
     assert_response :success
 
-    patch_params = { post: { amount: '3000' } }
+    patch_params = { post: { name: 'テスト ねーむ' } }
     Rails.logger.debug("Test Params: #{patch_params.inspect}")
 
-    patch post_path(@post), params: { post: { amount: '3000' } }
+    patch post_path(@post), params: { post: { name: 'テスト ねーむ' } }
     assert_response :redirect
 
     Rails.logger.debug("Response Body: #{response.body}")
