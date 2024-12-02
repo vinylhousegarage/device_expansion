@@ -9,7 +9,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = users(:first_poster)
     @post = posts(:first_post)
-    sign_in_as(@user)
+    post login_poster_qr_code_path(@user)
   end
 
   # find_posts_by_paramsメソッドをテスト
@@ -67,9 +67,6 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # updateアクションの更新をテスト
   test 'updates the record successfully' do
-    post login_poster_qr_code_path(@user)
-    assert_response :success
-
     patch_params = { post: { name: 'テスト ねーむ' } }
     Rails.logger.debug("Test Params: #{patch_params.inspect}")
 
