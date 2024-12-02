@@ -82,19 +82,20 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   # updateアクションにおける無効データの非更新を確認
   test 'does not update the record with invalid data' do
     @admin_user = users(:admin)
+    @admin_post = posts(:third_post)
     post admin_session_path
-    @user_post_index = @post.user_post_index
+    @user_post_index = @admin_post.user_post_index
     @all_users_stats = mock_all_users_stats(@user, @second_user)
     @user_stats_by_id = mock_user_stats_by_id(@admin_user)
-    original_amount = @post.amount
+    original_amount = @admin_post.amount
     Rails.logger.debug("Original amount before patch: #{original_amount}")
 
-    patch post_path(@post), params: { post: { amount: '' } }
+    patch post_path(@admin_post), params: { post: { amount: '' } }
     assert_response :unprocessable_entity
 
-    @post.reload
-    Rails.logger.debug("Amount after reload: #{@post.amount}")
+    @admin_post.reload
+    Rails.logger.debug("Amount after reload: #{@admin_post.amount}")
 
-    assert_equal original_amount, @post.amount
+    assert_equal original_amount, @admin_post.amount
   end
 end
