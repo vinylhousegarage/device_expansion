@@ -77,7 +77,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
 
     Rails.logger.debug("Response Body: #{response.body}")
-    post.reload
-    assert_equal '3000', @post.amount
+    @post.reload
+    assert_equal 'テスト ねーむ', @post.name
   end
 end
