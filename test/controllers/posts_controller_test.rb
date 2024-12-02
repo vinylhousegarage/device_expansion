@@ -80,4 +80,14 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     @post.reload
     assert_equal 'テスト ねーむ', @post.name
   end
+
+  # updateアクションにおける無効データの非更新を確認
+  test 'does not update the record with invalid data' do
+    original_amount = @post.amount
+    patch post_path(@post), params: { post: { amount: '' } }
+    assert_response :unprocessable_entity
+
+    @post.reload
+    assert_equal original_amount, @post.amount
+  end
 end
