@@ -10,6 +10,9 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     @user = users(:first_poster)
     @post = posts(:first_post)
     @second_user = users(:second_poster)
+    @post_count = mock_user_stats_by_id(@user).post_count
+    @post_amount = mock_user_stats_by_id(@user).post_amount
+    @user_stats_by_id = mock_user_stats_by_id(@user)
     post login_poster_qr_code_path(@user)
   end
 
@@ -87,13 +90,16 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     @admin_post = posts(:third_post)
     @user_post_index = @admin_post.user_post_index
+    puts "User post index: #{@user_post_index}"
     @user_stats_by_id = mock_user_stats_by_id(@admin_user)
+    puts "User stats by ID user_name: #{@user_stats_by_id.user_name}"
 
     original_amount = @admin_post.amount
     Rails.logger.debug("Original amount before patch: #{original_amount}")
 
-    patch post_path(@admin_post), params: { post: { amount: '' } }
+    patch post_path(@post), params: { post: { name: '' } }
     assert_response :unprocessable_entity
+    assert_template :edit
 
     @admin_post.reload
     Rails.logger.debug("Amount after reload: #{@admin_post.amount}")
