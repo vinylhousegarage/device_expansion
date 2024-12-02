@@ -9,7 +9,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = users(:first_poster)
     @post = posts(:first_post)
-    @second_user = users(:second_user)
+    @second_user = users(:second_poster)
     post login_poster_qr_code_path(@user)
   end
 
