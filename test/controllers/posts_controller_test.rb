@@ -84,10 +84,14 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   # updateアクションにおける無効データの非更新を確認
   test 'does not update the record with invalid data' do
     original_amount = @post.amount
+    Rails.logger.debug("Original amount before patch: #{original_amount}")
+
     patch post_path(@post), params: { post: { amount: '' } }
     assert_response :unprocessable_entity
 
     @post.reload
+    Rails.logger.debug("Amount after reload: #{@post.amount}")
+
     assert_equal original_amount, @post.amount
   end
 end
