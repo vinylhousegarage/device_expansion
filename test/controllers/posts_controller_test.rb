@@ -67,7 +67,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # updateアクションの更新をテスト
   test 'updates the record successfully' do
-    post login_poster_qr_code_path(@user)
+    post login_poster_qr_code_path(@user.id)
     assert_response :success
 
     patch_params = { post: { amount: '3000' } }
