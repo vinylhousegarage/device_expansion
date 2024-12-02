@@ -70,7 +70,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     post login_poster_qr_code_path(@user)
     assert_response :success
 
-    patch_params = { post: { amount: '3_000' } }
+    patch_params = { post: { amount: '3000' } }
     Rails.logger.debug("Test Params: #{patch_params.inspect}")
 
     patch post_path(@post), params: { post: { amount: '3000' } }
