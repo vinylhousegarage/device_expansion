@@ -9,7 +9,6 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
     @post_count = mock_user_stats_by_id(@user).post_count
     @post_amount = mock_user_stats_by_id(@user).post_amount
     @user_stats_by_id = mock_user_stats_by_id(@user)
-    @user_post_index = @post.user_post_index
     sign_in_as(@user)
   end
 
@@ -21,6 +20,7 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
     formatted_post_amount = number_to_currency(@post_amount, unit: '円', delimiter: ',', format: "%n%u", precision: 0)
     assert_select 'div#_user_info', text: /#{@user.name}さんの合計金額：#{formatted_post_amount}/
 
+    @user_post_index = @post.user_post_index
     assert_select 'div', text: /登録No. #{@user_post_index}件/
 
     assert_select 'table' do
