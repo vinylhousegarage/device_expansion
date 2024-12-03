@@ -1,6 +1,12 @@
 class PostsController < ApplicationController
   before_action :set_current_user, oexcept: [:destroy]
 
+  def show
+    @post = find_post_by_params
+    @user_post_index = @post.user_post_index
+    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
+  end
+
   def new
     @post = Post.new
     @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
