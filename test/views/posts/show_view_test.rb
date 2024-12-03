@@ -55,6 +55,10 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
     assert_select 'form[action=?][method=?]', user_path(@user), 'get' do
       assert_select 'button[type="submit"]', text: '登録一覧へ戻る'
     end
+
+    assert_select 'form[action=?][method=?]', new_post_path, 'get' do
+      assert_select 'button[type="submit"]', text: '新規登録へ戻る'
+    end
   end
 
   test 'show view renders additional button for aggregation user' do
@@ -72,10 +76,6 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
 
     assert_select 'form[action=?][method=?]', users_path, 'get' do
       assert_select 'button[type="submit"]', text: '登録状況へ戻る'
-    end
-
-    assert_select 'form[action=?][method=?]', new_post_path, 'get' do
-      assert_select 'button[type="submit"]', text: '新規登録へ戻る'
     end
   end
 end
