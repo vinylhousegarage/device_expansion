@@ -5,7 +5,7 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
 
   setup do
     @user = users(:first_poster)
-    @post = posts(:second_post)
+    @post = posts(:first_post)
     @post_count = mock_user_stats_by_id(@user).post_count
     @post_amount = mock_user_stats_by_id(@user).post_amount
     @user_stats_by_id = mock_user_stats_by_id(@user)
@@ -55,7 +55,7 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test 'edit view renders additional button for aggregation user' do
+  test 'show view renders additional button for aggregation user' do
     @admin_user = users(:admin)
     post admin_session_path
     puts "Session user ID: #{session[:user_id]}"
