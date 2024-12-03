@@ -43,16 +43,17 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
     end
 
     assert_select 'form[action=?][method=?]', edit_post_path(@post), 'get' do
-      assert_select 'input[type="submit"][value=?]', '投稿を編集する'
+      assert_select 'button[type="submit"]', text: '投稿を編集する'
     end
 
     assert_select 'form[action=?][method=?]', post_path(@post), 'post' do
       assert_select 'input[type="hidden"][name="_method"][value="delete"]'
-      assert_select 'input[type="submit"][value=?]', '投稿を削除する'
+      assert_select 'button[data-confirm=?]', text: '削除してもよろしいですか？'
+      assert_select 'button[type="submit"]', text: '投稿を削除する'
     end
 
     assert_select 'form[action=?][method=?]', user_path(@user), 'get' do
-      assert_select 'input[type="submit"][value=?]', '登録一覧へ戻る'
+      assert_select 'button[type="submit"]', text: '登録一覧へ戻る'
     end
   end
 
@@ -70,11 +71,11 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select 'form[action=?][method=?]', users_path, 'get' do
-      assert_select 'input[type="submit"][value=?]', '登録状況へ戻る'
+      assert_select 'button[type="submit"]', text: '登録状況へ戻る'
     end
 
     assert_select 'form[action=?][method=?]', new_post_path, 'get' do
-      assert_select 'input[type="submit"][value=?]', '新規登録へ戻る'
+      assert_select 'button[type="submit"]', text: '新規登録へ戻る'
     end
   end
 end
