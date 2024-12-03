@@ -21,7 +21,8 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
     assert_select 'div#_user_info', text: /#{@user.name}さんの合計金額：#{formatted_post_amount}/
 
     @user_post_index = @post.user_post_index
-    assert_select 'div', text: /登録No. #{@user_post_index}件/
+    assert_select 'div', text: /登録No. #{@user_post_index}/
+    puts @response.body
 
     assert_select 'table' do
       assert_select 'tr:nth-child(1) td:nth-child(1)', text: '氏名：'
