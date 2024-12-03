@@ -1,0 +1,37 @@
+<%= render 'shared/user_info' %>
+<br><br>
+<div>
+  <b>登録番号：<%= @user_post_index %></b>
+</div>
+<table>
+  <tr>
+    <td>氏名：</td>
+    <td><%= @post.name %></td>
+  </tr>
+  <tr>
+    <td>金額</td>
+    <td><%= number_to_currency(@post.amount, unit: '円', precision: 0, format: '%n%u') %></td>
+  </tr>
+  <tr>
+    <td>住所</td>
+    <td><%= @post.address %></td>
+  </tr>
+  <tr>
+    <td>電話</td>
+    <td><%= @post.tel %></td>
+  </tr>
+  <tr>
+    <td>備考</td>
+    <td><%= @post.others %></td>
+  </tr>
+</table>
+<br>
+<%= button_to '投稿を編集する', edit_post_path(@post), method: :get %><br>
+<%= button_to '投稿を削除する', post_path(@post), method: :delete, data: { confirm: '削除してもよろしいですか？' } %><br>
+<%= button_to '登録一覧へ戻る', user_path(@post.user), method: :get %><br>
+
+<% if @user_stats_by_id.user_name == '集計担当' %>
+  <%= button_to '登録状況へ戻る', users_path, method: :get %><br>
+<% else %>
+  <%= button_to '新規登録へ戻る', new_post_path, method: :get %>
+<% end %>
