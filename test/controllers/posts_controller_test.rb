@@ -93,7 +93,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     puts "User post index: #{@user_post_index}"
     @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@admin_user.id)
     puts "User stats by ID user_name: #{@user_stats_by_id.user_name}"
-    @all_users_stats = all_users_stats(@user, @admin_user)
+    @all_users_stats = UserPostsStatsService.new.all_users_stats
     puts "All user stats: #{@all_user_stats}"
 
     original_amount = @admin_post.amount
