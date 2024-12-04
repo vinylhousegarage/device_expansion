@@ -15,7 +15,7 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
 
   test 'show view renders correctly for partial' do
     assert_select 'div#_user_info', text: /#{@user.name}さんの登録件数：#{@post_count}件/
-    formatted_post_amount = number_to_currency(@post_amount, unit: '円', delimiter: ',', format: "%n%u", precision: 0)
+    formatted_post_amount = number_to_currency(@post_amount, unit: '円', delimiter: ',', format: '%n%u', precision: 0)
     assert_select 'div#_user_info', text: /#{@user.name}さんの合計金額：#{formatted_post_amount}/
   end
 
@@ -32,7 +32,7 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
 
       assert_select 'tr:nth-child(2) td:nth-child(1)', text: '金額'
       assert_select 'tr:nth-child(2) td:nth-child(2)',
-        text: /#{Regexp.escape(number_to_currency(@post.amount, unit: "円", precision: 0, format: "%n%u"))}/
+        text: /#{Regexp.escape(number_to_currency(@post.amount, unit: '円', precision: 0, format: '%n%u'))}/
 
       assert_select 'tr:nth-child(3) td:nth-child(1)', text: '住所'
       assert_select 'tr:nth-child(3) td:nth-child(2)', text: @post.address
