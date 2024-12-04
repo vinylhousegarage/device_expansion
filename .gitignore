@@ -40,3 +40,5 @@
 .env.production
 
 node_modules/
+
+.vscode
