@@ -43,3 +43,4 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
       assert_select 'button[type="submit"]', text: '戻る'
     end
   end
+end
