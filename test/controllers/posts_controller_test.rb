@@ -91,9 +91,9 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     @admin_post = posts(:third_post)
     @user_post_index = @admin_post.user_post_index
     puts "User post index: #{@user_post_index}"
-    @user_stats_by_id = mock_user_stats_by_id(@admin_user)
+    @user_stats_by_id = user_stats_by_id(@admin_user)
     puts "User stats by ID user_name: #{@user_stats_by_id.user_name}"
-    @all_users_stats = mock_all_users_stats(@user, @admin_user)
+    @all_users_stats = all_users_stats(@user, @admin_user)
     puts "All user stats: #{@all_user_stats}"
 
     original_amount = @admin_post.amount
