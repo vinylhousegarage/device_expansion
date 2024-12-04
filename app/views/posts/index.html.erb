@@ -1,0 +1,36 @@
+<h3>合計件数：<%= @total_posts_count %><%= '　合計金額：' %><%= number_with_delimiter(@total_posts_amount) %><%= ' 円' %></h3>
+
+<table>
+  <tr>
+    <th>　No.　</th>
+    <th>氏　　名</th>
+    <th>金　　額</th>
+    <th>入力担当</th>
+  </tr>
+
+  <% @posts.each_with_index do |post, index| %>
+
+  <tr>
+    <td><%= index + 1 %><%= '　' %></td>
+    <td><%= post.name %><%= '　' %></td>
+    <td><%= number_with_delimiter(post.amount) %><%= ' 円' %><%= '　' %></td>
+    <td><%= post.user.name %><%= '　' %></td>
+    <td><%= button_to '詳細', post_path(post), method: :get %></td>
+  </tr>
+
+  <% end %>
+</table>
+
+<p></p>
+<table>
+  <tr>
+    <td><b>登録状況へ戻る　</b></td>
+    <td><%= button_to '戻る', users_path, method: :get %></td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td><b>初期画面へ戻る　</b></td>
+    <td><%= button_to '戻る', new_user_path, method: :get %></td>
+  </tr>
+</table>
