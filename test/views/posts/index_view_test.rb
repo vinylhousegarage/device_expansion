@@ -22,8 +22,8 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
 
     assert_select 'table' do
       assert_select 'tr:nth-child(1) th:nth-child(1)', text: '　No.　'
-      assert_select 'tr:nth-child(1) th:nth-child(2)', text: '氏　　名'
-      assert_select 'tr:nth-child(1) th:nth-child(3)', text: '金　　額'
+      assert_select 'tr:nth-child(1) th:nth-child(2)', text: '　氏名　'
+      assert_select 'tr:nth-child(1) th:nth-child(3)', text: '　金額　'
       assert_select 'tr:nth-child(1) th:nth-child(4)', text: '入力担当'
     end
 
