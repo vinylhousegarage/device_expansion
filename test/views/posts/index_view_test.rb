@@ -5,7 +5,7 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
 
   setup do
     @user = users(:first_poster)
-    @posts = [posts(:first_post), posts(:sixth_post)]
+    @posts = Post.includes(:user).all
     @total_posts_count = mock_posts_stats.total_posts_count
     @total_posts_amount = mock_posts_stats.total_posts_amount
     sign_in_as(@user)
