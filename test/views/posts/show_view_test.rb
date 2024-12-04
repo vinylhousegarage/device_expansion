@@ -31,8 +31,7 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
       assert_select 'tr:nth-child(1) td:nth-child(2)', text: @post.name
 
       assert_select 'tr:nth-child(2) td:nth-child(1)', text: '金額'
-      assert_select 'tr:nth-child(2) td:nth-child(2)',
-        text: /#{Regexp.escape(number_to_currency(@post.amount, unit: '円', precision: 0, format: '%n%u'))}/
+      assert_select 'tr:nth-child(2) td:nth-child(2)', text: /#{Regexp.escape(number_to_currency(@post.amount, unit: '円', precision: 0, format: '%n%u'))}/
 
       assert_select 'tr:nth-child(3) td:nth-child(1)', text: '住所'
       assert_select 'tr:nth-child(3) td:nth-child(2)', text: @post.address
