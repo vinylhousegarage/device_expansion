@@ -88,10 +88,11 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     post admin_session_path
     assert_response :redirect
 
+    @current_user = @admin_user
     @admin_post = posts(:third_post)
     @user_post_index = @admin_post.user_post_index
     puts "User post index: #{@user_post_index}"
-    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@admin_post.user_id)
+    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
     puts "User stats by ID user_name: #{@user_stats_by_id.user_name}"
     @all_users_stats = UserPostsStatsService.new.all_users_stats
     puts "All user stats: #{@all_user_stats}"
