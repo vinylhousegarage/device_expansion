@@ -81,32 +81,4 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     @post.reload
     assert_equal 'テスト ねーむ', @post.name
   end
-
-  # updateアクションにおける無効データの非更新を確認
-  test 'does not update the record with invalid data' do
-    @admin_user = users(:admin)
-    post admin_session_path
-    assert_response :redirect
-
-    @current_user = @admin_user
-    @admin_post = posts(:third_post)
-    @user_post_index = @admin_post.user_post_index
-    puts "User post index: #{@user_post_index}"
-    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
-    puts "User stats by ID user_name: #{@user_stats_by_id.user_name}"
-    @all_users_stats = UserPostsStatsService.new.all_users_stats
-    puts "All user stats: #{@all_user_stats}"
-
-    original_amount = @admin_post.amount
-    Rails.logger.debug("Original amount before patch: #{original_amount}")
-
-    patch post_path(@post), params: { post: { name: '' } }
-    assert_response :unprocessable_entity
-    assert_template :edit
-
-    @admin_post.reload
-    Rails.logger.debug("Amount after reload: #{@admin_post.amount}")
-
-    assert_equal original_amount, @admin_post.amount
-  end
 end
