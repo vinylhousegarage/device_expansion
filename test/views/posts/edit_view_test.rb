@@ -27,7 +27,7 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
     end
 
     assert_select 'div#_user_info', text: /#{@user.name}さんの登録件数：#{@post_count}件/
-    formatted_post_amount = number_to_currency(@post_amount, unit: '円', delimiter: ',', format: "%n%u", precision: 0)
+    formatted_post_amount = number_to_currency(@post_amount, unit: '円', delimiter: ',', format: '%n%u', precision: 0)
     assert_select 'div#_user_info', text: /#{@user.name}さんの合計金額：#{formatted_post_amount}/
 
     assert_select 'form[action=?][method=?]', post_path, 'get'
