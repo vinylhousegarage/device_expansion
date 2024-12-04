@@ -21,17 +21,17 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
     assert_select 'h3', text: /合計件数：#{@total_posts_count} 件　合計金額：#{formatted_post_amount}/
 
     assert_select 'table' do
-      assert_select 'tr:nth-child(1) td:nth-child(1)', text: '　No.　'
-      assert_select 'tr:nth-child(1) td:nth-child(2)', text: '氏　　名'
-      assert_select 'tr:nth-child(1) td:nth-child(3)', text: '金　　額'
-      assert_select 'tr:nth-child(1) td:nth-child(4)', text: '入力担当'
+      assert_select 'tr:nth-child(2) td:nth-child(1)', text: '　No.　'
+      assert_select 'tr:nth-child(2) td:nth-child(2)', text: '氏　　名'
+      assert_select 'tr:nth-child(2) td:nth-child(3)', text: '金　　額'
+      assert_select 'tr:nth-child(2) td:nth-child(4)', text: '入力担当'
     end
 
     @posts.each_with_index do |post, index|
-      assert_select "tr:nth-child(#{index + 2}) td:nth-child(1)", text: "#{index + 1}　"
-      assert_select "tr:nth-child(#{index + 2}) td:nth-child(2)", text: "#{post.name}　"
-      assert_select "tr:nth-child(#{index + 2}) td:nth-child(3)", text: "#{number_with_delimiter(post.amount)} 円　"
-      assert_select "tr:nth-child(#{index + 2}) td:nth-child(4)", text: "#{post.user.name}　"
+      assert_select "tr:nth-child(#{index + 3}) td:nth-child(1)", text: "#{index + 1}　"
+      assert_select "tr:nth-child(#{index + 3}) td:nth-child(2)", text: "#{post.name}　"
+      assert_select "tr:nth-child(#{index + 3}) td:nth-child(3)", text: "#{number_with_delimiter(post.amount)} 円　"
+      assert_select "tr:nth-child(#{index + 3}) td:nth-child(4)", text: "#{post.user.name}　"
     end
 
     assert_select 'form[action=?][method=?]', users_path, 'get' do
