@@ -13,7 +13,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     @post_count = mock_user_stats_by_id(@user).post_count
     @post_amount = mock_user_stats_by_id(@user).post_amount
     @user_stats_by_id = mock_user_stats_by_id(@user)
-    post login_poster_qr_code_path(@user)
+    post login_poster_session_path(@user)
   end
 
   # find_posts_by_paramsメソッドをテスト
@@ -31,7 +31,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # createアクションの正常時をテスト
   test 'should create post successfully' do
-    post login_poster_qr_code_path(@user)
+    post login_poster_session_path(@user)
     assert_response :success
     assert_equal @user.id.to_s, session[:user_id], 'Session user_id is not correctly set'
 
@@ -55,7 +55,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # createアクションの異常時をテスト
   test 'should not create post with invalid attributes' do
-    post login_poster_qr_code_path(@user)
+    post login_poster_session_path(@user)
     assert_response :success
     assert_equal @user.id.to_s, session[:user_id], 'Session user_id is not correctly set'
 
