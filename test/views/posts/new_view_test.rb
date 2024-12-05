@@ -31,7 +31,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
       assert_back_to_status_button
       assert_logout_button(admin_session_path)
     else
-      assert_logout_button(logout_poster_qr_code_index_path)
+      assert_logout_button(logout_poster_sessions_path)
     end
   end
 
