@@ -3,8 +3,8 @@
 
 <%= form_with model: @post, local: true do |form| %>
   <% if @post.errors.any? %>
-    <div id="error_explanation">
-      <h3><%= pluralize(@post.errors.count, "エラー") %>が発生しました:</h3>
+    <div id='error_explanation'>
+      <h3><%= pluralize(@post.errors.count, 'エラー') %>が発生しました:</h3>
       <ul>
         <% @post.errors.full_messages.each do |message| %>
           <li><%= message %></li>
@@ -55,7 +55,7 @@
   <tr>
     <td><b><%= '作業を終了する　' %></b></td>
     <td>
-      <% logout_path = @user_stats_by_id.user_name == '集計担当' ? admin_session_path : logout_poster_qr_code_index_path %>
+      <% logout_path = @user_stats_by_id.user_name == '集計担当' ? admin_session_path : logout_poster_sessions_path %>
       <%= button_to '終了', logout_path, method: :delete, data: { turbo: false } %>
     </td>
   </tr>
