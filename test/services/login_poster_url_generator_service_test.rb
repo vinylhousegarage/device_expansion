@@ -5,7 +5,7 @@ class LoginPosterUrlGeneratorServiceTest < ActiveSupport::TestCase
     user = users(:first_poster)
     url = LoginPosterUrlGeneratorService.generate_login_poster_url(user)
 
-    expected_url = Rails.application.routes.url_helpers.login_poster_redirect_qr_code_url(
+    expected_url = Rails.application.routes.url_helpers.login_poster_redirect_session_url(
       user,
       host: 'https://device-expansion.onrender.com'
     )

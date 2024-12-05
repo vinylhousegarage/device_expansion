@@ -1,5 +1,5 @@
 <script>
-  fetch('<%= login_poster_qr_code_path(@user.id) %>', {
+  fetch('<%= login_poster_session_path(@user.id) %>', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

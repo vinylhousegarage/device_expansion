@@ -8,14 +8,19 @@ Rails.application.routes.draw do
 
   resources :posts
 
-  resources :qr_code do
+  resources :sessions do
     member do
-      post 'login_form'
       post 'login_poster'
       get 'login_poster_redirect'
     end
     collection do
       delete 'logout_poster'
+    end
+  end
+
+  resources :qr_code do
+    member do
+      post 'login_form'
     end
   end
 
