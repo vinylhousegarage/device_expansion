@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class QrCodeLogoutPosterViewTest < ActionView::TestCase
+class SessionsLogoutPosterViewTest < ActionView::TestCase
   def setup
     @user = users(:first_poster)
   end
