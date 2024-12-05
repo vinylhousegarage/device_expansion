@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class QrCodeControllerTest < ActionDispatch::IntegrationTest
+class SessionsControllerTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
   # test "the truth" do
   #   assert true
