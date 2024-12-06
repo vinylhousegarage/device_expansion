@@ -8,12 +8,12 @@ class User < ApplicationRecord
   scope :admin_users, -> { where(name: ADMIN_USERS) }
 
   # 投稿者を定義
-  POSTER_USERS = %w[投稿者１ 投稿者２ 投稿者３ 投稿者４ 投稿者５].freeze
+  POSTER_USERS = %w[ゲスト１ ゲスト２ ゲスト３ ゲスト４ ゲスト５].freeze
   # 投稿者をデータベースから取得するスコープを定義
   scope :poster_users, -> { where(name: POSTER_USERS) }
 
   # すべてのユーザーを定義
-  USERS = %w[投稿者１ 投稿者２ 投稿者３ 投稿者４ 投稿者５ 集計担当].freeze
+  USERS = %w[ゲスト１ ゲスト２ ゲスト３ ゲスト４ ゲスト５ 集計担当].freeze
   # すべてのユーザーをデータベースから取得するスコープを定義
   scope :users, -> { where(name: USERS) }
 end
