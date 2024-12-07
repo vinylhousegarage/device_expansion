@@ -46,7 +46,7 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
     puts "Session user ID: #{session[:user_id]}"
     assert_response :redirect
 
-    @posts = [posts(:third_post), posts(:forth_post), posts(:fifth_post)]
+    @posts = [posts(:third_post), posts(:fourth_post), posts(:fifth_post)]
     @total_post_count = @post.size
     @total_post_amount = @posts.sum(&:amount)
     @user_stats_by_id = mock_user_stats_by_id(@admin_user)
