@@ -72,12 +72,12 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   # updateアクションの更新をテスト
   test 'updates the record successfully' do
     patch_params = { post: { name: 'テスト ねーむ' } }
-    Rails.logger.debug {"Test Params: #{patch_params.inspect}"}
+    Rails.logger.debug { "Test Params: #{patch_params.inspect}"}
 
     patch post_path(@post), params: { post: { name: 'テスト ねーむ' } }
     assert_response :redirect
 
-    Rails.logger.debug {"Response Body: #{response.body}"}
+    Rails.logger.debug { "Response Body: #{response.body}"}
     @post.reload
     assert_equal 'テスト ねーむ', @post.name
   end
