@@ -56,7 +56,7 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select 'form[action=?][method=?]', new_user_path, 'get' do
-      assert_select 'button[type="submit"]', text: '初期画面へ戻る'
+      assert_select 'button[type="submit"]', text: '戻る'
     end
   end
 end
