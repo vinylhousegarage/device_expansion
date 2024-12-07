@@ -28,9 +28,12 @@
     <td><%= button_to '戻る', users_path, method: :get %></td>
   </tr>
 </table>
+
+<% if @user_stats_by_id.user_name == '集計担当' %>
 <table>
   <tr>
     <td><b>初期画面へ戻る　</b></td>
     <td><%= button_to '戻る', new_user_path, method: :get %></td>
   </tr>
 </table>
+<% end %>
