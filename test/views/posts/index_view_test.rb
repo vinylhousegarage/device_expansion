@@ -45,9 +45,9 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
     puts "Session user ID: #{session[:user_id]}"
     assert_response :redirect
 
-    @admin_post = posts(:third_post)
-    @total_posts_count = mock_posts_stats.total_posts_count
-    @total_posts_amount = mock_posts_stats.total_posts_amount
+    @posts = [posts(:third_post), posts(:forth_post), posts(:fifth_post)]
+    @total_post_count = @post.size
+    @total_post_amount = @posts.sum(&:amount)
     @user_stats_by_id = mock_user_stats_by_id(@admin_user)
     puts "User stats by ID user_name: #{@user_stats_by_id.user_name}"
     get posts_path
@@ -59,6 +59,3 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
     end
   end
 end
-
-
-
