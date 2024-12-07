@@ -6,6 +6,7 @@ class PostsController < ApplicationController
     @posts = Post.includes(:user).all
     @total_posts_count = PostsStatsService.new.calculate_posts_count
     @total_posts_amount = PostsStatsService.new.calculate_posts_amount
+    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
   end
 
   # 個人別投稿一覧を表示
