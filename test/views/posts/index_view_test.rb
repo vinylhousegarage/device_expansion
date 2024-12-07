@@ -8,6 +8,7 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
     @posts = Post.includes(:user).all
     @total_posts_count = mock_posts_stats.total_posts_count
     @total_posts_amount = mock_posts_stats.total_posts_amount
+    @user_stats_by_id = mock_user_stats_by_id(@user)
     sign_in_as(@user)
   end
 
@@ -37,6 +38,22 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
     assert_select 'form[action=?][method=?]', users_path, 'get' do
       assert_select 'button[type="submit"]', text: '戻る'
     end
+  end
+
+  test 'show view renders return button for admin user' do
+    @admin_user = users(:admin)
+    post admin_session_path
+    puts "Session user ID: #{session[:user_id]}"
+    assert_response :redirect
+
+    @posts = [posts(:third_post), posts(:fourth_post), posts(:fifth_post)]
+    @total_post_count = @posts.size
+    @total_post_amount = @posts.sum(&:amount)
+    @user_stats_by_id = mock_user_stats_by_id(@admin_user)
+    puts "User stats by ID user_name: #{@user_stats_by_id.user_name}"
+    get posts_path
+    puts @response.body
+    assert_response :success
 
     assert_select 'form[action=?][method=?]', new_user_path, 'get' do
       assert_select 'button[type="submit"]', text: '戻る'
