@@ -5,9 +5,7 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
 
   setup do
     @user = users(:first_poster)
-    @posts = Post.includes(:user).all
-    @total_posts_count = mock_posts_stats.total_posts_count
-    @total_posts_amount = mock_posts_stats.total_posts_amount
+    @posts = Post.by_user(@user)
     @user_stats_by_id = mock_user_stats_by_id(@user)
     sign_in_as(@user)
   end
@@ -18,8 +16,8 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
 
     puts @response.body
 
-    formatted_post_amount = number_to_currency(@total_posts_amount, unit: ' 円', delimiter: ',', format: '%n%u', precision: 0)
-    assert_select 'h3', text: /合計件数：#{@total_posts_count} 件　合計金額：#{formatted_post_amount}/
+    formatted_post_amount = number_to_currency(@user_stats_by_id.post_amount, unit: ' 円', delimiter: ',', format: '%n%u', precision: 0)
+    assert_select 'h3', text: /合計件数：#{@user_stats_by_id.post_count} 件　合計金額：#{formatted_post_amount}/
 
     assert_select 'table' do
       assert_select 'tr:nth-child(1) th:nth-child(1)', text: '　No.　'
@@ -46,9 +44,7 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
     puts "Session user ID: #{session[:user_id]}"
     assert_response :redirect
 
-    @posts = [posts(:third_post), posts(:fourth_post), posts(:fifth_post)]
-    @total_post_count = @posts.size
-    @total_post_amount = @posts.sum(&:amount)
+    @posts = Post.by_user(@admin_user)
     @user_stats_by_id = mock_user_stats_by_id(@admin_user)
     puts "User stats by ID user_name: #{@user_stats_by_id.user_name}"
     get posts_path
