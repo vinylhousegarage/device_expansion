@@ -1,15 +1,13 @@
 class PostsController < ApplicationController
   before_action :set_current_user, oexcept: [:destroy]
 
-  # 全ての投稿を表示
+  # 個人別投稿一覧を表示
   def index
-    @posts = Post.includes(:user).all
-    @total_posts_count = PostsStatsService.new.calculate_posts_count
-    @total_posts_amount = PostsStatsService.new.calculate_posts_amount
+    @posts = Post.by_user(@current_user)
     @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
   end
 
-  # 個人別投稿一覧を表示
+  # 投稿の詳細を表示
   def show
     @post = find_post_by_params
     @user_post_index = @post.user_post_index
