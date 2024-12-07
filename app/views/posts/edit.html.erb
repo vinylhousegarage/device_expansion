@@ -8,26 +8,26 @@
 
   <table>
     <tr>
-      <td><%= form.label :お名前 %></td>
+      <td><%= form.label :氏名 %></td>
       <td><%= form.text_field :name %></td>
       <td><%= form.label :円 %></td>
     </tr>
     <tr>
-      <td><%= form.label :金　額 %></td>
+      <td><%= form.label :金額 %></td>
       <td><%= form.number_field :amount %></td>
       <td><%= form.label :円 %></td>
     </tr>
     <tr>
-      <td><%= form.label :住　所 %></td>
+      <td><%= form.label :住所 %></td>
       <td><%= form.text_field :address %></td>
     </tr>
     <tr>
-      <td><%= form.label :電　話 %></td>
+      <td><%= form.label :電話 %></td>
       <td><%= form.text_field :tel, pattern: '\d*', title: 'ハイフン無し' %></td>
-      <td><%= form.label :―無し %></td>
+      <td><%= form.label :ハイフン無し %></td>
     </tr>
     <tr>
-      <td><%= form.label :その他 %></td>
+      <td><%= form.label :備考 %></td>
       <td><%= form.text_field :others %></td>
     </tr>
   </table><br>
