@@ -3,7 +3,7 @@ class PostsController < ApplicationController
 
   # 個人別投稿一覧を表示
   def index
-    @posts = Post.includes(:user).where(user: @current_user)
+    @posts = Post.by_user(@current_user)
     @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
   end
 
