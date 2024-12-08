@@ -33,7 +33,7 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
       assert_select "tr:nth-child(#{index + 2}) td:nth-child(4)", text: "#{post.user.name}　"
     end
 
-    assert_select 'form[action=?][method=?]', users_path, 'get' do
+    assert_select 'form[action=?][method=?]', new_post_path, 'get' do
       assert_select 'button[type="submit"]', text: '戻る'
     end
   end
