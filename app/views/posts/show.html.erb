@@ -28,7 +28,7 @@
 <br>
 <%= button_to '投稿を編集する', edit_post_path(@post), method: :get %><br>
 <%= button_to '投稿を削除する', post_path(@post), method: :delete, data: { confirm: '削除してもよろしいですか？' } %><br>
-<%= button_to '登録一覧へ戻る', user_path(@post.user), method: :get %><br>
+<%= button_to '集計確認へ戻る', posts_path, method: :get %><br>
 
 <% if @user_stats_by_id.user_name == '集計担当' %>
   <%= button_to '登録状況へ戻る', users_path, method: :get %><br>
