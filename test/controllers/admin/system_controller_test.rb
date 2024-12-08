@@ -18,10 +18,4 @@ module Admin
       assert_flash_set(I18n.t('notices.data_reset'))
     end
   end
-
-  test 'should get user_posts'
-    @user = users(:first_poster)
-    get admin_user_posts_path(@user)
-    assert_response :success
-  end
 end
