@@ -9,7 +9,7 @@ class PostDestroyService
       if @user.posts.count.zero?
         { path: :new_post_path, type: :notice, message_key: 'notices.all_deleted', params: nil }
       else
-        { path: :user_path, type: :notice, message_key: 'notices.post_deleted', params: @user }
+        { path: :posts_path, type: :notice, message_key: 'notices.post_deleted', params: @user }
       end
     else
       { path: :new_post_path, type: :alert, message_key: 'alerts.delete_failed', params: nil }
