@@ -22,7 +22,7 @@ class PostDestroyServiceTest < ActiveSupport::TestCase
     @post = posts(:first_post)
     @post.destroy
     result = PostDestroyService.new(@post).call
-    assert_equal :user_path, result[:path]
+    assert_equal :posts_path, result[:path]
   end
 
   # 投稿の削除が失敗した場合のリダイレクトをテスト
