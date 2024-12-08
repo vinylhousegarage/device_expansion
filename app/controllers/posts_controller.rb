@@ -42,7 +42,7 @@ class PostsController < ApplicationController
   def update
     @post = find_post_by_params
     if @post.update(post_params)
-      redirect_to user_path(@current_user)
+      redirect_to posts_path
     else
       render :edit
     end
