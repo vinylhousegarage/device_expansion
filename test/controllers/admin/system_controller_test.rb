@@ -6,7 +6,6 @@ module Admin
       post admin_session_path
       assert_response :redirect
       assert_redirected_to users_path
-      redirect_with_alert(root_path, 'alerts.unauthorized_access')
     end
 
     # admin/system#reset_database のパスとフラッシュをテスト
