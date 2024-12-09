@@ -23,7 +23,7 @@ module Admin
 
   # admin/system#index のパスをテスト
   test 'should get index' do
-    get admin_user_posts_path(@user.id)
+    get admin_user_posts_path(user_id: @user.id)
     assert_response :success
   end
 end
