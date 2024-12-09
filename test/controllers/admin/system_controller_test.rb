@@ -22,6 +22,7 @@ module Admin
   # admin/system#index のパスをテスト
   test 'should get index' do
     @user = users(:first_poster)
+    @post = posts(:first_post)
     path = admin_user_posts_path(user_id: @user.id)
     Rails.logger.debug { "Generated path: #{path}" }
     get path
