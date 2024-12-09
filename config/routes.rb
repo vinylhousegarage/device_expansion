@@ -20,7 +20,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :qr_code do
+  resources :qr_code, only: [] do
     member do
       post 'login_form'
     end
