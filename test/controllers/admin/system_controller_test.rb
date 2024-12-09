@@ -21,11 +21,14 @@ module Admin
 
   # admin/system#index のパスをテスト
   test 'should get index' do
-    @admin_user = users(:admin)
-    @user = users(:first_poster)
-    path = admin_user_posts_path(@admin_user, @user)
-    Rails.logger.debug { "Generated path: #{path}" }
-    get path
-    assert_response :success
+    begin
+      @user = users(:first_poster)
+      get admin_user_posts_path(user_id: @user.id)
+      assert_response :success
+    rescue ArgumentError => e
+      puts "ArgumentError caught: #{e.message}"
+      puts "Details: given=#{e.backtrace_locations&.first&.lineno || 'unknown'}, expected=2"
+      raise e
+    end
   end
 end
