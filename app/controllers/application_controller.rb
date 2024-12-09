@@ -8,12 +8,12 @@ class ApplicationController < ActionController::Base
 
   # params[:id] に基づいてユーザーを取得
   def find_user_by_params
-    User.find(params[:id])
+    User.find(params[:id] || params[:user_id])
   end
 
   # params[:id] に基づいて投稿を取得
   def find_post_by_params
-    Post.find(params[:id])
+    Post.find(params[:id] || params[:post_id])
   end
 
   # リダイレクト後にタイプを判別したフラッシュメッセージを表示
