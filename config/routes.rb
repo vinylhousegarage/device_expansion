@@ -32,5 +32,9 @@ Rails.application.routes.draw do
         post 'reset_database', to: 'system#reset_database'
       end
     end
+
+    resources :users, only: [] do
+      resources :posts, only: [:index, :show, :edit, :update, :destroy], controller: 'system'
+    end
   end
 end
