@@ -23,7 +23,7 @@ module Admin
   test 'should get index' do
     @user = users(:first_poster)
     path = admin_user_posts_path(user_id: @user.id)
-    puts "Generated path: #{path}"
+    Rails.logger.debug { "Generated path: #{path}" }
     get path
     assert_response :success
   end
