@@ -6,8 +6,6 @@ module Admin
       post admin_session_path
       assert_response :redirect
       assert_redirected_to users_path
-      @user = users(:first_poster)
-      @post = posts(:first_post)
     end
 
     # admin/system#reset_database のパスとフラッシュをテスト
@@ -23,7 +21,8 @@ module Admin
 
   # admin/system#index のパスをテスト
   test 'should get index' do
-    get admin_user_posts_path(user_id: @user.id)
+    @user = users(:first_poster)
+    get admin_user_posts_path(@user)
     assert_response :success
   end
 end
