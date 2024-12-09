@@ -16,8 +16,9 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
 
     puts @response.body
 
-    formatted_post_amount = number_to_currency(@user_stats_by_id.post_amount, unit: ' 円', delimiter: ',', format: '%n%u', precision: 0)
-    assert_select 'h4', text: /合計件数：#{@user_stats_by_id.post_count} 件　合計金額：#{formatted_post_amount}/
+    assert_select 'div#_user_info', text: /#{@user.name}さんの登録件数：#{@post_count}件/
+    formatted_post_amount = number_to_currency(@post_amount, unit: '円', delimiter: ',', format: '%n%u', precision: 0)
+    assert_select 'div#_user_info', text: /#{@user.name}さんの合計金額：#{formatted_post_amount}/
 
     assert_select 'table' do
       assert_select 'tr:nth-child(1) th:nth-child(1)', text: '　No.　'
