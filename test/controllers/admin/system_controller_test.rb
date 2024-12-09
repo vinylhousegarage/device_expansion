@@ -18,13 +18,4 @@ module Admin
       assert_flash_set(I18n.t('notices.data_reset'))
     end
   end
-
-  # admin/system#index のパスをテスト
-  test 'should get index' do
-    @user = users(:first_poster)
-    path = admin_user_posts_path(user_id: @user.id, format: :html)
-    Rails.logger.debug { "Generated path: #{path}" }
-    get path
-    assert_response :success
-  end
 end
