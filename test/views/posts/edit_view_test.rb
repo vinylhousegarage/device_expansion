@@ -16,7 +16,9 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
     get edit_post_path(@post)
     assert_response :success
 
-    assert_select 'div', text: @mock_user_stats_by_id
+    assert_select 'div#_user_info', text: /#{@user.name}さんの登録件数：#{@post_count}件/
+    formatted_post_amount = number_to_currency(@post_amount, unit: '円', delimiter: ',', format: '%n%u', precision: 0)
+    assert_select 'div#_user_info', text: /#{@user.name}さんの合計金額：#{formatted_post_amount}/
 
     assert_select 'form' do
       assert_select 'input[name=?]', 'post[name]'
@@ -25,10 +27,6 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
       assert_select 'input[name=?]', 'post[tel]'
       assert_select 'input[name=?]', 'post[others]'
     end
-
-    assert_select 'div#_user_info', text: /#{@user.name}さんの登録件数：#{@post_count}件/
-    formatted_post_amount = number_to_currency(@post_amount, unit: '円', delimiter: ',', format: '%n%u', precision: 0)
-    assert_select 'div#_user_info', text: /#{@user.name}さんの合計金額：#{formatted_post_amount}/
 
     assert_select 'form[action=?][method=?]', post_path, 'get'
     assert_select 'form[action=?][method=?]', new_post_path, 'get'
