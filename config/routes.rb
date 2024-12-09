@@ -4,11 +4,13 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root 'users#new'
 
-  resources :users
+  resources :users, only: %i[index show new] do
+    resources :posts, only: %i[index show]
+  end
 
   resources :posts
 
-  resources :sessions do
+  resources :sessions, only: [] do
     member do
       post 'login_poster'
       get 'login_poster_redirect'
@@ -18,7 +20,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :qr_code do
+  resources :qr_code, only: [] do
     member do
       post 'login_form'
     end
@@ -31,10 +33,6 @@ Rails.application.routes.draw do
       collection do
         post 'reset_database', to: 'system#reset_database'
       end
-    end
-
-    resources :users, only: [] do
-      resources :posts, only: [:index, :show, :edit, :update, :destroy], controller: 'system'
     end
   end
 end
