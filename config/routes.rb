@@ -10,7 +10,7 @@ Rails.application.routes.draw do
 
   resources :posts
 
-  resources :sessions do
+  resources :sessions, only: [] do
     member do
       post 'login_poster'
       get 'login_poster_redirect'
