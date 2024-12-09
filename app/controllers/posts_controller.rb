@@ -3,7 +3,7 @@ class PostsController < ApplicationController
 
   # 個人別投稿一覧を表示
   def index
-    if params[:id].present?
+    if params[:user_id].present?
       @user = find_user_by_params
       @posts = @user.posts
       @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@user.id)
