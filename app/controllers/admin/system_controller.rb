@@ -2,6 +2,12 @@ module Admin
   class SystemController < ApplicationController
     before_action :ensure_admin_user
 
+    # 投稿者別投稿一覧を表示
+    def index
+      @user = find_user_by_params
+      @posts = @user.posts
+    end
+
     # データベースをリセット
     def reset_database
       DataResetService.call
