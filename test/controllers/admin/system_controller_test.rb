@@ -22,7 +22,9 @@ module Admin
   # admin/system#index のパスをテスト
   test 'should get index' do
     @user = users(:first_poster)
-    get admin_user_posts_path(@user)
+    path = admin_user_posts_path(user_id: @user.id)
+    puts "Generated path: #{path}"
+    get path
     assert_response :success
   end
 end
