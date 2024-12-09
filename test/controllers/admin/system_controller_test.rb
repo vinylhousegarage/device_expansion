@@ -20,4 +20,9 @@ module Admin
       assert_flash_set(I18n.t('notices.data_reset'))
     end
   end
+
+  test 'should get index' do
+    get admin_user_posts_path(@user)
+    assert_response :success
+  end
 end
