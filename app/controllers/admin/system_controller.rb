@@ -1,6 +1,6 @@
 module Admin
   class SystemController < ApplicationController
-    before_action :ensure_admin_user
+    before_action :ensure_admin_user, only: :reset_database
 
     # 投稿者別投稿一覧を表示
     def index
