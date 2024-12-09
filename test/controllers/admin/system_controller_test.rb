@@ -6,8 +6,6 @@ module Admin
       post admin_session_path
       assert_response :redirect
       assert_redirected_to users_path
-      @user = users(:first_poster)
-      @post = posts(:first_post)
     end
 
     # admin/system#reset_database のパスとフラッシュをテスト
