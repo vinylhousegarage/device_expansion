@@ -8,7 +8,7 @@ class UsersController < ApplicationController
 
   # 個人別投稿一覧を表示
   def show
-    @user = find_user_by_params
+    @user = find_user_by_id
     @all_users_stats = UserPostsStatsService.new.all_users_stats
     @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(params[:id].to_i)
   end
