@@ -22,18 +22,19 @@
 </table>
 
 <p></p>
-<table>
-  <tr>
-    <td><b>新規登録へ戻る　</b></td>
-    <td><%= button_to '戻る', new_post_path, method: :get %></td>
-  </tr>
-</table>
 
-<% if @user_stats_by_id.user_name == '集計担当' %>
-<table>
-  <tr>
-    <td><b>初期画面へ戻る　</b></td>
-    <td><%= button_to '戻る', new_user_path, method: :get %></td>
-  </tr>
-</table>
+<% if @current_user.name == '集計担当' %>
+  <table>
+    <tr>
+      <td><b>登録画面へ戻る　</b></td>
+      <td><%= button_to '戻る', users_path, method: :get %></td>
+    </tr>
+  </table>
+<% else %>
+  <table>
+    <tr>
+      <td><b>新規登録へ戻る　</b></td>
+      <td><%= button_to '戻る', new_post_path, method: :get %></td>
+    </tr>
+  </table>
 <% end %>
