@@ -1,18 +1,6 @@
 class PostsController < ApplicationController
   before_action :set_current_user, oexcept: [:destroy]
 
-  # 個人別投稿一覧を表示
-  def index
-    if params[:user_id].present?
-      @user = find_user_by_user_id
-      @posts = @user.posts
-      @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@user.id)
-    else
-      @posts = Post.by_user(@current_user)
-      @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
-    end
-  end
-
   # 投稿の詳細を表示
   def show
     if params[:user_id].present?
