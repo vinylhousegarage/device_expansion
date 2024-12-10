@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+  before_action :set_current_user, only: :show
+
   # 投稿者一覧を表示
   def index
     @total_posts_count = PostsStatsService.new.calculate_posts_count
