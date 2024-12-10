@@ -15,9 +15,6 @@ class PostsController < ApplicationController
 
   # 投稿の詳細を表示
   def show
-    Rails.logger.debug "DEBUG: params[:user_id] = #{params[:user_id]}"
-    Rails.logger.debug "DEBUG: params[:id] = #{params[:id]}"
-
     if params[:user_id].present?
       @user = find_user_by_user_id
       @post = find_post_by_id
