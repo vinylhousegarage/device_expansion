@@ -26,12 +26,17 @@
   </tr>
 </table>
 <br>
-<%= button_to '投稿を編集する', edit_post_path(@post), method: :get %><br>
-<%= button_to '投稿を削除する', post_path(@post), method: :delete, data: { confirm: '削除してもよろしいですか？' } %><br>
-<%= button_to '集計確認へ戻る', posts_path, method: :get %><br>
 
-<% if @user_stats_by_id.user_name == '集計担当' %>
-  <%= button_to '登録状況へ戻る', users_path, method: :get %><br>
-<% else %>
+<% if @user_stats_by_id.user_name == @current_user.name %>
+  <%= button_to '投稿を編集する', edit_post_path(@post), method: :get %><br>
+  <%= button_to '投稿を削除する', post_path(@post), method: :delete, data: { confirm: '削除してもよろしいですか？' } %><br>
+  <%= button_to '集計確認へ戻る', posts_path, method: :get %><br>
   <%= button_to '新規登録へ戻る', new_post_path, method: :get %>
+<% else %>
+  <%= button_to '集計確認へ戻る', posts_path, method: :get %><br>
+  <%= button_to '登録状況へ戻る', users_path, method: :get %>
 <% end %>
+
+<br>
+<%= "User stats by ID user_name: #{@user_stats_by_id.user_name}" %><br>
+<%= "Current user name: #{@current_user.name}" %><br>
