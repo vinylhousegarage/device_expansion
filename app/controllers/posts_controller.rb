@@ -15,9 +15,15 @@ class PostsController < ApplicationController
 
   # 投稿の詳細を表示
   def show
-    @post = find_post_by_params
-    @user_post_index = @post.user_post_index
-    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
+    if params[:user_id].present?
+      @user = find_user_by_params
+      @post = find_post_by_params
+      @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@user.id)
+    else
+      @post = find_post_by_params
+      @user_post_index = @post.user_post_index
+      @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
+    end
   end
 
   # 投稿フォームを表示
