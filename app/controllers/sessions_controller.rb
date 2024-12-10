@@ -1,7 +1,7 @@
 class SessionsController < ApplicationController
   # GETルートで受けたQRコードのパスをPOSTルートに変換
   def login_poster_redirect
-    @user = find_user_by_params
+    @user = find_user_by_id
   end
 
   # 投稿者のトップページを設定

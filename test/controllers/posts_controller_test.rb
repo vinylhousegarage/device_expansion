@@ -81,4 +81,15 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     @post.reload
     assert_equal 'テスト ねーむ', @post.name
   end
+
+  # user_post_path をテスト
+  test 'should show post with valid user_id and id' do
+    puts "DEBUG (before request): @user.id = #{@user.id}"
+    puts "DEBUG (before request): @post.id = #{@post.id}"
+
+    get user_post_path(user_id: @user.id, id: @post.id)
+    assert_response :success
+
+    puts "DEBUG (after request): Response body = #{response.body}"
+  end
 end

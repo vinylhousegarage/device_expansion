@@ -4,7 +4,7 @@ class PostsController < ApplicationController
   # 個人別投稿一覧を表示
   def index
     if params[:user_id].present?
-      @user = find_user_by_params
+      @user = find_user_by_user_id
       @posts = @user.posts
       @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@user.id)
     else
@@ -15,12 +15,15 @@ class PostsController < ApplicationController
 
   # 投稿の詳細を表示
   def show
+    Rails.logger.debug "DEBUG: params[:user_id] = #{params[:user_id]}"
+    Rails.logger.debug "DEBUG: params[:id] = #{params[:id]}"
+
     if params[:user_id].present?
-      @user = find_user_by_params
-      @post = find_post_by_params
+      @user = find_user_by_user_id
+      @post = find_post_by_id
       @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@user.id)
     else
-      @post = find_post_by_params
+      @post = find_post_by_id
       @user_post_index = @post.user_post_index
       @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
     end
@@ -34,7 +37,7 @@ class PostsController < ApplicationController
 
   # 編集フォームを表示
   def edit
-    @post = find_post_by_params
+    @post = find_post_by_id
     @user_post_index = @post.user_post_index
     @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
   end
@@ -52,7 +55,7 @@ class PostsController < ApplicationController
 
   # 編集を保存
   def update
-    @post = find_post_by_params
+    @post = find_post_by_id
     if @post.update(post_params)
       redirect_to post_path
     else
@@ -62,7 +65,7 @@ class PostsController < ApplicationController
 
   # 投稿を削除
   def destroy
-    @post = find_post_by_params
+    @post = find_post_by_id
     @user = @post.user
     result = PostDestroyService.new(@post).call
     redirect_with_flash(send(result[:path], *Array(result[:params])), result[:type], result[:message_key])

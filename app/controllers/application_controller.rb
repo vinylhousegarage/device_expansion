@@ -6,14 +6,19 @@ class ApplicationController < ActionController::Base
     @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
   end
 
+  # params[:user_id] に基づいてユーザーを取得
+  def find_user_by_user_id
+    User.find(params[:user_id])
+  end
+
   # params[:id] に基づいてユーザーを取得
-  def find_user_by_params
-    User.find(params[:id] || params[:user_id])
+  def find_user_by_id
+    User.find(params[:id])
   end
 
   # params[:id] に基づいて投稿を取得
-  def find_post_by_params
-    Post.find(params[:id] || params[:post_id])
+  def find_post_by_id
+    Post.find(params[:id])
   end
 
   # リダイレクト後にタイプを判別したフラッシュメッセージを表示
