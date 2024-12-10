@@ -71,7 +71,6 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
     puts "Session user ID: #{session[:user_id]}"
     assert_response :redirect
 
-    @admin_post = posts(:first_post)
     @user_stats_by_id = mock_user_stats_by_id(@user)
     puts "User stats by ID user_name: #{@user_stats_by_id.user_name}"
     get user_post_path(user_id: @user.id, id: @post.id)
