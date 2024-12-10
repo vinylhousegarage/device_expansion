@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   root 'users#new'
 
   resources :users, only: %i[index show new] do
-    resources :posts, only: %i[index show]
+    resources :posts, only: %i[index show edit update destroy]
   end
 
   resources :posts
