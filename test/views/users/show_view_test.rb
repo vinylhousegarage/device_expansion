@@ -3,71 +3,59 @@ require 'test_helper'
 class UsersShowViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
-  def setup
+  setup do
     @user = users(:first_poster)
-    @admin_user = users(:admin)
-    @users = [@user, @admin_user]
-    @mock_user_stats_by_id = mock_user_stats_by_id(@user)
-    @mock_all_users_stats = mock_all_users_stats(@user, @admin_user)
-  end
-
-  test 'renders user-info section with correct content' do
-    @users.each do |user|
-      sign_in_as(user)
-      get user_path(user)
-
-      assert_user_info(user)
-    end
-  end
-
-  test 'displays headers in show template for different user roles' do
+    @posts = @user.posts
+    @post_count = mock_user_stats_by_id(@user).post_count
+    @post_amount = mock_user_stats_by_id(@user).post_amount
+    @user_stats_by_id = mock_user_stats_by_id(@user)
     sign_in_as(@user)
-    get user_path(@user)
+  end
 
-    assert_select 'h3', text: "#{@user.name}さんの登録一覧"
+  test 'index view renders correctly for general user' do
+    get user_path(@user)
+    assert_response :success
+
+    puts @response.body
+
+    assert_select 'div#_user_info', text: /#{@user.name}さんの登録件数：#{@post_count}件/
+    formatted_post_amount = number_to_currency(@post_amount, unit: '円', delimiter: ',', format: '%n%u', precision: 0)
+    assert_select 'div#_user_info', text: /#{@user.name}さんの合計金額：#{formatted_post_amount}/
+
     assert_select 'table' do
-      assert_select 'th', text: 'No.'
-      assert_select 'th', text: '氏名'
-      assert_select 'th', text: '金額'
+      assert_select 'tr:nth-child(1) th:nth-child(1)', text: '　No.　'
+      assert_select 'tr:nth-child(1) th:nth-child(2)', text: '　氏名　'
+      assert_select 'tr:nth-child(1) th:nth-child(3)', text: '　金額　'
+      assert_select 'tr:nth-child(1) th:nth-child(4)', text: '入力担当'
+    end
+
+    @posts.each_with_index do |post, index|
+      assert_select "tr:nth-child(#{index + 2}) td:nth-child(1)", text: "#{index + 1}　"
+      assert_select "tr:nth-child(#{index + 2}) td:nth-child(2)", text: "#{post.name}　"
+      assert_select "tr:nth-child(#{index + 2}) td:nth-child(3)", text: "#{number_with_delimiter(post.amount)} 円　"
+      assert_select "tr:nth-child(#{index + 2}) td:nth-child(4)", text: "#{post.user.name}　"
+    end
+
+    assert_select 'form[action=?][method=?]', new_post_path, 'get' do
+      assert_select 'button[type="submit"]', text: '戻る'
     end
   end
 
-  test 'displays user posts with correct details in show template' do
-    sign_in_as(@user)
-    get user_path(@user)
+  test 'show view renders return button for admin user' do
+    @admin_user = users(:admin)
+    post admin_session_path
+    puts "Session user ID: #{session[:user_id]}"
+    assert_response :redirect
 
-    @mock_all_users_stats.each_with_index do |stat, index|
-      assert_select 'tr' do
-        assert_select 'td', text: (index + 1).to_s
-        assert_select 'td', text: stat.user_name
-        assert_select 'td', text: "　#{number_with_delimiter(stat.post_amount)} 円　"
-        assert_select 'form[action=?][method=?]', post_path(stat.user_id), 'get' do
-          assert_select 'button', '詳細'
-        end
-      end
-    end
-  end
+    @posts = @admin_user.posts
+    @user_stats_by_id = mock_user_stats_by_id(@admin_user)
+    puts "User stats by ID user_name: #{@user_stats_by_id.user_name}"
+    get user_path(@admin_user)
+    puts @response.body
+    assert_response :success
 
-  test 'displays navigation buttons based on user role in show template' do
-    @users.each do |user|
-      sign_in_as(user)
-      get user_path(user)
-
-      assert_select 'form[action=?][method=?]', new_post_path, 'get' do
-        assert_select 'button', '新規登録へ戻る'
-      end
-      assert_buttons_for_admin if user.name == '集計担当'
-    end
-  end
-
-  private
-
-  def assert_buttons_for_admin
     assert_select 'form[action=?][method=?]', users_path, 'get' do
-      assert_select 'button', '登録状況へ戻る'
-    end
-    assert_select 'form[action=?][method=?]', new_user_path, 'get' do
-      assert_select 'button', '初期画面へ戻る'
+      assert_select 'button[type="submit"]', text: '戻る'
     end
   end
 end
