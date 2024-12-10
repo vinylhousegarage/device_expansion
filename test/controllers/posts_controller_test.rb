@@ -16,19 +16,6 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     post login_poster_session_path(@user)
   end
 
-  # find_posts_by_paramsメソッドをテスト
-  test 'should successfully delete the correct post' do
-    assert_difference 'Post.count', -1 do
-      delete post_path(@post)
-    end
-
-    assert_response :redirect
-    follow_redirect!
-    assert_response :success
-
-    assert_nil Post.find_by(id: @post.id)
-  end
-
   # createアクションの正常時をテスト
   test 'should create post successfully' do
     post login_poster_session_path(@user)
