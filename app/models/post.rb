@@ -6,7 +6,7 @@ class Post < ApplicationRecord
   before_validation :normalize_amount
 
   # 個人別投稿を取得するスコープを定義
-  scope :by_user, ->(user) { includes(:user).where(user: user) }
+  scope :by_user, ->(user) { includes(:user).where(user:) }
 
   # 個人別投稿のインデックスを取得
   def user_post_index
