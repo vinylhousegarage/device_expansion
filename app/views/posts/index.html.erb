@@ -15,7 +15,7 @@
     <td><%= post.name %><%= '　' %></td>
     <td><%= number_with_delimiter(post.amount) %><%= ' 円' %><%= '　' %></td>
     <td><%= post.user.name %><%= '　' %></td>
-    <td><%= button_to '詳細', user_post_path(@user_stats_by_id.id, post.id), method: :get %></td>
+    <td><%= button_to '詳細', user_post_path(@user_stats_by_id.user_id, post), method: :get %></td>
   </tr>
 
   <% end %>
