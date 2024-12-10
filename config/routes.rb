@@ -4,35 +4,9 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root 'users#new'
 
-  resources :users, only: %i[index show new] do
-    resources :posts, only: %i[index show edit update destroy]
-  end
-
-  resources :posts
-
-  resources :sessions, only: [] do
-    member do
-      post 'login_poster'
-      get 'login_poster_redirect'
-    end
-    collection do
-      delete 'logout_poster'
-    end
-  end
-
-  resources :qr_code, only: [] do
-    member do
-      post 'login_form'
-    end
-  end
-
-  namespace :admin do
-    resource :session, only: %i[create destroy]
-
-    resource :system, only: [] do
-      collection do
-        post 'reset_database', to: 'system#reset_database'
-      end
-    end
-  end
+  draw :users
+  draw :posts
+  draw :sessions
+  draw :qr_code
+  draw :admin
 end
