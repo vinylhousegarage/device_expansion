@@ -48,7 +48,7 @@ class PostsController < ApplicationController
   def update
     @post = find_post_by_params
     if @post.update(post_params)
-      redirect_to posts_path
+      redirect_to post_path
     else
       render :edit
     end
