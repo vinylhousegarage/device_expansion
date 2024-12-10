@@ -1,28 +1,40 @@
 <%= render 'shared/user_info' %><br>
-<h3><%= @user_stats_by_id.user_name %>さんの登録一覧</h3>
+
 <table>
   <tr>
-    <th>No.</th>
-    <th>氏名</th>
-    <th>金額</th>
+    <th>　No.　</th>
+    <th>　氏名　</th>
+    <th>　金額　</th>
+    <th>入力担当</th>
   </tr>
 
-  <% @all_users_stats.each_with_index do |stat, index| %>
+  <% @posts.each_with_index do |post, index| %>
+
   <tr>
-    <td><%= index + 1 %></td>
-    <td><%= stat.user_name %></td>
-    <td><%= '　' %><%= number_with_delimiter(stat.post_amount) %><%= ' 円　' %></td>
-    <td><%= button_to '詳細', post_path(stat.user_id), method: :get %></td>
+    <td><%= index + 1 %><%= '　' %></td>
+    <td><%= post.name %><%= '　' %></td>
+    <td><%= number_with_delimiter(post.amount) %><%= ' 円' %><%= '　' %></td>
+    <td><%= post.user.name %><%= '　' %></td>
+    <td><%= button_to '詳細', user_post_path(@user_stats_by_id.user_id, post), method: :get %></td>
   </tr>
+
   <% end %>
 </table>
-<br>
-<% if @user_stats_by_id.user_name == '集計担当' %>
-  <%= button_to '新規登録へ戻る', new_post_path, method: :get %>
-  <br>
-  <%= button_to '登録状況へ戻る', users_path, method: :get %>
-  <br>
-  <%= button_to '初期画面へ戻る', new_user_path, method: :get %>
+
+<p></p>
+
+<% if @current_user.name == '集計担当' %>
+  <table>
+    <tr>
+      <td><b>登録状況へ戻る　</b></td>
+      <td><%= button_to '戻る', users_path, method: :get %></td>
+    </tr>
+  </table>
 <% else %>
-  <%= button_to '新規登録へ戻る', new_post_path, method: :get %>
+  <table>
+    <tr>
+      <td><b>新規登録へ戻る　</b></td>
+      <td><%= button_to '戻る', new_post_path, method: :get %></td>
+    </tr>
+  </table>
 <% end %>
