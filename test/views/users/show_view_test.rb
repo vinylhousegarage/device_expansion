@@ -5,7 +5,7 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
 
   setup do
     @user = users(:first_poster)
-    @posts = Post.by_user(@user)
+    @posts = @user.posts
     @post_count = mock_user_stats_by_id(@user).post_count
     @post_amount = mock_user_stats_by_id(@user).post_amount
     @user_stats_by_id = mock_user_stats_by_id(@user)
@@ -47,10 +47,10 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
     puts "Session user ID: #{session[:user_id]}"
     assert_response :redirect
 
-    @posts = Post.by_user(@user)
-    @user_stats_by_id = mock_user_stats_by_id(@user)
+    @posts = @admin_user.posts
+    @user_stats_by_id = mock_user_stats_by_id(@admin_user)
     puts "User stats by ID user_name: #{@user_stats_by_id.user_name}"
-    get user_path(@user)
+    get user_path(@admin_user)
     puts @response.body
     assert_response :success
 
