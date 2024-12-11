@@ -3,15 +3,10 @@ class PostsController < ApplicationController
 
   # 投稿の詳細を表示
   def show
-    if params[:user_id].present?
-      @user = find_user_by_user_id
-      @post = find_post_by_id
-      @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@user.id)
-    else
-      @post = find_post_by_id
-      @user_post_index = @post.user_post_index
-      @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
-    end
+    @post = find_post_by_id
+    @user = @post.user
+    @user_post_index = @post.user_post_index
+    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@user.id)
   end
 
   # 投稿フォームを表示
