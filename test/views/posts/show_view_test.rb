@@ -56,7 +56,7 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
       assert_select 'button[type="submit"]', text: '投稿を削除する'
     end
 
-    assert_select 'form[action=?][method=?]', posts_path, 'get' do
+    assert_select 'form[action=?][method=?]', user_path(@user), 'get' do
       assert_select 'button[type="submit"]', text: '集計確認へ戻る'
     end
 
@@ -73,7 +73,7 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
 
     @user_stats_by_id = mock_user_stats_by_id(@user)
     puts "User stats by ID user_name: #{@user_stats_by_id.user_name}"
-    get user_post_path(user_id: @user.id, id: @post.id)
+    get post_path(@post)
     puts @response.body
     assert_response :success
 
