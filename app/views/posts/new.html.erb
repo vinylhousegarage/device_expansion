@@ -58,5 +58,6 @@
       <% logout_path = @user_stats_by_id.user_name == '集計担当' ? admin_session_path : logout_poster_sessions_path %>
       <%= button_to '終了', logout_path, method: :delete, data: { turbo: false } %>
     </td>
+    <td><%= '（自動ログアウト）' %></td>
   </tr>
 </table>
