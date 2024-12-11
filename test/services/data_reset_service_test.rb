@@ -1,11 +1,13 @@
 require 'test_helper'
 
 class DataResetServiceTest < ActiveSupport::TestCase
-  test 'it resets the database and calls Rails.application.load_seed' do
-    Rails.application.expects(:load_seed).once
+  setup do
+    @user = users(:first_poster)
+  end
 
-    assert_difference('User.count', -User.count) do
-      assert_difference('Post.count', -Post.count) do
+  test 'it resets the database and auto-increments' do
+    assert_difference('User.count', -1) do
+      assert_difference('Post.count', -1) do
         DataResetService.call
       end
     end
