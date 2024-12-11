@@ -49,14 +49,26 @@ class PostsController < ApplicationController
     @user = @post.user
 
     if @post.destroy
-      if @user.posts.count.zero?
-        redirect_to new_post_path, notice: I18n.t('notices.all_deleted')
-      else
-        redirect_to user_path(@user), notice: I18n.t('notices.post_deleted')
-      end
+      handle_successful_destroy
     else
-      redirect_to new_post_path, alert: I18n.t('alerts.delete_failed')
+      handle_failed_destroy
     end
+  end
+
+  private
+
+  # 投稿削除成功時を定義
+  def handle_successful_destroy
+    if @user.posts.count.zero?
+      redirect_to new_post_path, notice: I18n.t('notices.all_deleted')
+    else
+      redirect_to user_path(@user), notice: I18n.t('notices.post_deleted')
+    end
+  end
+
+  # 投稿削除失敗時を定義
+  def handle_failed_destroy
+    redirect_to new_post_path, alert: I18n.t('alerts.delete_failed')
   end
 
   # 属性を指定
