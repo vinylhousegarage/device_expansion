@@ -47,8 +47,16 @@ class PostsController < ApplicationController
   def destroy
     @post = find_post_by_id
     @user = @post.user
-    result = PostDestroyService.new(@post).call
-    redirect_with_flash(send(result[:path], *Array(result[:params])), result[:type], result[:message_key])
+
+    if @post.destroy
+      if @user.posts.count.zero?
+        redirect_to new_post_path, notice: I18n.t('notices.all_deleted')
+      else
+        redirect_to user_path(@user), notice: I18n.t('notices.post_deleted')
+      end
+    else
+      redirect_to new_post_path, alert: I18n.t('alerts.delete_failed')
+    end
   end
 
   # 属性を指定
