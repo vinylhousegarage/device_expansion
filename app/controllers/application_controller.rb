@@ -17,8 +17,8 @@ class ApplicationController < ActionController::Base
   end
 
   # リダイレクト後にタイプを判別したフラッシュメッセージを表示
-  def redirect_with_flash(path, type, message_key)
-    redirect_to path, type => I18n.t(message_key)
+  def redirect_with_flash(path, type, message_key, params = {})
+    redirect_to path, params.merge(type => I18n.t(message_key))
   end
 
   # リダイレクト後に notice のフラッシュメッセージを表示
