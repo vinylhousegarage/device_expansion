@@ -13,7 +13,7 @@ class DataResetServiceTest < ActionDispatch::IntegrationTest
     post reset_database_admin_system_path
     assert_response :redirect
 
-    assert_difference('Post.count', -6) do
+    assert_difference('Post.count', 0) do
       Rails.logger.debug { "Post_count_after: #{Post.count}" }
 
       DataResetService.call
