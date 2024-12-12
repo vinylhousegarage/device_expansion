@@ -4,7 +4,8 @@ class DataResetService
   end
 
   def self.reset_database
-    Post.destroy_all
-    ActiveRecord::Base.connection.execute("ALTER SEQUENCE posts_id_seq RESTART WITH 1")
+    ActiveRecord::Base.connection.execute('TRUNCATE TABLE posts, users RESTART IDENTITY CASCADE')
+
+    Rails.application.load_seed
   end
 end
