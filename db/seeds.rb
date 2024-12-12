@@ -17,5 +17,5 @@ USERS = (POSTER_USERS + ADMIN_USERS).freeze
 
 # 初期データを作成
 USERS.each do |user_name|
-  User.create!(name: user_name)
+  User.find_or_create_by!(name: user_name)
 end
