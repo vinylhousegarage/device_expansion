@@ -7,4 +7,3 @@ resources :sessions, only: [] do
     delete 'logout_poster'
   end
 end
-
