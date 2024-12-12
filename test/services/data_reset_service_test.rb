@@ -8,17 +8,17 @@ class DataResetServiceTest < ActionDispatch::IntegrationTest
   end
 
   test 'it resets the database and auto-increments' do
-    Rails.logger.debug { "Post_count_before: #{Post.count}" }
+    assert_equal 6, Post.count
+    assert_equal 6, User.count
 
     post reset_database_admin_system_path
     assert_response :redirect
 
-    assert_difference('Post.count', 0) do
-      Rails.logger.debug { "Post_count_after: #{Post.count}" }
+    assert_equal 6, Post.count, 'Post count should match fixtures'
+    assert_equal 6, User.count, 'User count should match fixtures'
 
-      DataResetService.call
-    end
-
-    assert_equal 1, ActiveRecord::Base.connection.execute('SELECT last_value FROM posts_id_seq').first['last_value']
+    new_post = Post.create!(name: 'データリセット', amount: 3000)
+    assert_equal 7, new_post.id, 'ID should continue from the correct sequence'
+    assert_equal 7, Post.count, 'Post count should increase after creation'
   end
 end
