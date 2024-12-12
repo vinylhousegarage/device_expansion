@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class UsersShowViewTest < ActionDispatch::IntegrationTest
+class PostsIndexViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
   setup do
