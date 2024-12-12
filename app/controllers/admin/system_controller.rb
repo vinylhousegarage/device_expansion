@@ -2,7 +2,7 @@ module Admin
   class SystemController < ApplicationController
     before_action :ensure_admin_user, only: :reset_database
 
-    # データベースをリセット
+    # データベースと自動インクリメントをリセット
     def reset_database
       DataResetService.call
       redirect_with_notice(users_path, 'notices.data_reset')
