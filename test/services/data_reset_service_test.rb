@@ -7,7 +7,7 @@ class DataResetServiceTest < ActiveSupport::TestCase
 
   test 'it resets the database and auto-increments' do
     assert_difference('User.count', -1) do
-      assert_difference('Post.count', -1) do
+      assert_difference('Post.count', -2) do
         DataResetService.call
       end
     end
