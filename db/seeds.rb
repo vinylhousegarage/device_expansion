@@ -15,12 +15,6 @@ ADMIN_USERS = %w[集計担当].freeze
 # ユーザーのリストを統合
 USERS = (POSTER_USERS + ADMIN_USERS).freeze
 
-# データベースと自動インクリメントのリセット
-User.destroy_all
-%w[users posts].each do |table_name|
-  ActiveRecord::Base.connection.execute("ALTER SEQUENCE #{table_name}_id_seq RESTART WITH 1")
-end
-
 # 初期データを作成
 USERS.each do |user_name|
   User.create!(name: user_name)
