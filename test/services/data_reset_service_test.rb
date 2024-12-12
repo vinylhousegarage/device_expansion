@@ -12,6 +12,8 @@ class DataResetServiceTest < ActiveSupport::TestCase
       end
     end
 
+    Rails.logger.debug { "User.count: #{User.count}" }
+
     assert_equal 1, ActiveRecord::Base.connection.execute('SELECT last_value FROM users_id_seq').first['last_value']
     assert_equal 1, ActiveRecord::Base.connection.execute('SELECT last_value FROM posts_id_seq').first['last_value']
   end
