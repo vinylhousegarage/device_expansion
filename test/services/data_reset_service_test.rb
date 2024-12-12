@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class DataResetServiceTest < ActiveSupport::TestCase
+class DataResetServiceTest < ActionDispatch::IntegrationTest
   setup do
     @admin_user = users(:admin)
     post admin_session_path
