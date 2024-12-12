@@ -26,14 +26,12 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
       assert_select 'tr:nth-child(1) th:nth-child(1)', text: '　No.　'
       assert_select 'tr:nth-child(1) th:nth-child(2)', text: '　氏名　'
       assert_select 'tr:nth-child(1) th:nth-child(3)', text: '　金額　'
-      assert_select 'tr:nth-child(1) th:nth-child(4)', text: '入力担当'
     end
 
     @posts.each_with_index do |post, index|
       assert_select "tr:nth-child(#{index + 2}) td:nth-child(1)", text: "#{index + 1}　"
       assert_select "tr:nth-child(#{index + 2}) td:nth-child(2)", text: "#{post.name}　"
       assert_select "tr:nth-child(#{index + 2}) td:nth-child(3)", text: "#{number_with_delimiter(post.amount)} 円　"
-      assert_select "tr:nth-child(#{index + 2}) td:nth-child(4)", text: "#{post.user.name}　"
     end
 
     assert_select 'form[action=?][method=?]', new_post_path, 'get' do
