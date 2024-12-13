@@ -5,6 +5,7 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
 
   setup do
     @user = users(:first_poster)
+    @post = posts(:first_post)
     @posts = @user.posts
     @post_count = mock_user_stats_by_id(@user).post_count
     @post_amount = mock_user_stats_by_id(@user).post_amount
@@ -13,7 +14,7 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'index view renders correctly for general user' do
-    get posts_path(@user)
+    get posts_path
     assert_response :success
 
     puts @response.body
