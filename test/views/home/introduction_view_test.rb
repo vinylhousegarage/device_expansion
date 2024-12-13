@@ -13,7 +13,7 @@ class HomeIntroductionViewTest < ActionDispatch::IntegrationTest
       assert_select 'p', text: /実際の使用において発生するいかなる損害や/
       assert_select 'p', text: /Copyright \(c\) 2024 Satoshi Kamazawa/
       assert_select 'a[href="/LICENSE"]', text: 'the MIT License'
-      assert_select 'form[action=?][method=?]', admin_session_path, 'get' do
+      assert_select 'form[action=?][method=?]', admin_session_path, 'post' do
         assert_select 'button', text: '　　　スタート　　　'
       end
     end
