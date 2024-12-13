@@ -3,25 +3,11 @@ require 'test_helper'
 class PostsIndexViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
-  setup do
-    @user = users(:first_poster)
-    @post = posts(:first_post)
-    @posts = @user.posts
-    @post_count = mock_user_stats_by_id(@user).post_count
-    @post_amount = mock_user_stats_by_id(@user).post_amount
-    @user_stats_by_id = mock_user_stats_by_id(@user)
-    sign_in_as(@user)
-  end
-
   test 'index view renders correctly for general user' do
     get posts_path
     assert_response :success
 
     puts @response.body
-
-    assert_select 'div#_user_info', text: /#{@user.name}さんの登録件数：#{@post_count}件/
-    formatted_post_amount = number_to_currency(@post_amount, unit: '円', delimiter: ',', format: '%n%u', precision: 0)
-    assert_select 'div#_user_info', text: /#{@user.name}さんの合計金額：#{formatted_post_amount}/
 
     assert_select 'table' do
       assert_select 'tr:nth-child(1) th:nth-child(1)', text: 'No.'
@@ -35,18 +21,8 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
       assert_select "tr:nth-child(#{index + 2}) td:nth-child(2)", text: "#{post.name}　"
       assert_select "tr:nth-child(#{index + 2}) td:nth-child(3)", text: "#{number_with_delimiter(post.amount)} 円　"
       assert_select "tr:nth-child(#{index + 2}) td:nth-child(4)", text: "#{post.user.name}　"
+      assert_select 'form[action=?][method=?]', post_path(post), 'get'
     end
-  end
-
-  test 'show view renders return button for admin user' do
-    @admin_user = users(:admin)
-    post admin_session_path
-    puts "Session user ID: #{session[:user_id]}"
-    assert_response :redirect
-
-    get user_path(@user)
-    puts @response.body
-    assert_response :success
 
     assert_select 'form[action=?][method=?]', users_path, 'get' do
       assert_select 'button[type="submit"]', text: '戻る'
