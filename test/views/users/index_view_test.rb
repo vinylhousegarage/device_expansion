@@ -16,9 +16,10 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
 
   def assert_total_heading(total_count, total_amount)
     assert_select 'table' do
-      assert_select 'td', text: '　合　　計　　'
+      assert_select 'td', text: '　合計'
       assert_select 'td', text: "#{total_count}件　"
       assert_select 'td', text: "#{number_with_delimiter(total_amount)} 円　"
+      assert_form_action(posts_path, 'get', '詳細')
     end
   end
 
