@@ -5,6 +5,8 @@ class HomeIntroductionViewTest < ActionDispatch::IntegrationTest
     get root_path
     assert_response :success
 
+    puts @response.body
+
     assert_select 'div' do
       assert_select 'p', text: /この度は、「みんなで香典集計」をご覧いただき、誠にありがとうございます。/
       assert_select 'p', text: /デモ目的で公開されております。/
