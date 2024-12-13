@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class PostsEditViewTest < ActionDispatch::IntegrationTest
+class HomeIntroductionViewTest < ActionDispatch::IntegrationTest
   test 'should display static text and copyright' do
     get root_path
     assert_response :success
