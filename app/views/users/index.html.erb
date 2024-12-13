@@ -1,9 +1,10 @@
 <table>
 <h3>登録状況</h3>
   <tr>
-    <td><b>　合　　計　　</b></td>
+    <td><b>　合計</b></td>
     <td><b><%= @total_posts_count %>件　</b></td>
     <td><b><%= number_with_delimiter(@total_posts_amount) %> 円　</b></td>
+    <td><%= button_to '詳細', posts_path, method: :get %></td>
   </tr>
 
   <% @all_users_stats.each do |stat| %>
@@ -18,7 +19,7 @@
     <td><p></p></td>
   </tr>
   <tr>
-    <td colspan='3'><b>集計担当も投稿する</b></td>
+    <td colspan='3'><b>集計担当も登録する</b></td>
     <td><%= button_to '参加', new_post_path, method: :get %></td>
   </tr>
 
