@@ -7,7 +7,7 @@ class SessionsController < ApplicationController
   # 投稿者のトップページを設定
   def login_poster
     session[:user_id] = params[:id]
-    render json: { redirect_url: new_post_path }
+    render json: { redirect_url: root_path }
   end
 
   # 投稿者のログアウト
