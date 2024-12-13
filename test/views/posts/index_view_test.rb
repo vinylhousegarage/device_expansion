@@ -3,6 +3,10 @@ require 'test_helper'
 class PostsIndexViewTest < ActionDispatch::IntegrationTest
   include ActionView::Helpers::NumberHelper
 
+  def setup
+    @posts = Post.includes(:user).all
+  end
+
   test 'index view renders correctly for general user' do
     get posts_path
     assert_response :success
