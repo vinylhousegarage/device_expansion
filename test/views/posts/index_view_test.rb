@@ -13,7 +13,7 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
   end
 
   test 'index view renders correctly for general user' do
-    get user_path(@user)
+    get posts_path(@user)
     assert_response :success
 
     puts @response.body
