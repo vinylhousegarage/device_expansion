@@ -1,6 +1,11 @@
 class PostsController < ApplicationController
   before_action :set_current_user, oexcept: [:destroy]
 
+  # 全ての投稿を表示
+  def index
+    @posts = Post.includes(:user).all
+  end
+
   # 投稿の詳細を表示
   def show
     @post = find_post_by_id
@@ -15,13 +20,6 @@ class PostsController < ApplicationController
     @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
   end
 
-  # 編集フォームを表示
-  def edit
-    @post = find_post_by_id
-    @user_post_index = @post.user_post_index
-    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
-  end
-
   # 投稿を保存
   def create
     @post = @current_user.posts.build(post_params)
@@ -31,6 +29,13 @@ class PostsController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  # 編集フォームを表示
+  def edit
+    @post = find_post_by_id
+    @user_post_index = @post.user_post_index
+    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
   end
 
   # 編集を保存
