@@ -1,0 +1,26 @@
+<div>
+  <p>この度は、「みんなで香典集計」をご覧いただき、誠にありがとうございます。</p>
+
+  <p>
+    本アプリケーションは、デモ目的で公開されております。<br>
+    そのため、データの安全性を保証するものではございません。<br>
+    実在する個人情報（氏名、住所、電話番号など）の入力は、お控えください。<br>
+  </p>
+
+  <p>
+    また、実際の使用において発生するいかなる損害や問題についても責任を負いかねます。
+  </p>
+
+  <p>何卒ご理解のほど、よろしくお願い申し上げます。</p>
+
+  <p>
+    Copyright (c) 2024 Satoshi Kamazawa<br>
+    <a>This file is licensed under the MIT License.</a>
+  </p>
+</div>
+
+<% if @current_user %>
+  <%= button_to '　　　スタート　　　', new_post_path, method: :get %>
+<% else %>
+  <%= button_to '　　　スタート　　　', admin_session_path, method: :post %>
+<% end %>
