@@ -6,9 +6,9 @@ class HomeIntroductionViewTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select 'div' do
-      assert_select 'p', text: '本アプリケーションは、デモ目的で公開されております。'
-      assert_select 'p', text: 'また、実際の使用において発生するいかなる損害や' +
-                        '問題についても責任を負いかねます。'
+      assert_select 'p', text: 'この度は、「みんなで香典集計」をご覧いただき、誠にありがとうございます。'
+      assert_select 'p', text: /デモ目的で公開されております。/
+      assert_select 'p', text: /実際の使用において発生するいかなる損害や/
       assert_select 'p', text: 'Copyright (c) 2024 Satoshi Kamazawa'
       assert_select 'a[href="/LICENSE"]', text: 'the MIT License'
       assert_select 'form[action=?][method=?]', admin_session_path, 'get' do
