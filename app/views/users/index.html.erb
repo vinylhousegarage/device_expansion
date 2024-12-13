@@ -4,7 +4,7 @@
     <td><b>　合計</b></td>
     <td><b><%= @total_posts_count %>件　</b></td>
     <td><b><%= number_with_delimiter(@total_posts_amount) %> 円　</b></td>
-    <td><%= button_to '詳細', user_path(stat.user_id), method: :get %></td>
+    <td><%= button_to '詳細', posts_path, method: :get %></td>
   </tr>
 
   <% @all_users_stats.each do |stat| %>
@@ -12,7 +12,7 @@
     <td><%= stat.user_name %></td>
     <td><%= stat.post_count %>件　</td>
     <td><%= number_with_delimiter(stat.post_amount) %> 円　</td>
-    <td><%= button_to '詳細', posts_path, method: :get %></td>
+    <td><%= button_to '詳細', user_path(stat.user_id), method: :get %></td>
   </tr>
   <% end %>
   <tr>
