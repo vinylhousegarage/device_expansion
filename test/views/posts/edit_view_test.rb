@@ -28,7 +28,7 @@ class PostsEditViewTest < ActionDispatch::IntegrationTest
       assert_select 'input[name=?]', 'post[others]'
     end
 
-    assert_select 'form[action=?][method=?]', post_path, 'get'
+    assert_select 'form[action=?][method=?]', post_path(@post), 'get'
     assert_select 'form[action=?][method=?]', new_post_path, 'get'
   end
 
