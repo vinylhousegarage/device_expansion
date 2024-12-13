@@ -23,9 +23,9 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
     assert_select 'div#_user_info', text: /#{@user.name}さんの合計金額：#{formatted_post_amount}/
 
     assert_select 'table' do
-      assert_select 'tr:nth-child(1) th:nth-child(1)', text: '　No.　'
-      assert_select 'tr:nth-child(1) th:nth-child(2)', text: '　氏名　'
-      assert_select 'tr:nth-child(1) th:nth-child(3)', text: '　金額　'
+      assert_select 'tr:nth-child(1) th:nth-child(1)', text: 'No.'
+      assert_select 'tr:nth-child(1) th:nth-child(2)', text: '氏名'
+      assert_select 'tr:nth-child(1) th:nth-child(3)', text: '金額'
     end
 
     @posts.each_with_index do |post, index|
