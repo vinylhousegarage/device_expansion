@@ -4,9 +4,6 @@ class PostsController < ApplicationController
   # 全ての投稿を表示
   def index
     @posts = Post.includes(:user).all
-    @post = find_post_by_id
-    @user = @post.user
-    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@user.id)
   end
 
   # 投稿の詳細を表示
