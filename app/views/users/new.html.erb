@@ -1,7 +1,5 @@
 <h3>みんなで香典集計</h3>
 
-<%= render 'shared/flash' %>
-
 <p></p>
 
 <% @poster_users.each do |poster_user| %>
@@ -10,4 +8,4 @@
   <br>
 <% end %>
 
-<%= button_to '集計の状況を確認する　', users_path, method: :post %>
+<%= button_to '集計の状況を確認する　', users_path, method: :get %>
