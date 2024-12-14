@@ -30,7 +30,7 @@
 
   <tr>
     <td colspan='3'><b>最新データに更新する</b></td>
-    <td><%= button_to '更新', users_path, method: :get %></td>
+    <td><%= button_to '更新', users_path(updated: true), method: :get %></td>
   </tr>
 
   <tr>
