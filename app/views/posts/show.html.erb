@@ -1,5 +1,5 @@
-<%= render 'shared/user_info' %>
-<br><br>
+<%= render 'shared/user_info' %><br>
+<%= render 'shared/flash' %><br>
 <div>
   <b>登録番号：<%= @user_post_index %></b>
 </div>
@@ -36,7 +36,3 @@
   <%= button_to '集計確認へ戻る', user_path(@user), method: :get %><br>
   <%= button_to '登録状況へ戻る', users_path, method: :get %>
 <% end %>
-
-<br>
-<%= "User stats by ID user_name: #{@user_stats_by_id.user_name}" %><br>
-<%= "Current user name: #{@current_user.name}" %><br>
