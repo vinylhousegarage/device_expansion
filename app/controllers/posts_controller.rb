@@ -44,7 +44,7 @@ class PostsController < ApplicationController
     if @post.update(post_params)
       redirect_with_notice(post_path, 'post_updated')
     else
-      render :edit
+      render :edit, status: :unprocessable_entity
     end
   end
 
