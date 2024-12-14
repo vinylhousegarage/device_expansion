@@ -73,7 +73,7 @@ class PostsController < ApplicationController
 
   # 投稿削除失敗時を定義
   def handle_failed_destroy
-    redirect_with_alert(new_post_path, delete_failed)
+    redirect_with_alert(new_post_path, 'delete_failed')
   end
 
   # 属性を指定
