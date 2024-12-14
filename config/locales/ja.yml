@@ -18,11 +18,12 @@ ja:
               greater_than_or_equal_to: "は0以上で入力してください"
 
   notices:
-    data_reset: "データがリセットされました"
+    data_reset: "データをリセットしました"
     logged_out: "ログアウトしました"
-    all_deleted: "すべての投稿が削除されました"
-    post_deleted: "投稿が削除されました"
+    all_deleted: "すべての登録を削除しました"
+    post_deleted: "登録を削除しました"
+    post_updated: "登録を更新しました"
 
   alerts:
-    unauthorized_access: "不正なアクセスです"
-    delete_failed: "削除に失敗しました"
+    unauthorized_access: "アクセスが許可されていません"
+    delete_failed: "削除できませんでした"
