@@ -26,7 +26,7 @@ class ApplicationController < ActionController::Base
   # リダイレクト後に alert のフラッシュメッセージを表示
   # message_key に arert. が自動補完される
   def redirect_with_alert(path, message_key)
-    full_message_key = "arert.#{message_key}"
+    full_message_key = "alert.#{message_key}"
     redirect_to path, alert: I18n.t(full_message_key)
   end
 end
