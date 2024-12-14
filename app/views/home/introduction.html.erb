@@ -25,5 +25,5 @@
   <%= button_to '　　　スタート　　　', admin_session_path, method: :post %>
 <% end %>
 
-<%= "User stats by ID user_name: #{@user_stats_by_id.user_name}" %><br>
+<%= "Session ID: #{session[:user_id]}" %><br>
 <%= "Current user name: #{@current_user.name}" %><br>
