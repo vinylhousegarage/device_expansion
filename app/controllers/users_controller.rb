@@ -6,6 +6,7 @@ class UsersController < ApplicationController
     @total_posts_count = PostsStatsService.new.calculate_posts_count
     @total_posts_amount = PostsStatsService.new.calculate_posts_amount
     @all_users_stats = UserPostsStatsService.new.all_users_stats
+    flash.now[:notice] = I18n.t('notices.index_updated') if params[:updated]
   end
 
   # 個人別投稿一覧を表示
