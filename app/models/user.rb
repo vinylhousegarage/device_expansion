@@ -16,6 +16,7 @@ class User < ApplicationRecord
   # すべてのユーザーをデータベースから取得するスコープを定義
   scope :users, -> { where(name: USERS) }
 
+  # 管理者を判定
   def admin?
     User::ADMIN_USERS.include?(name)
   end
