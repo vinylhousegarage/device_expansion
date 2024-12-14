@@ -5,7 +5,7 @@ module Admin
     def setup
       post admin_session_path
       assert_response :redirect
-      assert_redirected_to users_path
+      assert_redirected_to new_user_path
     end
 
     # admin/system#reset_database のパスとフラッシュをテスト

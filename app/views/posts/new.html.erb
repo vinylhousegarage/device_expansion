@@ -12,6 +12,7 @@
       </ul>
     </div>
   <% end %>
+  <%= render 'shared/flash' %>
   <div>
     <label><%= form.label :name, '氏名' %></label>
     <%= form.text_field :name %>
@@ -50,14 +51,16 @@
       <td><b><%= '登録状況へ戻る　' %></b></td>
       <td><%= button_to "戻る", users_path, method: :get %></td>
     </tr>
+  <% else %>
+    <tr>
+      <td><b><%= '作業を終了する　' %></b></td>
+      <td>
+        <%= button_to '終了', logout_poster_sessions_path, method: :delete, data: { turbo: false } %>
+      </td>
+      <td><%= '（自動ログアウト）' %></td>
+    </tr>
   <% end %>
-  <br>
-  <tr>
-    <td><b><%= '作業を終了する　' %></b></td>
-    <td>
-      <% logout_path = @user_stats_by_id.user_name == '集計担当' ? admin_session_path : logout_poster_sessions_path %>
-      <%= button_to '終了', logout_path, method: :delete, data: { turbo: false } %>
-    </td>
-    <td><%= '（自動ログアウト）' %></td>
-  </tr>
 </table>
+
+<%= "User stats by ID user_name: #{@user_stats_by_id.user_name}" %><br>
+<%= "Current user name: #{@current_user.name}" %><br>
