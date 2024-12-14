@@ -4,6 +4,7 @@ namespace :admin do
   resource :system, only: [] do
     collection do
       post 'reset_database', to: 'system#reset_database'
+      post 'reload_database', to: 'system#reload_database'
     end
   end
 end
