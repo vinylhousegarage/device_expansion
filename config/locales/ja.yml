@@ -23,6 +23,7 @@ ja:
     all_deleted: "すべての登録を削除しました"
     post_deleted: "登録を削除しました"
     post_updated: "登録を更新しました"
+    index_updated: "最新データに更新されました"
 
   alerts:
     unauthorized_access: "アクセスが許可されていません"
