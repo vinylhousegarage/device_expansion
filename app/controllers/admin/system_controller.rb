@@ -1,6 +1,11 @@
 module Admin
   class SystemController < ApplicationController
-    before_action :ensure_admin_user, only: :reset_database
+    before_action :ensure_admin_user
+
+    # データベースをリロード
+    def reload_database
+      redirect_with_notice(users_path, 'index_updated')
+    end
 
     # データベースと自動インクリメントをリセット
     def reset_database
