@@ -57,7 +57,9 @@
       <td>
         <%= button_to '終了', logout_poster_sessions_path, method: :delete, data: { turbo: false } %>
       </td>
-      <td><%= '（自動ログアウト）' %></td>
+    </tr>
+    <tr>
+      <td colspan='3'><%= '(終了するとログアウトします)' %></td>
     </tr>
   <% end %>
 </table>

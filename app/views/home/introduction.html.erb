@@ -25,4 +25,6 @@
   <%= button_to '　　　スタート　　　', admin_session_path, method: :post %>
 <% end %>
 
+<%= render 'shared/flash' %>
+
 <%= "Session ID: #{session[:user_id]}" %><br>
