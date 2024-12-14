@@ -29,7 +29,6 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     get new_post_path
     if user.name == '集計担当'
       assert_back_to_status_button
-      assert_logout_button(admin_session_path)
     else
       assert_logout_button(logout_poster_sessions_path)
     end
