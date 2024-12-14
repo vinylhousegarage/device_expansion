@@ -3,6 +3,6 @@ class HomeController < ApplicationController
 
   # root を設定
   def introduction
-
+    @current_user = nil if @current_user&.admin?
   end
 end
