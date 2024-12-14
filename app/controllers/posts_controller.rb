@@ -42,7 +42,7 @@ class PostsController < ApplicationController
   def update
     @post = find_post_by_id
     if @post.update(post_params)
-      redirect_to post_path, notice: I18n.t('notices.post_updated')
+      redirect_with_notice(post_path, 'post_updated')
     else
       render :edit
     end
@@ -65,15 +65,15 @@ class PostsController < ApplicationController
   # 投稿削除成功時を定義
   def handle_successful_destroy
     if @user.posts.count.zero?
-      redirect_to new_post_path, notice: I18n.t('notices.all_deleted')
+      redirect_with_notice(new_post_path, 'all_deleted')
     else
-      redirect_to user_path(@user), notice: I18n.t('notices.post_deleted')
+      redirect_with_notice(user_path(@user), 'post_deleted')
     end
   end
 
   # 投稿削除失敗時を定義
   def handle_failed_destroy
-    redirect_to new_post_path, alert: I18n.t('alerts.delete_failed')
+    redirect_with_alert(new_post_path, delete_failed)
   end
 
   # 属性を指定
