@@ -5,7 +5,7 @@ module Admin
     # データベースと自動インクリメントをリセット
     def reset_database
       DataResetService.call
-      redirect_with_notice(users_path, 'notices.data_reset')
+      redirect_with_notice(users_path, 'data_reset')
     end
 
     private
