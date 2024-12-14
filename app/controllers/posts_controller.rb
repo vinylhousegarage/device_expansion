@@ -42,7 +42,7 @@ class PostsController < ApplicationController
   def update
     @post = find_post_by_id
     if @post.update(post_params)
-      redirect_to post_path
+      redirect_to post_path, notice: I18n.t('notices.post_updated')
     else
       render :edit
     end
