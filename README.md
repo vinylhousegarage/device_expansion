@@ -88,5 +88,4 @@
   - 実際の使用において発生するいかなる損害や問題についても責任を負いかねます。
 
 ### 6. ライセンス
-  - このプロジェクトは [MIT License](LICENSE) のもとで公開されています。
-  - 詳しくはリポジトリ内の [LICENSE](./LICENSE) ファイルをご確認ください。
+- このプロジェクトは [MIT License(public/LICENSE)](public/LICENSE) のもとで公開されています。
