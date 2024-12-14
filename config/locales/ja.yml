@@ -20,8 +20,9 @@ ja:
   notices:
     data_reset: "データがリセットされました"
     logged_out: "ログアウトしました"
-    all_deleted: "すべての投稿が削除されました"
-    post_deleted: "投稿が削除されました"
+    all_deleted: "すべての登録が削除されました"
+    post_deleted: "登録が削除されました"
+    post_updated: "登録が更新されました"
 
   alerts:
     unauthorized_access: "不正なアクセスです"
