@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class QrCodeRequestUrlGeneratorServiceTest < ActiveSupport::TestCase
-  test 'should generate correct login poster redirect URL' do
+  test 'should generate correct qr_code_request URL' do
     user = users(:first_poster)
     url = QrCodeRequestUrlGeneratorService.generate_qr_code_request_url(user)
 
