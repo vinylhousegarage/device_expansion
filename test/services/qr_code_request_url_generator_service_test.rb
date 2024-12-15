@@ -1,11 +1,11 @@
 require 'test_helper'
 
-class LoginPosterUrlGeneratorServiceTest < ActiveSupport::TestCase
+class QrCodeRequestUrlGeneratorServiceTest < ActiveSupport::TestCase
   test 'should generate correct login poster redirect URL' do
     user = users(:first_poster)
-    url = LoginPosterUrlGeneratorService.generate_login_poster_url(user)
+    url = QrCodeRequestUrlGeneratorService.generate_qr_code_request_url(user)
 
-    expected_url = Rails.application.routes.url_helpers.login_poster_redirect_session_url(
+    expected_url = Rails.application.routes.url_helpers.qr_code_request_qr_code_url(
       user,
       host: 'https://device-expansion.onrender.com'
     )
