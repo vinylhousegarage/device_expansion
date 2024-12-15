@@ -14,4 +14,27 @@ class QrCodeControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select 'svg', svg_expected_count
   end
+
+  # qr_code_request 正常系: 有効なユーザーIDを渡した場合
+  test 'should handle valid qr_code_request' do
+    user = users(:second_poster)
+    get qr_code_request_path(id: user.id)
+    assert_response :success
+    assert_match "Key received for user: #{user.name}", response.body
+  end
+
+  # qr_code_request 異常系1: id パラメータが欠落している場合
+  test 'should return bad request when id is missing' do
+    get qr_code_request_path
+    assert_response :bad_request
+    assert_match 'Bad Request', response.body
+  end
+
+  # qr_code_request 異常系2: 存在しないユーザーIDを渡した場合
+  test 'should return not found for invalid user' do
+    user = users(:sixth_poster)
+    get qr_code_request_path(id: user.id)
+    assert_response :not_found
+    assert_match "User not found", response.body
+  end
 end
