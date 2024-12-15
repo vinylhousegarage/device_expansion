@@ -28,3 +28,4 @@ ja:
   alerts:
     unauthorized_access: "アクセスが許可されていません"
     delete_failed: "削除できませんでした"
+    not_found: "ページが見つかりません"
