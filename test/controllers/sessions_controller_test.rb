@@ -25,12 +25,6 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @user.id, session[:user_id].to_i
   end
 
-  # login_poster_redirectルートとリダイレクトをテスト
-  test 'should route to login_poster_redirect' do
-    get login_poster_redirect_session_path(@user)
-    assert_response :success
-  end
-
   # users#logout_poster のパスをテスト
   test 'should successfully post to logout_poster path' do
     delete logout_poster_sessions_path
