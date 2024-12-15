@@ -16,3 +16,4 @@ class QrCodeController < ApplicationController
     rescue ActiveRecord::RecordNotFound
       render :qr_code_request, status: :not_found
   end
+end
