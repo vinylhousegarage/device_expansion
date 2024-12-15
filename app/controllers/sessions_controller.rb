@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-  # 投稿者のトップページを設定
+  # 投稿者のログイン
   def login_poster
     session[:user_id] = params[:id]
     render json: { redirect_url: root_path }
