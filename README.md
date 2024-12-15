@@ -14,7 +14,7 @@
       - あらかじめ設定された「集計担当」
 ### 2. 機能要件
   - **投稿者機能**
-     - 香典の「氏名、金額、住所、電話、備考」の投稿
+     - 香典の「氏名・金額・住所・電話・備考」の投稿
      - 投稿の編集と削除
      - 投稿件数と合計金額の表示
   - **管理者機能**
@@ -59,11 +59,18 @@
     - プログラミング言語：Ruby 3.1.0
     - フレームワーク：Ruby on Rails 7.0.8.4
     - データベース：PostgreSQL 14.13
-    - バージョン管理：Git, GitHub, GitHub Container Registry
-    - コンテナ化：Docker Compose
+    - バージョン管理：
+      - Git（ソースコードのローカルバージョン管理）
+      - GitHub（リモートリポジトリのホスティング）
+      - GitHub Container Registry（Dockerイメージの保存とバージョン管理）
+    - コンテナ化：Docker Compose（開発環境と本番環境を統一）
     - ホスティング：Render（アプリケーションの稼働サーバー）
-    - CI/CD：GitHub Actions（テスト）/ Render（デプロイ）
-    - テストフレームワーク：Minitest（単体・機能・統合テスト）
+    - CI/CD：
+      - GitHub Actions（テスト・ビルド）
+        - テスト：Minitestを用いた単体・機能・統合テスト
+        - ビルド：DockerイメージのビルドとGitHub Container Registryへのプッシュ
+      - Render（デプロイ）
+        - デプロイ：ビルド済みDockerイメージをRender APIを利用して自動トリガー
 
   - **インフラ要件**
     - サーバー構成：Puma, PostgreSQLサーバー
@@ -74,8 +81,8 @@
     - OS：Windows 10
     - エディタ/IDE：Visual Studio Code
     - コンテナ開発環境：Docker Compose
-    - バージョン管理の方法
-      - **ブランチ戦略**
+    - バージョン管理の方法：
+      - ブランチ戦略
         - mainブランチと作業ブランチ（featureブランチやtestブランチなど）に分けて管理
         - Pull Requestを通してmainブランチにマージ
         - 現在は個人開発であるため、コードレビューは任意で行うことが可能
@@ -88,5 +95,4 @@
   - 実際の使用において発生するいかなる損害や問題についても責任を負いかねます。
 
 ### 6. ライセンス
-  - このプロジェクトは [MIT License](LICENSE) のもとで公開されています。
-  - 詳しくはリポジトリ内の [LICENSE](./LICENSE) ファイルをご確認ください。
+  - このプロジェクトは [MIT License(public/LICENSE)](public/LICENSE) のもとで公開されています。
