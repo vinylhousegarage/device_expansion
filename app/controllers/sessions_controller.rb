@@ -2,7 +2,7 @@ class SessionsController < ApplicationController
   # 投稿者のログイン
   def login_poster
     session[:user_id] = params[:id]
-    render json: { redirect_url: root_path }
+    redirect_to root_path
   end
 
   # 投稿者のログアウト
