@@ -5,6 +5,6 @@ class ErrorsControllerTest < ActionDispatch::IntegrationTest
   test 'renders not_found template' do
     get '/non_existent_page'
     assert_response :not_found
-    assert_template :not_found
+    assert_match '<h3>ページが見つかりません</h3>', response.body
   end
 end
