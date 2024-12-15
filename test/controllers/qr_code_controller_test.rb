@@ -19,15 +19,14 @@ class QrCodeControllerTest < ActionDispatch::IntegrationTest
   test 'should handle valid qr_code_request' do
     user = users(:second_poster)
     get qr_code_request_path(id: user.id)
-    assert_response :success
-    assert_match "Key received for user: #{user.name}", response.body
+    assert_response :redirect
   end
 
   # qr_code_request 異常系1: id パラメータが欠落している場合
   test 'should return bad request when id is missing' do
     get qr_code_request_path
     assert_response :bad_request
-    assert_match 'Bad Request', response.body
+    assert_match '<h3>最初からやり直してください</h3>', response.body
   end
 
   # qr_code_request 異常系2: 存在しないユーザーIDを渡した場合
@@ -35,6 +34,6 @@ class QrCodeControllerTest < ActionDispatch::IntegrationTest
     user = users(:sixth_poster)
     get qr_code_request_path(id: user.id)
     assert_response :not_found
-    assert_match "User not found", response.body
+    assert_match '<h3>最初からやり直してください</h3>', response.body
   end
 end
