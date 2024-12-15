@@ -9,4 +9,5 @@ Rails.application.routes.draw do
   draw :sessions
   draw :qr_code
   draw :admin
+  draw :errors
 end
