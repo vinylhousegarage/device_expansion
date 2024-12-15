@@ -8,13 +8,11 @@ class QrCodeController < ApplicationController
 
   # QRコードの確認
   def qr_code_request
-    begin
-      @user = find_user_by_id
-      redirect_to login_poster_session_path(@user)
-    rescue ActionController::ParameterMissing => e
-      render :qr_code_request, status: :bad_request
-    rescue ActiveRecord::RecordNotFound
-      render :qr_code_request, status: :not_found
-    end
+    @user = find_user_by_id
+    redirect_to login_poster_session_path(@user)
+  rescue ActionController::ParameterMissing
+    render :qr_code_request, status: :bad_request
+  rescue ActiveRecord::RecordNotFound
+    render :qr_code_request, status: :not_found
   end
 end
