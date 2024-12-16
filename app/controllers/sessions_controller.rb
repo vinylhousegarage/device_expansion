@@ -6,7 +6,7 @@ class SessionsController < ApplicationController
   end
 
   # 投稿者のログアウト
-  def logout_poster
+  def destroy
     session[:user_id] = nil
   end
 end
