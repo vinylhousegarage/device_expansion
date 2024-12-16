@@ -21,7 +21,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   # '投稿者１'でのログインをテスト
   test 'should log in first_poster user' do
     post login_poster_session_path(@user), params: { id: @user.id }, as: :json
-    assert_response :success
+    assert_response :redirect
     assert_equal @user.id, session[:user_id].to_i
   end
 
