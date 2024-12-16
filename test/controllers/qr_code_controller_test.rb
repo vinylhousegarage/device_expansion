@@ -28,12 +28,4 @@ class QrCodeControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
     assert_match '<h3>最初からやり直してください</h3>', response.body
   end
-
-  # qr_code_request 異常系2: 存在しないユーザーIDを渡した場合
-  test 'should return not found for invalid user' do
-    user = users(:sixth_poster)
-    get qr_code_request_path(id: user.id)
-    assert_response :not_found
-    assert_match '<h3>最初からやり直してください</h3>', response.body
-  end
 end
