@@ -23,7 +23,7 @@ class HomeIntroductionViewTest < ActionDispatch::IntegrationTest
   test 'should start button for poster user' do
     @user = users(:first_poster)
     post login_poster_session_path(@user)
-    assert_response :success
+    assert_response :redirect
 
     get root_path
     assert_response :success
