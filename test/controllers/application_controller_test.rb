@@ -12,4 +12,11 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match @user.name, response.body
   end
+
+  # application#handle_not_found のパスをテスト
+  test 'renders generic_error template' do
+    get '/non_existent_page'
+    assert_response :not_found
+    assert_match '<h3>エラーが発生しました</h3>', response.body
+  end
 end
