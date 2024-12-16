@@ -42,7 +42,7 @@ class ApplicationController < ActionController::Base
     render :handle_not_found, status: status, locals: { message: message }
   end
 
-  # rescue_from のエラーハンドリング
+  # 例外が発生した場合のエラーハンドリング
   def handle_error(exception)
     case exception
     when ActionController::ParameterMissing
