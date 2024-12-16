@@ -1,5 +1,5 @@
-resources :sessions, only: %i[destroy] do
+resource :sessions, only: %i[destroy] do
   member do
-    post '/', to: 'sessions#create', as: session
+    post '/', to: 'sessions#create'
   end
 end
