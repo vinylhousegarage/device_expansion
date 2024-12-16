@@ -13,12 +13,12 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     @post_count = mock_user_stats_by_id(@user).post_count
     @post_amount = mock_user_stats_by_id(@user).post_amount
     @user_stats_by_id = mock_user_stats_by_id(@user)
-    post sessions_path(@user)
+    post create_sessions_path(@user)
   end
 
   # createアクションの正常時をテスト
   test 'should create post successfully' do
-    post sessions_path(@user)
+    post create_sessions_path(@user)
     assert_response :redirect
     assert_equal @user.id.to_s, session[:user_id], 'Session user_id is not correctly set'
 
@@ -42,7 +42,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # createアクションの異常時をテスト
   test 'should not create post with invalid attributes' do
-    post sessions_path(@user)
+    post create_sessions_path(@user)
     assert_response :redirect
     assert_equal @user.id.to_s, session[:user_id], 'Session user_id is not correctly set'
 
