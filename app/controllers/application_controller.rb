@@ -39,6 +39,7 @@ class ApplicationController < ActionController::Base
     Rails.logger.error 'RoutingError: No route matches'
 
     render template: 'application/handle_not_found', status: :not_found
+    Rails.logger.info "Status: #{response.status}"
   end
 
   # 例外が発生した場合のエラーハンドリング
