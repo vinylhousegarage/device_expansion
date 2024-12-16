@@ -49,13 +49,13 @@
   <% if @user_stats_by_id.user_name == '集計担当' %>
     <tr>
       <td><b><%= '登録状況へ戻る　' %></b></td>
-      <td><%= button_to "戻る", users_path, method: :get %></td>
+      <td><%= button_to '戻る', users_path, method: :get %></td>
     </tr>
   <% else %>
     <tr>
       <td><b><%= '作業を終了する　' %></b></td>
       <td>
-        <%= button_to '終了', logout_poster_sessions_path, method: :delete, data: { turbo: false } %>
+        <%= button_to '終了', sessions_path, method: :delete, data: { turbo: false } %>
       </td>
     </tr>
     <tr>
