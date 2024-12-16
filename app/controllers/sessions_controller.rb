@@ -1,13 +1,8 @@
 class SessionsController < ApplicationController
-  # GETルートで受けたQRコードのパスをPOSTルートに変換
-  def login_poster_redirect
-    @user = find_user_by_id
-  end
-
-  # 投稿者のトップページを設定
+  # 投稿者のログイン
   def login_poster
     session[:user_id] = params[:id]
-    render json: { redirect_url: root_path }
+    redirect_to root_path
   end
 
   # 投稿者のログアウト
