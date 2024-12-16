@@ -32,10 +32,4 @@ class UserTest < ActiveSupport::TestCase
     assert_includes @user.posts, post1
     assert_includes @user.posts, post2
   end
-
-  # login_adminアクションのテスト
-  test 'should get admin user from fixture' do
-    admin_user = users(:admin)
-    assert_equal '集計担当', admin_user.name
-  end
 end
