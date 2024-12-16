@@ -36,11 +36,13 @@ class ApplicationController < ActionController::Base
 
   # 無効なパスを検知
   def handle_not_found
-    exception = ActionController::RoutingError.new('No route matches')
-    handle_error(exception)
+    Rails.logger.error 'RoutingError: No route matches'
+    status = :not_found
+    message = I18n.t('errors.messages.not_found')
+    render :handle_not_found, status: status, locals: { message: message }
   end
 
-  # エラーハンドリングを統一
+  # rescue_from のエラーハンドリング
   def handle_error(exception)
     case exception
     when ActionController::ParameterMissing
