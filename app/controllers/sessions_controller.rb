@@ -1,6 +1,6 @@
 class SessionsController < ApplicationController
   # 投稿者のログイン
-  def login_poster
+  def create
     session[:user_id] = params[:id]
     redirect_to root_path
   end
