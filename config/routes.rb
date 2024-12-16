@@ -6,8 +6,8 @@ Rails.application.routes.draw do
 
   draw :users
   draw :posts
+  draw :admin
   draw :sessions
   draw :qr_code
-  draw :admin
   draw :errors
 end
