@@ -1,6 +1,6 @@
 class QrCodeGeneratorService
-  def self.generate_for_login_poster(user)
-    url = LoginPosterUrlGeneratorService.generate_login_poster_url(user)
+  def self.generate_qr_code_request(user)
+    url = QrCodeRequestUrlGeneratorService.generate_qr_code_request_url(user)
     generate_qr_code_svg(url)
   end
 
