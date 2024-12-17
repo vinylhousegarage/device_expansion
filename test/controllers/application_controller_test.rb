@@ -28,4 +28,12 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
     assert_select 'h3', 'ページが見つかりません'
   end
+
+  # internal_server_error をテスト
+  test 'handle_internal_server_error renders internal_server_error view' do
+    get internal_server_error_simulation_path
+
+    assert_response :internal_server_error
+    assert_select 'h3', 'システムエラーが発生しました'
+  end
 end
