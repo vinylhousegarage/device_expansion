@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::Base
+  rescue_from ActionController::ParameterMissing, with: :handle_bad_request
+
   helper_method :set_current_user, :find_user_by_id
 
   # セッションの user_id に基づいて現在のユーザーを取得
@@ -28,5 +30,12 @@ class ApplicationController < ActionController::Base
   def redirect_with_alert(path, message_key)
     full_message_key = "alerts.#{message_key}"
     redirect_to path, alert: I18n.t(full_message_key)
+  end
+
+  private
+
+  def handle_bad_request(exception)
+    Rails.logger.error "Bad Request: #{exception.message}"
+    render template: 'errors/bad_request', status: :bad_request
   end
 end
