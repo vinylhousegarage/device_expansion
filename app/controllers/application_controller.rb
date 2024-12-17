@@ -10,8 +10,8 @@ class ApplicationController < ActionController::Base
   end
 
   # params[:id] に基づいてユーザーを取得
-  def find_user_by_id
-    User.find(params[:id])
+  def set_user
+    @user = User.find(params[:id])
   end
 
   # params[:id] に基づいて投稿を取得し @post に代入
