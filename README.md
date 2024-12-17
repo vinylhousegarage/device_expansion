@@ -2,7 +2,7 @@
 
 ### 1. 概要
   - **目的**
-    - 通夜・葬儀でいただいた香典の情報を複数の投稿者で分担して入力し、入力された情報を一元管理のもとで集計する。
+    - 通夜・葬儀でいただいた香典の情報を複数の投稿者で分担して入力し、入力された情報を一元管理のもとで集計することを目指します。
       - 複数の投稿者が、自身が所有するスマートフォンで、通夜・葬儀でいただいた香典の情報を投稿
       - 管理者が、自身が所有するスマートフォンで、全体の集計を確認
   - **範囲**
@@ -12,6 +12,14 @@
     - **管理者**
       - 投稿者を招待する権限と、投稿の集計を管理する権限を持つユーザー
       - あらかじめ設定された「集計担当」
+  - **URL**
+    - **GitHubリポジトリ**
+      - [https://github.com/vinylhousegarage/device_expansion](https://github.com/vinylhousegarage/device_expansion)
+    - **GitHub公開サイト**
+      - [https://vinylhousegarage.github.io/device_expansion](https://vinylhousegarage.github.io/device_expansion)
+    - **Render.comデプロイ**
+      - [https://device-expansion.onrender.com](https://device-expansion.onrender.com)
+
 ### 2. 機能要件
   - **投稿者機能**
      - 香典の「氏名・金額・住所・電話・備考」の投稿
@@ -47,6 +55,7 @@
     | updated_at | timestamp(6) without time zone | not null | 編集日時 |
 
   - **初期データ**
+    - 初回起動時に以下のデータを自動生成
     ```ruby
     USERS = %w[ゲスト１ ゲスト２ ゲスト３ ゲスト４ ゲスト５ 集計担当].freeze
     USERS.each do |user_name|
@@ -75,7 +84,7 @@
   - **インフラ要件**
     - サーバー構成：Puma, PostgreSQLサーバー
     - ネットワーク要件：RenderによるホスティングとDNS管理
-    - ドメイン：https://device-expansion.onrender.com
+    - ドメイン：[https://device-expansion.onrender.com](https://device-expansion.onrender.com)
 
   - **開発環境**
     - OS：Windows 10
@@ -95,4 +104,4 @@
   - 実際の使用において発生するいかなる損害や問題についても責任を負いかねます。
 
 ### 6. ライセンス
-  - このプロジェクトは [MIT License(public/LICENSE)](public/LICENSE) のもとで公開されています。
+  - このプロジェクトは [MIT License](public/LICENSE) のもとで公開されています。
