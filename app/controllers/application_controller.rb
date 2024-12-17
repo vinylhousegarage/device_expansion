@@ -14,9 +14,9 @@ class ApplicationController < ActionController::Base
     User.find(params[:id])
   end
 
-  # params[:id] に基づいて投稿を取得
-  def find_post_by_id
-    Post.find(params[:id])
+  # params[:id] に基づいて投稿を取得し @post に代入
+  def set_post
+    @post = Post.find(params[:id])
   end
 
   # リダイレクト後に notice のフラッシュメッセージを表示
