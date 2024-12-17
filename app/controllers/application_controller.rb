@@ -2,21 +2,19 @@ class ApplicationController < ActionController::Base
   rescue_from ActionController::ParameterMissing, with: :handle_bad_request
   rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
 
-  helper_method :set_current_user, :find_user_by_id
-
   # セッションの user_id に基づいて現在のユーザーを取得
   def set_current_user
     @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
   end
 
   # params[:id] に基づいてユーザーを取得
-  def find_user_by_id
-    User.find(params[:id])
+  def set_user
+    @user = User.find(params[:id])
   end
 
-  # params[:id] に基づいて投稿を取得
-  def find_post_by_id
-    Post.find(params[:id])
+  # params[:id] に基づいて投稿を取得し @post に代入
+  def set_post
+    @post = Post.find(params[:id])
   end
 
   # リダイレクト後に notice のフラッシュメッセージを表示

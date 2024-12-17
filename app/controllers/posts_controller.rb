@@ -1,5 +1,7 @@
 class PostsController < ApplicationController
-  before_action :set_current_user, oexcept: [:destroy]
+  before_action :set_current_user
+  before_action :set_post, only: [:show, :edit, :update, :destroy]
+  before_action :authorize_user, only: [:update, :destroy]
 
   # 全ての投稿を表示
   def index
@@ -8,7 +10,6 @@ class PostsController < ApplicationController
 
   # 投稿の詳細を表示
   def show
-    @post = find_post_by_id
     @user = @post.user
     @user_post_index = @post.user_post_index
     @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@user.id)
@@ -22,7 +23,6 @@ class PostsController < ApplicationController
 
   # 編集フォームを表示
   def edit
-    @post = find_post_by_id
     @user_post_index = @post.user_post_index
     @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@current_user.id)
   end
@@ -40,7 +40,6 @@ class PostsController < ApplicationController
 
   # 編集を保存
   def update
-    @post = find_post_by_id
     if @post.update(post_params)
       redirect_with_notice(post_path, 'post_updated')
     else
@@ -50,7 +49,6 @@ class PostsController < ApplicationController
 
   # 投稿を削除
   def destroy
-    @post = find_post_by_id
     @user = @post.user
 
     if @post.destroy
@@ -79,5 +77,12 @@ class PostsController < ApplicationController
   # 属性を指定
   def post_params
     params.require(:post).permit(:name, :amount, :address, :tel, :others)
+  end
+
+  # 現在のユーザーが投稿の所有者か確認
+  def authorize_user
+    if @current_user != @post.user
+      redirect_with_alert(new_post_path, 'unauthorized_access')
+    end
   end
 end
