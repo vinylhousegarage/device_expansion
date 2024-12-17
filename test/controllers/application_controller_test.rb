@@ -14,9 +14,9 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
   end
 
   # application#handle_not_found のパスをテスト
-  test 'renders handle_not_found template' do
+  test 'renders generic_error template' do
     get '/non_existent_page'
     assert_response :not_found
-    assert_match '<p>リソースが見つかりませんでした</p>', response.body
+    assert_match '<h3>エラーが発生しました</h3>', response.body
   end
 end
