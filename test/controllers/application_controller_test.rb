@@ -20,7 +20,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
     puts response.body
 
-    assert_select 'h3', text: 'エラーが発生しました'
+    assert_select 'p', text: 'リソースが見つかりませんでした'
     assert_select 'p', text: '最初からやり直してください'
   end
 end
