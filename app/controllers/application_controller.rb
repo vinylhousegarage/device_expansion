@@ -34,24 +34,6 @@ class ApplicationController < ActionController::Base
     redirect_to path, alert: I18n.t(full_message_key)
   end
 
-  # テスト環境を設定
-  if Rails.env.test?
-    # 400エラーをシミュレート
-    def bad_request_simulation
-      raise ActionController::ParameterMissing, 'post'
-    end
-
-    # 404エラーをシミュレート
-    def not_found_simulation
-      raise ActiveRecord::RecordNotFound, 'User not found'
-    end
-
-    # 500エラーをシミュレート
-    def internal_server_error_simulation
-      raise StandardError, 'Intentional 500 error for testing.'
-    end
-  end
-
   private
 
   # 400エラー発生時にログを記録しエラーページを表示
@@ -64,11 +46,5 @@ class ApplicationController < ActionController::Base
   def handle_not_found(exception)
     Rails.logger.error "Not Found: #{exception.message}"
     render template: 'errors/not_found', status: :not_found
-  end
-
-  # 500エラー発生時にログを記録しエラーページを表示
-  def handle_internal_server_error(exception)
-    Rails.logger.error "Internal Server Error: #{exception.message}"
-    render template: 'errors/internal_server_error', status: :internal_server_error
   end
 end
