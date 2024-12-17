@@ -1,7 +1,6 @@
 class ApplicationController < ActionController::Base
   rescue_from ActionController::ParameterMissing, with: :handle_bad_request
   rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
-  rescue_from StandardError, with: :handle_internal_server_error
 
   helper_method :set_current_user, :find_user_by_id
 
