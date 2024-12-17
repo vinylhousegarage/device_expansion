@@ -15,7 +15,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
   # bad_request をテスト
   test 'handle_bad_request renders bad_request view' do
-    post posts_path, params: {}
+    get bad_request_simulation_path
 
     assert_response :bad_request
     assert_select 'h3', 'リクエストに問題がありました'
@@ -23,7 +23,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
   # not_found をテスト
   test 'handle_not_found renders not_found view' do
-    get user_path(id: -1)
+    get not_found_simulation_path
 
     assert_response :not_found
     assert_select 'h3', 'ページが見つかりません'
