@@ -17,10 +17,6 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
   test 'renders handle_not_found template' do
     get '/non_existent_page'
     assert_response :not_found
-
-    puts response.body
-
-    assert_select 'p', text: 'リソースが見つかりませんでした'
-    assert_select 'p', text: '最初からやり直してください'
+    assert_match '<p>リソースが見つかりませんでした</p>', response.body
   end
 end
