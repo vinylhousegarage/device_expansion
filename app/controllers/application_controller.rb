@@ -34,6 +34,13 @@ class ApplicationController < ActionController::Base
     redirect_to path, alert: I18n.t(full_message_key)
   end
 
+  # テスト用500エラーをシミュレート
+  if Rails.env.test?
+    def internal_server_error_simulation
+      raise StandardError, 'Intentional 500 error for testing.'
+    end
+  end
+
   private
 
   # 400エラー発生時にログを記録しエラーページを表示
