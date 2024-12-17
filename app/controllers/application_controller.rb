@@ -2,8 +2,6 @@ class ApplicationController < ActionController::Base
   rescue_from ActionController::ParameterMissing, with: :handle_bad_request
   rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
 
-  helper_method :set_current_user, :set_user
-
   # セッションの user_id に基づいて現在のユーザーを取得
   def set_current_user
     @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
