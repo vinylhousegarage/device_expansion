@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   rescue_from ActionController::ParameterMissing, with: :handle_bad_request
   rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
+  rescue_from StandardError, with: :handle_internal_server_error
 
   helper_method :set_current_user, :find_user_by_id
 
@@ -45,5 +46,11 @@ class ApplicationController < ActionController::Base
   def handle_not_found(exception)
     Rails.logger.error "Not Found: #{exception.message}"
     render template: 'errors/not_found', status: :not_found
+  end
+
+  # 500エラー発生時にログを記録しエラーページを表示
+  def handle_internal_server_error(exception)
+    Rails.logger.error "Internal Server Error: #{exception.message}"
+    render template: 'errors/internal_server_error', status: :internal_server_error
   end
 end
