@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::Base
   helper_method :set_current_user, :find_user_by_id
-  rescue_from ActionController::RoutingError, with: :handle_error
   rescue_from ActionController::ParameterMissing, with: :handle_error
   rescue_from ActiveRecord::RecordNotFound, with: :handle_error
 
