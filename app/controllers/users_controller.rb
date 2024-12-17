@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   before_action :set_current_user, only: :show
+  before_action :set_user, only: :show
 
   # 投稿者一覧を表示
   def index
@@ -10,9 +11,8 @@ class UsersController < ApplicationController
 
   # 個人別投稿一覧を表示
   def show
-    @user = find_user_by_id
     @posts = @user.posts
-    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(params[:id].to_i)
+    @user_stats_by_id = UserPostsStatsService.new.user_stats_by_id(@user.id)
   end
 
   # 投稿者を招待
