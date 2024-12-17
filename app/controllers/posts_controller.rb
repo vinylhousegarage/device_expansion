@@ -1,6 +1,6 @@
 class PostsController < ApplicationController
   before_action :set_current_user
-  before_action :find_post_by_id, only: [:show, :edit, :update, :destroy]
+  before_action :set_post, only: [:show, :edit, :update, :destroy]
 
   # 全ての投稿を表示
   def index
