@@ -20,4 +20,12 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
     assert_select 'h3', 'リクエストに問題がありました'
   end
+
+  # not_found をテスト
+  test 'handle_not_found renders not_found view' do
+    get user_path(id: -1)
+
+    assert_response :not_found
+    assert_select 'h3', 'ページが見つかりません'
+  end
 end

@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   rescue_from ActionController::ParameterMissing, with: :handle_bad_request
+  rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
 
   helper_method :set_current_user, :find_user_by_id
 
@@ -34,8 +35,15 @@ class ApplicationController < ActionController::Base
 
   private
 
+  # 400エラー発生時にログを記録しエラーページを表示
   def handle_bad_request(exception)
     Rails.logger.error "Bad Request: #{exception.message}"
     render template: 'errors/bad_request', status: :bad_request
+  end
+
+  # 404エラー発生時にログを記録しエラーページを表示
+  def handle_not_found(exception)
+    Rails.logger.error "Not Found: #{exception.message}"
+    render template: 'errors/not_found', status: :not_found
   end
 end
