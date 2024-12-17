@@ -32,7 +32,7 @@ Rails.application.configure do
   config.assets.precompile += %w[application.css application.js]
 
   # Show full error reports and disable caching.
-  config.consider_all_requests_local       = false
+  config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
   config.cache_store = :null_store
 
