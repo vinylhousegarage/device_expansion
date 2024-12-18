@@ -14,19 +14,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # pandoc と wkhtmltopdf をインストール
-      - name: Install pandoc and wkhtmltopdf
+      # pandoc, wkhtmltopdf and Japanese fonts のインストール
+      - name: Install pandoc, wkhtmltopdf and Japanese fonts
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc wkhtmltopdf
+          sudo apt-get install -y pandoc wkhtmltopdf fonts-noto-cjk
 
       # README.md を HTML に変換
       - name: Convert README.md to HTML
-        run: pandoc README.md -o README.html
+        run: pandoc README.md -o README.html --metadata charset=UTF-8
 
-      # HTML を PDF に変換
+      # HTML を PDF に変換し CSS でフォントを指定
       - name: Convert HTML to PDF
-        run: wkhtmltopdf README.html README.pdf
+        run: wkhtmltopdf --encoding UTF-8 --user-style-sheet style.css README.html README.pdf
 
       # PDF を Artifacts として保存
       - name: Upload PDF artifact
