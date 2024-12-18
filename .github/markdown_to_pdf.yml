@@ -1,0 +1,36 @@
+name: Convert README to PDF
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # リモートリポジトリをチェックアウト
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # pandoc と wkhtmltopdf をインストール
+      - name: Install pandoc and wkhtmltopdf
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc
+
+      # README.md を HTML に変換
+      - name: Convert README.md to HTML
+        run: pandoc README.md -o README.html
+
+      # HTML を PDF に変換
+      - name: Convert HTML to PDF
+        run: wkhtmltopdf README.html README.pdf
+
+      # PDF を Artifacts として保存
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: README-pdf
+          path: README.pdf
