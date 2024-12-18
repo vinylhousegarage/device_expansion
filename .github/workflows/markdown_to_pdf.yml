@@ -24,9 +24,17 @@ jobs:
       - name: Convert README.md to HTML
         run: pandoc README.md -o README.html --metadata charset=UTF-8
 
-      # HTML を PDF に変換し CSS でフォントを指定
+      # 游ゴシックフォントを指定したCSSを生成
+      - name: Generate style.css
+        run: |
+          echo 'body { font-family: "Yu Gothic", sans-serif; font-size: 12pt; line-height: 1.8; }' > style.css
+          echo 'ol, ul { margin: 0 0 1em 1.5em; padding: 0; }' >> style.css
+          echo 'li { margin-bottom: 0.5em; }' >> style.css
+          echo '@page { size: A4; margin: 20mm; }' >> style.css
+
+      # HTML を PDF に変換し CSS を適用
       - name: Convert HTML to PDF
-        run: wkhtmltopdf --encoding UTF-8 --user-style-sheet style.css README.html README.pdf
+        run: wkhtmltopdf --encoding UTF-8 --user-style-sheet style.css --footer-right "Page [page] of [topage]" README.html README.pdf
 
       # PDF を Artifacts として保存
       - name: Upload PDF artifact
