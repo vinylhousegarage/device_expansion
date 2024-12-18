@@ -1,5 +1,5 @@
 class QrCodeGeneratorService
-  def self.generate_qr_code_request(user)
+  def self.generate_qr_code(user)
     url = QrCodeRequestUrlGeneratorService.generate_qr_code_request_url(user)
     generate_qr_code_svg(url)
   end
