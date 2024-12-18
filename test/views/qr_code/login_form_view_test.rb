@@ -3,7 +3,7 @@ require 'test_helper'
 class QrCodeLoginFormViewTest < ActionDispatch::IntegrationTest
   def setup
     @user = users(:first_poster)
-    post login_form_qr_code_path(@user)
+    get login_form_qr_code_path(@user)
     assert_response :success
   end
 
