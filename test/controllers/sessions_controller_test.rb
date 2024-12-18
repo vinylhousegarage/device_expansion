@@ -9,7 +9,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   # '投稿者１'でのログインをテスト
   test 'should login first_poster user' do
     @user = users(:first_poster)
-    post create_session_path(@user)
+    post sessions_path
     assert_response :redirect
     assert_equal @user.id, session[:user_id].to_i
   end
