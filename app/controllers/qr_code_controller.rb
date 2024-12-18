@@ -4,7 +4,7 @@ class QrCodeController < ApplicationController
   # QRコードを取得し@svgに格納
   def login_form
     @url = QrCodeRequestUrlGeneratorService.generate_qr_code_request_url(@user)
-    @svg = QrCodeGeneratorService.generate_qr_code_request(@user)
+    @svg = QrCodeGeneratorService.generate_qr_code(@user)
   end
 
   # QRコードの確認
