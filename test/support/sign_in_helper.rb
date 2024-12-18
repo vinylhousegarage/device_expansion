@@ -1,5 +1,5 @@
 module SignInHelper
-  def sign_in_as(user, path = create_session_path(user.id), params: { id: user.id }, as: :html, method: :post)
+  def sign_in_as(user, path = sessions_path, params: { id: user.id }, as: :html, method: :post)
     send(method, path, params:, as:)
     assert_response :redirect
   end
