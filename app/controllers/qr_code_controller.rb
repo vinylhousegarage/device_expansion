@@ -7,7 +7,7 @@ class QrCodeController < ApplicationController
   end
 
   # QRコードの確認
-  def qr_code_request
+  def handle_login
     redirect_to create_session_path(@user)
   rescue ActionController::ParameterMissing
     render :qr_code_request, status: :bad_request
