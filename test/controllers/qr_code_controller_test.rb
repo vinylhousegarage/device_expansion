@@ -18,7 +18,7 @@ class QrCodeControllerTest < ActionDispatch::IntegrationTest
     assert_select 'svg', svg_expected_count
   end
 
-  # qr_code_request のパスをテスト
+  # handle_login のパスをテスト
   test 'should handle valid handle_login' do
     get handle_login_qr_code_path(@user)
     assert_response :redirect
