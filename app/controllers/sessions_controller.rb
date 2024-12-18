@@ -1,6 +1,4 @@
 class SessionsController < ApplicationController
-  before_action :set_user, only: :create
-
   # 投稿者のログイン
   def create
     session[:user_id] = params[:id]
