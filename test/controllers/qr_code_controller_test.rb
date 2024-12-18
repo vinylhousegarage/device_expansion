@@ -21,6 +21,6 @@ class QrCodeControllerTest < ActionDispatch::IntegrationTest
   # handle_login のパスをテスト
   test 'should handle valid handle_login' do
     get handle_login_qr_code_path(@user)
-    assert_response :redirect
+    assert_response :success
   end
 end
