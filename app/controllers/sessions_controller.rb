@@ -1,5 +1,5 @@
 class SessionsController < ApplicationController
-  before_action :set_user, only: :create
+  before_action :set_user, only: :login
 
   # 投稿者のログイン
   def login
