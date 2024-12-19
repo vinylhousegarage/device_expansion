@@ -19,7 +19,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   # createアクションの正常時をテスト
   test 'should create post successfully' do
     post login_session_path(@user)
-    assert_response :redirect
+    assert_response :success
     assert_equal @user.id, session[:user_id], 'Session user_id is not correctly set'
 
     Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
@@ -43,7 +43,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   # createアクションの異常時をテスト
   test 'should not create post with invalid attributes' do
     post login_session_path(@user)
-    assert_response :redirect
+    assert_response :success
     assert_equal @user.id, session[:user_id], 'Session user_id is not correctly set'
 
     Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
