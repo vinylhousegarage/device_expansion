@@ -15,7 +15,7 @@ class QrCodeLoginFormViewTest < ActionDispatch::IntegrationTest
 
   test 'should navigate to qr_code_request path successfully' do
     get handle_login_qr_code_path(@user)
-    assert_response :redirect
+    assert_response :success
   end
 
   test 'should navigate to new_user path successfully' do
