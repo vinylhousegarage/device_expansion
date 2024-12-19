@@ -1,6 +1,6 @@
 class QrCodeGeneratorService
   def self.generate_qr_code(user)
-    url = HandleLoginUrlGeneratorService.generate_handle_login_url(user)
+    url = QrCodeRequestUrlGeneratorService.generate_qr_code_request_url(user)
     generate_qr_code_svg(url)
   end
 
