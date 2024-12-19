@@ -10,7 +10,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test 'should login first_poster user' do
     @user = users(:first_poster)
     post login_session_path(@user)
-    assert_response :redirect
+    assert_response :success
     assert_equal @user.id, session[:user_id].to_i
   end
 end
