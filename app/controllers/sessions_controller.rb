@@ -1,13 +1,8 @@
 class SessionsController < ApplicationController
-  before_action :set_user, only: :create
   # 投稿者のログイン
   def create
-    if @user
-      session[:user_id] = @user.id
-      render json: { message: 'User logged in', user_id: @user.id }, status: :ok
-    else
-      render json: { message: 'User not found' }, status: :not_found
-    end
+    session[:user_id] = params[:id]
+    redirect_to root_path
   end
 
   # 投稿者のログアウト
