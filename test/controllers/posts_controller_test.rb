@@ -68,4 +68,26 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     @post.reload
     assert_equal 'テスト ねーむ', @post.name
   end
+
+  # 更新時の認可エラーをテスト
+  test 'should redirect update when user is not owner' do
+    post sessions_path
+
+    patch post_path(@post), params: { post: { name: "Updated Name" } }
+
+    assert_redirected_to new_post_path
+    assert_equal 'アクセスが許可されていません', flash[:alert]
+  end
+
+  # 削除時の認可エラーをテスト
+  test 'should redirect destroy when user is not owner' do
+    post create_session_path
+
+    assert_no_difference 'Post.count' do
+      delete post_path(@post)
+    end
+
+    assert_redirected_to new_post_path
+    assert_equal 'アクセスが許可されていません', flash[:alert]
+  end
 end
