@@ -8,10 +8,10 @@ class QrCodeController < ApplicationController
 
   # QRコードの確認
   def handle_login
-    redirect_to create_session_path(@user)
+    redirect_to login_session_path(@user)
   rescue ActionController::ParameterMissing
-    render :qr_code_request, status: :bad_request
+    render :handle_login, status: :bad_request
   rescue ActiveRecord::RecordNotFound
-    render :qr_code_request, status: :not_found
+    render :handle_login, status: :not_found
   end
 end
