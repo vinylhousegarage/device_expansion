@@ -10,8 +10,8 @@ class QrCodeController < ApplicationController
   def handle_login
     redirect_to sessions_path
   rescue ActionController::ParameterMissing
-    render template: 'errors/bad_request', status: :bad_request
+    render :qr_code_request, status: :bad_request
   rescue ActiveRecord::RecordNotFound
-    render template: 'errors/not_found', status: :not_found
+    render :qr_code_request, status: :not_found
   end
 end
