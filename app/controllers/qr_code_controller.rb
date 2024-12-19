@@ -1,5 +1,5 @@
 class QrCodeController < ApplicationController
-  before_action :set_user, only: :login_form
+  before_action :set_user
 
   # QRコードを取得し@svgに格納
   def login_form
@@ -8,6 +8,6 @@ class QrCodeController < ApplicationController
 
   # QRコードの確認
   def handle_login
-    head :ok
+
   end
 end
