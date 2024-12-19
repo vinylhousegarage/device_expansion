@@ -3,7 +3,7 @@
 <p></p>
 
 <% @poster_users.each do |poster_user| %>
-  <%= button_to poster_user.name + 'さんを招待する', login_form_qr_code_path(poster_user), method: :get, data: { turbo: false }, id: "invite-button-#[poster_user.id]" %>
+  <%= button_to poster_user.name + 'さんを招待する', login_form_qr_code_path(poster_user), method: :post, data: { turbo: false }, id: "invite-button-#[poster_user.id]" %>
 
   <br>
 <% end %>

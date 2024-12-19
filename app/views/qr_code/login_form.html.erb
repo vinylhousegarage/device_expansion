@@ -1,7 +1,7 @@
 QRコードを読み取ってください<br>
 QRコードのタップでも進みます<br>
 <br>
-<%= link_to handle_login_qr_code_path(@user) do %>
+<%= link_to qr_code_request_qr_code_path(@user) do %>
   <%= raw @svg %>
 <% end %>
 <br>
