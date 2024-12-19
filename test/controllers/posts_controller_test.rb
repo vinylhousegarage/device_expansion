@@ -20,7 +20,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   test 'should create post successfully' do
     post login_session_path(@user)
     assert_response :redirect
-    assert_equal @user.id.to_s, session[:user_id], 'Session user_id is not correctly set'
+    assert_equal @user.id, session[:user_id], 'Session user_id is not correctly set'
 
     Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
 
