@@ -4,7 +4,7 @@ class SessionsController < ApplicationController
   # 投稿者のログイン
   def login
     session[:user_id] = @user.id
-    redirect_to root_path
+    render json: { redirect_url: root_path }
   end
 
   # 投稿者のログアウト
