@@ -1,5 +1,5 @@
 class QrCodeController < ApplicationController
-  before_action :set_user, only: :login_form
+  before_action :set_user
 
   # QRコードを取得し@svgに格納
   def login_form
@@ -8,6 +8,10 @@ class QrCodeController < ApplicationController
 
   # QRコードの確認
   def handle_login
-    head :ok
+    redirect_to sessions_path
+  rescue ActionController::ParameterMissing
+    render template: 'errors/bad_request', status: :bad_request
+  rescue ActiveRecord::RecordNotFound
+    render template: 'errors/not_found', status: :not_found
   end
 end
