@@ -4,10 +4,6 @@ class HomeController < ApplicationController
   # root を設定
   def introduction
     @current_user = nil if @current_user&.admin?
-
-    respond_to do |format|
-      format.html
-      format.json { render json: { message: 'Accessed the root' }, status: :ok }
-    end
+    render json: { message: 'Accessed the root' }, status: :ok
   end
 end
