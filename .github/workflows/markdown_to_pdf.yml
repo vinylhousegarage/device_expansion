@@ -30,7 +30,7 @@ jobs:
           echo 'body { font-family: "Yu Gothic", sans-serif; font-size: 14pt; line-height: 1.8; }' > style.css
           echo 'ol, ul { margin: 0 0 1em 1.5em; padding: 0; }' >> style.css
           echo 'li { margin-bottom: 0.5em; }' >> style.css
-          echo '@page { size: A4; margin: 20mm; }' >> style.css
+          echo '@page { size: A4; margin: 40mm; }' >> style.css
 
       # HTML を PDF に変換し CSS を適用
       - name: Convert HTML to PDF
