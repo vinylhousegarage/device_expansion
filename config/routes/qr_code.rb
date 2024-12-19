@@ -1,6 +1,6 @@
 resources :qr_code, only: [] do
   member do
     get 'login_form'
-    get 'handle_login'
+    get 'qr_code_request'
   end
 end
