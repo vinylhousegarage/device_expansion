@@ -13,7 +13,7 @@ class QrCodeControllerTest < ActionDispatch::IntegrationTest
   # QRコードの表示をテスト
   test 'should post to login form and generate QR code' do
     svg_expected_count = 1
-    get login_form_qr_code_path(@user)
+    post login_form_qr_code_path(@user)
     assert_response :success
     assert_select 'svg', svg_expected_count
   end
