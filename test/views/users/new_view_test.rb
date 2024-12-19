@@ -8,10 +8,10 @@ class UsersNewViewTest < ActionView::TestCase
   test 'renders the new user invitation form' do
     render template: 'users/new'
     assert_select 'h3', 'みんなで香典集計'
-    assert_select 'form[action=?][method=?]', login_form_qr_code_path(users(:first_poster)), 'get' do
+    assert_select 'form[action=?][method=?]', login_form_qr_code_path(users(:first_poster)), 'post' do
       assert_select 'button', 'ゲスト１さんを招待する'
     end
-    assert_select 'form[action=?][method=?]', login_form_qr_code_path(users(:second_poster)), 'get' do
+    assert_select 'form[action=?][method=?]', login_form_qr_code_path(users(:second_poster)), 'post' do
       assert_select 'button', 'ゲスト２さんを招待する'
     end
   end
