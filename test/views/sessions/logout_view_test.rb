@@ -5,7 +5,7 @@ class SessionsLogoutViewTest < ActionView::TestCase
     @user = users(:first_poster)
   end
 
-  test 'renders sessions#destroy page with farewell message' do
+  test 'renders sessions#logout page with farewell message' do
     render template: 'sessions/logout'
     assert_select 'h3', 'おつかれ様でした'
   end
