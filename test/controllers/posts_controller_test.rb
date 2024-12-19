@@ -13,14 +13,14 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     @post_count = mock_user_stats_by_id(@user).post_count
     @post_amount = mock_user_stats_by_id(@user).post_amount
     @user_stats_by_id = mock_user_stats_by_id(@user)
-    post create_session_path(@user)
+    post login_session_path(@user)
   end
 
   # createアクションの正常時をテスト
   test 'should create post successfully' do
-    post create_session_path(@user)
+    post login_session_path(@user)
     assert_response :redirect
-    assert_equal @user.id.to_s, session[:user_id], 'Session user_id is not correctly set'
+    assert_equal @user.id, session[:user_id], 'Session user_id is not correctly set'
 
     Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
 
@@ -42,9 +42,9 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # createアクションの異常時をテスト
   test 'should not create post with invalid attributes' do
-    post create_session_path(@user)
+    post login_session_path(@user)
     assert_response :redirect
-    assert_equal @user.id.to_s, session[:user_id], 'Session user_id is not correctly set'
+    assert_equal @user.id, session[:user_id], 'Session user_id is not correctly set'
 
     Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
 
@@ -71,7 +71,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # 更新時の認可エラーをテスト
   test 'should redirect update when user is not owner' do
-    post create_session_path(@second_user)
+    post login_session_path(@second_user)
 
     patch post_path(@post), params: { post: { name: "Updated Name" } }
 
@@ -81,7 +81,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # 削除時の認可エラーをテスト
   test 'should redirect destroy when user is not owner' do
-    post create_session_path(@second_user)
+    post login_session_path(@second_user)
 
     assert_no_difference 'Post.count' do
       delete post_path(@post)
