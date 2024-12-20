@@ -55,7 +55,7 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     @mock_all_users_stats.each do |stat|
       assert_user_index(stat)
     end
-    assert_button('登録', new_post_path, 'get')
+    assert_button('新規', new_post_path, 'get')
     assert_button('招待', new_user_path, 'get')
   end
 
