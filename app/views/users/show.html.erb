@@ -22,18 +22,18 @@
 
 <p></p>
 
+<table>
+  <tr>
+    <td><b>新規登録へ戻る　</b></td>
+    <td><%= button_to '新規', new_post_path, method: :get %></td>
+  </tr>
+</table>
+
 <% if @current_user.name == '集計担当' %>
   <table>
     <tr>
       <td><b>登録状況へ戻る　</b></td>
       <td><%= button_to '状況', users_path, method: :get %></td>
-    </tr>
-  </table>
-<% else %>
-  <table>
-    <tr>
-      <td><b>新規登録へ戻る　</b></td>
-      <td><%= button_to '新規', new_post_path, method: :get %></td>
     </tr>
   </table>
 <% end %>
