@@ -55,8 +55,8 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     @mock_all_users_stats.each do |stat|
       assert_user_index(stat)
     end
-    assert_button('参加', new_post_path, 'get')
-    assert_button('戻る', new_user_path, 'get')
+    assert_button('登録', new_post_path, 'get')
+    assert_button('招待', new_user_path, 'get')
   end
 
   test 'renders delete button with correct attributes' do
@@ -67,7 +67,7 @@ class UsersIndexViewTest < ActionDispatch::IntegrationTest
     get users_path
     assert_response :success
 
-    assert_button('削除', reset_database_admin_system_path, 'post')
+    assert_button('再起', reset_database_admin_system_path, 'post')
   end
 
   test 'successfully resets database and redirects with flash message' do
