@@ -47,13 +47,13 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
 
   test 'show view renders correctly for button' do
     assert_select 'form[action=?][method=?]', edit_post_path(@post), 'get' do
-      assert_select 'button[type="submit"]', text: '投稿を編集する'
+      assert_select 'button[type="submit"]', text: '登録を編集する'
     end
 
     assert_select 'form[action=?][method=?]', post_path(@post), 'post' do
       assert_select 'input[type="hidden"][name="_method"][value="delete"]'
       assert_select 'button[data-confirm="削除してもよろしいですか？"]'
-      assert_select 'button[type="submit"]', text: '投稿を削除する'
+      assert_select 'button[type="submit"]', text: '登録を削除する'
     end
 
     assert_select 'form[action=?][method=?]', user_path(@user), 'get' do
