@@ -28,8 +28,8 @@
 <br>
 
 <% if @user_stats_by_id.user_name == @current_user.name %>
-  <%= button_to '投稿を編集する', edit_post_path(@post), method: :get %><br>
-  <%= button_to '投稿を削除する', post_path(@post), method: :delete, data: { confirm: '削除してもよろしいですか？' } %><br>
+  <%= button_to '登録を編集する', edit_post_path(@post), method: :get %><br>
+  <%= button_to '登録を削除する', post_path(@post), method: :delete, data: { confirm: '削除してもよろしいですか？' } %><br>
   <%= button_to '集計確認へ戻る', user_path(@user), method: :get %><br>
   <%= button_to '新規登録へ戻る', new_post_path, method: :get %>
 <% else %>
