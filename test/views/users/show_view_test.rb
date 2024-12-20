@@ -35,7 +35,7 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
     end
 
     assert_select 'form[action=?][method=?]', new_post_path, 'get' do
-      assert_select 'button[type="submit"]', text: '戻る'
+      assert_select 'button[type="submit"]', text: '新規'
     end
   end
 
@@ -50,7 +50,7 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select 'form[action=?][method=?]', users_path, 'get' do
-      assert_select 'button[type="submit"]', text: '戻る'
+      assert_select 'button[type="submit"]', text: '状況'
     end
   end
 end

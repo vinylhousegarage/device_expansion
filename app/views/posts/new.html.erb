@@ -36,7 +36,7 @@
     <%= form.text_field :others %>
   </div>
   <div>
-　　　<%= form.submit "　　　登　　録　　　" %>
+　　　<%= form.submit '　　　登　　録　　　' %>
   </div>
   <br>
 <% end %>
@@ -49,7 +49,7 @@
   <% if @user_stats_by_id.user_name == '集計担当' %>
     <tr>
       <td><b><%= '登録状況へ戻る　' %></b></td>
-      <td><%= button_to '戻る', users_path, method: :get %></td>
+      <td><%= button_to '状況', users_path, method: :get %></td>
     </tr>
   <% else %>
     <tr>
@@ -63,6 +63,3 @@
     </tr>
   <% end %>
 </table>
-
-<%= "User stats by ID user_name: #{@user_stats_by_id.user_name}" %><br>
-<%= "Current user name: #{@current_user.name}" %><br>

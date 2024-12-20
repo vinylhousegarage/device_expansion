@@ -29,7 +29,7 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
     end
 
     assert_select 'form[action=?][method=?]', users_path, 'get' do
-      assert_select 'button[type="submit"]', text: '戻る'
+      assert_select 'button[type="submit"]', text: '状況'
     end
   end
 end

@@ -40,7 +40,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
     assert_select 'table' do
       assert_select 'td', text: '登録状況へ戻る　'
       assert_select 'form[action=?][method=?]', users_path, 'get' do
-        assert_select 'button', text: '戻る'
+        assert_select 'button', text: '状況'
       end
     end
   end
