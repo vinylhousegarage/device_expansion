@@ -41,12 +41,12 @@
 <table>
   <tr>
     <td><b>投稿詳細へ戻る</b></td>
-    <td><%= button_to '戻る', post_path(@post), method: :get %></td>
+    <td><%= button_to '詳細', post_path(@post), method: :get %></td>
   </tr>
 
   <tr>
     <td><b>新規登録へ戻る　</b></td>
-    <td><%= button_to '戻る', new_post_path, method: :get %></td>
+    <td><%= button_to '新規', new_post_path, method: :get %></td>
   </tr>
 </table>
 
@@ -55,7 +55,7 @@
 <table>
   <tr>
     <td><b>登録状況へ戻る　</b></td>
-    <td><%= button_to '戻る', users_path, method: :get %></td>
+    <td><%= button_to '状況', users_path, method: :get %></td>
   </tr>
 </table>
 <% end %>
