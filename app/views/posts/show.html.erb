@@ -29,10 +29,10 @@
 
 <table>
   <% if @user_stats_by_id.user_name == @current_user.name %>
-    <%= '登録を編集する　'%><%= button_to '編集', edit_post_path(@post), method: :get %><br>
-    <%= '登録を削除する　'%><%= button_to '削除', post_path(@post), method: :delete %><br>
-    <%= '集計確認へ戻る　'%><%= button_to '確認', user_path(@user), method: :get %><br>
-    <%= '新規登録へ戻る　'%><%= button_to '新規', new_post_path, method: :get %>
+    <%= '登録を編集する　'%><%= button_to '編集', edit_post_path(@post), method: :get, data: { turbo: false }, id: "confirm-button-#{@post.id}" %><br>
+    <%= '登録を削除する　'%><%= button_to '削除', post_path(@post), method: :delete, data: { turbo: false }, id: "confirm-button-#{@post.id}" %><br>
+    <%= '集計確認へ戻る　'%><%= button_to '確認', user_path(@user), method: :get, data: { turbo: false }, id: "confirm-button-#{@user.id}" %><br>
+    <%= '新規登録へ戻る　'%><%= button_to '新規', new_post_path, method: :get, data: { turbo: false }, id: "confirm-button-#{@user.id}" %>
   <% else %>
     <%= '集計確認へ戻る　'%><%= button_to '集計', user_path(@user), method: :get %><br>
     <%= '登録状況へ戻る　'%><%= button_to '状況', users_path, method: :get %>
