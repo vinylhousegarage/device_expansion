@@ -13,13 +13,14 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     @post_count = mock_user_stats_by_id(@user).post_count
     @post_amount = mock_user_stats_by_id(@user).post_amount
     @user_stats_by_id = mock_user_stats_by_id(@user)
-    post sessions_path
   end
 
   # createアクションの正常時をテスト
   test 'should create post successfully' do
-    post sessions_path
+    handle_login_qr_code_path(@user)
     assert_response :success
+    post sessions_path
+
     assert_equal @user.id, session[:user_id], 'Session user_id is not correctly set'
 
     Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
@@ -42,8 +43,10 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # createアクションの異常時をテスト
   test 'should not create post with invalid attributes' do
-    post sessions_path
+    handle_login_qr_code_path(@user)
     assert_response :success
+    post sessions_path
+
     assert_equal @user.id, session[:user_id], 'Session user_id is not correctly set'
 
     Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
@@ -58,6 +61,10 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # updateアクションの更新をテスト
   test 'updates the record successfully' do
+    handle_login_qr_code_path(@user)
+    assert_response :success
+    post sessions_path
+
     patch_params = { post: { name: 'テスト ねーむ' } }
     Rails.logger.debug { "Test Params: #{patch_params.inspect}" }
 
@@ -71,6 +78,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # 更新時の認可エラーをテスト
   test 'should redirect update when user is not owner' do
+    handle_login_qr_code_path(@user)
+    assert_response :success
     post sessions_path
 
     patch post_path(@post), params: { post: { name: "Updated Name" } }
@@ -81,6 +90,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # 削除時の認可エラーをテスト
   test 'should redirect destroy when user is not owner' do
+    handle_login_qr_code_path(@user)
+    assert_response :success
     post sessions_path
 
     assert_no_difference 'Post.count' do
