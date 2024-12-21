@@ -78,7 +78,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     post sessions_path, params: { id: @second_user.id }, as: :json
     assert_response :success
 
-    patch post_path(@post), params: { post: { name: "Updated Name" } }
+    patch post_path(@post), params: { post: { name: 'Updated Name' } }
 
     assert_redirected_to new_post_path
     assert_equal 'アクセスが許可されていません', flash[:alert]
