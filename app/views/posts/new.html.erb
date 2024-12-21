@@ -55,7 +55,7 @@
     <tr>
       <td><b><%= '作業を終了する　' %></b></td>
       <td>
-        <%= button_to '終了', logout_sessions_path, method: :delete, data: { turbo: false } %>
+        <%= button_to '終了', session_path(@current_user), method: :delete, data: { turbo: false } %>
       </td>
     </tr>
     <tr>

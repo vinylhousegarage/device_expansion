@@ -13,13 +13,13 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     @post_count = mock_user_stats_by_id(@user).post_count
     @post_amount = mock_user_stats_by_id(@user).post_amount
     @user_stats_by_id = mock_user_stats_by_id(@user)
-    post login_session_path(@user)
   end
 
   # createアクションの正常時をテスト
   test 'should create post successfully' do
-    post login_session_path(@user)
+    post sessions_path, params: { id: @user.id }, as: :json
     assert_response :success
+
     assert_equal @user.id, session[:user_id], 'Session user_id is not correctly set'
 
     Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
@@ -42,8 +42,9 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # createアクションの異常時をテスト
   test 'should not create post with invalid attributes' do
-    post login_session_path(@user)
+    post sessions_path, params: { id: @user.id }, as: :json
     assert_response :success
+
     assert_equal @user.id, session[:user_id], 'Session user_id is not correctly set'
 
     Rails.logger.debug { "Validation errors: #{@post.errors.full_messages}" }
@@ -58,6 +59,9 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # updateアクションの更新をテスト
   test 'updates the record successfully' do
+    post sessions_path, params: { id: @user.id }, as: :json
+    assert_response :success
+
     patch_params = { post: { name: 'テスト ねーむ' } }
     Rails.logger.debug { "Test Params: #{patch_params.inspect}" }
 
@@ -71,7 +75,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # 更新時の認可エラーをテスト
   test 'should redirect update when user is not owner' do
-    post login_session_path(@second_user)
+    post sessions_path, params: { id: @second_user.id }, as: :json
+    assert_response :success
 
     patch post_path(@post), params: { post: { name: "Updated Name" } }
 
@@ -81,7 +86,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # 削除時の認可エラーをテスト
   test 'should redirect destroy when user is not owner' do
-    post login_session_path(@second_user)
+    post sessions_path, params: { id: @second_user.id }, as: :json
+    assert_response :success
 
     assert_no_difference 'Post.count' do
       delete post_path(@post)
