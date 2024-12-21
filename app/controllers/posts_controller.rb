@@ -81,8 +81,8 @@ class PostsController < ApplicationController
 
   # 現在のユーザーが投稿の所有者か確認
   def authorize_user
-    if @current_user != @post.user
-      redirect_with_alert(new_post_path, 'unauthorized_access')
-    end
+    return if @current_user == @post.user
+
+    redirect_with_alert(new_post_path, 'unauthorized_access')
   end
 end
