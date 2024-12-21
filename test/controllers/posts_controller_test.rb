@@ -81,7 +81,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # 更新時の認可エラーをテスト
   test 'should redirect update when user is not owner' do
-    get handle_login_qr_code_path(@user)
+    get handle_login_qr_code_path(@second_user)
     assert_response :success
     post sessions_path
     assert_response :success
@@ -94,7 +94,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # 削除時の認可エラーをテスト
   test 'should redirect destroy when user is not owner' do
-    get handle_login_qr_code_path(@user)
+    get handle_login_qr_code_path(@second_user)
     assert_response :success
     post sessions_path
     assert_response :success
