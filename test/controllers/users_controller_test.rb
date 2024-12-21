@@ -9,7 +9,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # テスト用の初期データを設定
   def setup
     @user = users(:first_poster)
-    @poster_users = [users(:first_poster), users(:second_user)]
+    @poster_users = [users(:first_poster), users(:second_poster)]
     @admin_user = users(:admin)
     @total_posts_count = mock_posts_stats.total_posts_count
     @total_posts_amount = mock_posts_stats.total_posts_amount
