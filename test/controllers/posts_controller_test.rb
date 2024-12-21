@@ -20,6 +20,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     get handle_login_qr_code_path(@user)
     assert_response :success
     post sessions_path
+    assert_response :success
 
     assert_equal @user.id, session[:user_id], 'Session user_id is not correctly set'
 
@@ -46,6 +47,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     get handle_login_qr_code_path(@user)
     assert_response :success
     post sessions_path
+    assert_response :success
 
     assert_equal @user.id, session[:user_id], 'Session user_id is not correctly set'
 
@@ -64,6 +66,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     get handle_login_qr_code_path(@user)
     assert_response :success
     post sessions_path
+    assert_response :success
 
     patch_params = { post: { name: 'テスト ねーむ' } }
     Rails.logger.debug { "Test Params: #{patch_params.inspect}" }
@@ -81,6 +84,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     get handle_login_qr_code_path(@user)
     assert_response :success
     post sessions_path
+    assert_response :success
 
     patch post_path(@post), params: { post: { name: "Updated Name" } }
 
@@ -93,6 +97,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     get handle_login_qr_code_path(@user)
     assert_response :success
     post sessions_path
+    assert_response :success
 
     assert_no_difference 'Post.count' do
       delete post_path(@post)
