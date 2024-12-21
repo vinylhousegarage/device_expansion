@@ -1,7 +1,7 @@
 class PostsController < ApplicationController
   before_action :set_current_user
-  before_action :set_post, only: [:show, :edit, :update, :destroy]
-  before_action :authorize_user, only: [:update, :destroy]
+  before_action :set_post, only: %i[show edit update destroy]
+  before_action :authorize_user, only: %i[update destroy]
 
   # 全ての投稿を表示
   def index
@@ -81,8 +81,8 @@ class PostsController < ApplicationController
 
   # 現在のユーザーが投稿の所有者か確認
   def authorize_user
-    if @current_user != @post.user
-      redirect_with_alert(new_post_path, 'unauthorized_access')
-    end
+    return if @current_user == @post.user
+
+    redirect_with_alert(new_post_path, 'unauthorized_access')
   end
 end

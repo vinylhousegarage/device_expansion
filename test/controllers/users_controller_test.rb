@@ -9,7 +9,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # テスト用の初期データを設定
   def setup
     @user = users(:first_poster)
-    @users = [users(:first_poster), users(:admin)]
+    @poster_users = [users(:first_poster), users(:second_poster)]
     @admin_user = users(:admin)
     @total_posts_count = mock_posts_stats.total_posts_count
     @total_posts_amount = mock_posts_stats.total_posts_amount
@@ -27,9 +27,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # スコープ poster_users の参照をテスト
   test 'should display poster users in new action' do
     get new_user_path
-    assert_select 'form[action=?]', login_form_qr_code_path(users(:first_poster)), text: 'ゲスト１さんを招待する'
-    assert_select 'form[action=?]', login_form_qr_code_path(users(:second_poster)), text: 'ゲスト２さんを招待する'
-    assert_select 'form[action=?]', login_form_qr_code_path(users(:admin)), count: 0
+    assert_response :success
+
+    @poster_users.each do |poster_user|
+      assert_select 'form[action=?][method=?]', login_form_qr_code_path(poster_user), 'post' do
+        assert_select 'button', text: '招待'
+        assert_match(/#{poster_user.name}さんを招待する/, response.body)
+      end
+    end
   end
 
   # users#index のパスをテスト

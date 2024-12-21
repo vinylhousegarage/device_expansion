@@ -7,12 +7,15 @@ class UsersNewViewTest < ActionView::TestCase
 
   test 'renders the new user invitation form' do
     render template: 'users/new'
+
     assert_select 'h3', 'みんなで香典集計'
-    assert_select 'form[action=?][method=?]', login_form_qr_code_path(users(:first_poster)), 'post' do
-      assert_select 'button', 'ゲスト１さんを招待する'
-    end
-    assert_select 'form[action=?][method=?]', login_form_qr_code_path(users(:second_poster)), 'post' do
-      assert_select 'button', 'ゲスト２さんを招待する'
+
+    @poster_users.each do |poster_user|
+      assert_select 'table', text: /#{poster_user.name}さんを招待する/
+
+      assert_select 'form[action=?][method=?]', login_form_qr_code_path(poster_user), 'post' do
+        assert_select 'button', '招待'
+      end
     end
   end
 end

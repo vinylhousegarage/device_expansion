@@ -7,7 +7,5 @@ class QrCodeController < ApplicationController
   end
 
   # QRコードの確認
-  def handle_login
-
-  end
+  def handle_login; end
 end
