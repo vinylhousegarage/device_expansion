@@ -73,7 +73,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
       assert_field_with_label('住所', 'post[address]', 'text')
       assert_field_with_label('電話', 'post[tel]', 'text')
       assert_field_with_label('備考', 'post[others]', 'text')
-      assert_submit_button('　　　登　　録　　　')
+      assert_submit_button('　　　実　　行　　　')
     end
   end
 

@@ -47,21 +47,20 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
 
   test 'show view renders correctly for button' do
     assert_select 'form[action=?][method=?]', edit_post_path(@post), 'get' do
-      assert_select 'button[type="submit"]', text: '登録を編集する'
+      assert_select 'button[type="submit"]', text: '編集'
     end
 
     assert_select 'form[action=?][method=?]', post_path(@post), 'post' do
       assert_select 'input[type="hidden"][name="_method"][value="delete"]'
-      assert_select 'button[data-confirm="削除してもよろしいですか？"]'
-      assert_select 'button[type="submit"]', text: '登録を削除する'
+      assert_select 'button[type="submit"]', text: '削除'
     end
 
     assert_select 'form[action=?][method=?]', user_path(@user), 'get' do
-      assert_select 'button[type="submit"]', text: '集計確認へ戻る'
+      assert_select 'button[type="submit"]', text: '確認'
     end
 
     assert_select 'form[action=?][method=?]', new_post_path, 'get' do
-      assert_select 'button[type="submit"]', text: '新規登録へ戻る'
+      assert_select 'button[type="submit"]', text: '新規'
     end
   end
 
@@ -78,7 +77,7 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_select 'form[action=?][method=?]', users_path, 'get' do
-      assert_select 'button[type="submit"]', text: '登録状況へ戻る'
+      assert_select 'button[type="submit"]', text: '状況'
     end
   end
 end
