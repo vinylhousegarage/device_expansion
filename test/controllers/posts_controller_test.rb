@@ -17,9 +17,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # createアクションの正常時をテスト
   test 'should create post successfully' do
-    get handle_login_qr_code_path(@user)
-    assert_response :success
-    post sessions_path
+    post sessions_path, params: { id: @user.id }, as: :json
     assert_response :success
 
     assert_equal @user.id, session[:user_id], 'Session user_id is not correctly set'
@@ -44,9 +42,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # createアクションの異常時をテスト
   test 'should not create post with invalid attributes' do
-    get handle_login_qr_code_path(@user)
-    assert_response :success
-    post sessions_path
+    post sessions_path, params: { id: @user.id }, as: :json
     assert_response :success
 
     assert_equal @user.id, session[:user_id], 'Session user_id is not correctly set'
@@ -63,9 +59,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # updateアクションの更新をテスト
   test 'updates the record successfully' do
-    get handle_login_qr_code_path(@user)
-    assert_response :success
-    post sessions_path
+    post sessions_path, params: { id: @user.id }, as: :json
     assert_response :success
 
     patch_params = { post: { name: 'テスト ねーむ' } }
@@ -81,9 +75,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # 更新時の認可エラーをテスト
   test 'should redirect update when user is not owner' do
-    get handle_login_qr_code_path(@second_user)
-    assert_response :success
-    post sessions_path
+    post sessions_path, params: { id: @second_user.id }, as: :json
     assert_response :success
 
     patch post_path(@post), params: { post: { name: "Updated Name" } }
@@ -94,9 +86,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # 削除時の認可エラーをテスト
   test 'should redirect destroy when user is not owner' do
-    get handle_login_qr_code_path(@second_user)
-    assert_response :success
-    post sessions_path
+    post sessions_path, params: { id: @second_user.id }, as: :json
     assert_response :success
 
     assert_no_difference 'Post.count' do
