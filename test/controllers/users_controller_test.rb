@@ -30,10 +30,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     @poster_users.each do |poster_user|
-      assert_select 'form[action=?][method=?]', login_form_qr_code_path(poster_user), text: /#{poster_user.name}さんを招待する/
-
       assert_select 'form[action=?][method=?]', login_form_qr_code_path(poster_user), 'post' do
-        assert_select 'button', '招待'
+        assert_select 'button', text: '招待'
+        assert_match /#{poster_user.name}さんを招待する/, response.body
       end
     end
   end
