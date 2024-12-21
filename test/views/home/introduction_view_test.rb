@@ -22,6 +22,8 @@ class HomeIntroductionViewTest < ActionDispatch::IntegrationTest
 
   test 'should start button for poster user' do
     @user = users(:first_poster)
+    get handle_login_qr_code_path(@user)
+    assert_response :success
     post sessions_path
     assert_response :success
 
