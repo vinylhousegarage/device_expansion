@@ -2,12 +2,16 @@
 <p></p>
 <table>
   <% @poster_users.each do |poster_user| %>
-    <%= poster_user.name + 'さんを招待する　' %><%= button_to '招待', login_form_qr_code_path(poster_user), method: :post, data: { turbo: false }, id: "invite-button-#[poster_user.id]" %>
-
-    <br>
+    <tr>
+      <td><%= poster_user.name + 'さんを招待する　' %></td>
+      <td><%= button_to '招待', login_form_qr_code_path(poster_user), method: :post, data: { turbo: false }, id: "invite-button-#[poster_user.id]" %></td>
+    </tr>
   <% end %>
 </table>
 <br>
 <table>
-  <%= '集計の状況を確認する　　' %><%= button_to '確認', users_path, method: :get %>
+  <tr>
+    <td><%= '集計の状況を確認する　　' %></td>
+    <td><%= button_to '確認', users_path, method: :get %></td>
+  </tr>
 </table>
