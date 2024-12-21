@@ -17,7 +17,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # createアクションの正常時をテスト
   test 'should create post successfully' do
-    handle_login_qr_code_path(@user)
+    get handle_login_qr_code_path(@user)
     assert_response :success
     post sessions_path
 
@@ -43,7 +43,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # createアクションの異常時をテスト
   test 'should not create post with invalid attributes' do
-    handle_login_qr_code_path(@user)
+    get handle_login_qr_code_path(@user)
     assert_response :success
     post sessions_path
 
@@ -61,7 +61,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # updateアクションの更新をテスト
   test 'updates the record successfully' do
-    handle_login_qr_code_path(@user)
+    get handle_login_qr_code_path(@user)
     assert_response :success
     post sessions_path
 
@@ -78,7 +78,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # 更新時の認可エラーをテスト
   test 'should redirect update when user is not owner' do
-    handle_login_qr_code_path(@user)
+    get handle_login_qr_code_path(@user)
     assert_response :success
     post sessions_path
 
@@ -90,7 +90,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   # 削除時の認可エラーをテスト
   test 'should redirect destroy when user is not owner' do
-    handle_login_qr_code_path(@user)
+    get handle_login_qr_code_path(@user)
     assert_response :success
     post sessions_path
 
