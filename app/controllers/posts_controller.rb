@@ -1,7 +1,7 @@
 class PostsController < ApplicationController
   before_action :set_current_user
-  before_action :set_post, only: [:show, :edit, :update, :destroy]
-  before_action :authorize_user, only: [:update, :destroy]
+  before_action :set_post, only: %i[show edit update destroy]
+  before_action :authorize_user, only: %i[update destroy]
 
   # 全ての投稿を表示
   def index
