@@ -27,9 +27,15 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # スコープ poster_users の参照をテスト
   test 'should display poster users in new action' do
     get new_user_path
-    assert_select 'form[action=?]', login_form_qr_code_path(users(:first_poster)), text: 'ゲスト１さんを招待する'
-    assert_select 'form[action=?]', login_form_qr_code_path(users(:second_poster)), text: 'ゲスト２さんを招待する'
-    assert_select 'form[action=?]', login_form_qr_code_path(users(:admin)), count: 0
+    assert_response :success
+
+    @poster_users.each do |poster_user|
+      assert_select 'form[action=?][method=?]', login_form_qr_code_path(poster_user)), text: /#{poster_user.name}さんを招待する/
+
+      assert_select 'form[action=?][method=?]', login_form_qr_code_path(poster_user), 'post' do
+        assert_select 'button', '招待'
+      end
+    end
   end
 
   # users#index のパスをテスト
