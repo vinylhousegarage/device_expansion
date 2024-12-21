@@ -6,7 +6,7 @@ class SessionsLogoutViewTest < ActionView::TestCase
   end
 
   test 'renders sessions#logout page with farewell message' do
-    render template: 'sessions/logout'
+    render template: 'sessions/destroy'
     assert_select 'h3', 'おつかれ様でした'
   end
 end
