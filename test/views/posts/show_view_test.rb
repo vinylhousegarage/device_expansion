@@ -56,7 +56,7 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
     end
 
     assert_select 'form[action=?][method=?]', user_path(@user), 'get' do
-      assert_select 'button[type="submit"]', text: '確認'
+      assert_select 'button[type="submit"]', text: '集計'
     end
 
     assert_select 'form[action=?][method=?]', new_post_path, 'get' do
