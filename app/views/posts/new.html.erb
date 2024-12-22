@@ -43,7 +43,7 @@
 <table>
   <tr>
     <td><b><%= '集計を確認する' %></b></td>
-    <td><%= button_to '確認', user_path(@current_user), method: :get %></td>
+    <td><%= button_to '集計', user_path(@current_user), method: :get %></td>
   </tr>
   <br>
   <% if @user_stats_by_id.user_name == '集計担当' %>
