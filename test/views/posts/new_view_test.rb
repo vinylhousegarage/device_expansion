@@ -84,7 +84,7 @@ class PostsNewViewTest < ActionDispatch::IntegrationTest
       assert_select 'table' do
         assert_select 'td', text: '集計を確認する'
         assert_select 'form[action=?][method=?]', user_path(user), 'get' do
-          assert_select 'button', text: '確認'
+          assert_select 'button', text: '集計'
         end
       end
     end
