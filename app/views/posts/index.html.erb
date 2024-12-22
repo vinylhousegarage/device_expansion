@@ -15,7 +15,7 @@
     <td><%= post.name %><%= '　' %></td>
     <td><%= number_with_delimiter(post.amount) %><%= ' 円' %><%= '　' %></td>
     <td><%= post.user.name %><%= '　' %></td>
-    <td><%= button_to '詳細', post_path(post), method: :get, data: { turbo: false }, id: "invite-button-#{poster_user.id}" %></td>
+    <td><%= button_to '詳細', post_path(post), method: :get, data: { turbo: false }, id: "invite-button-#{post.id}" %></td>
   </tr>
 
   <% end %>
