@@ -15,8 +15,6 @@
   - **URL**
     - **GitHubリポジトリ**
       - [https://github.com/vinylhousegarage/device_expansion](https://github.com/vinylhousegarage/device_expansion)
-    - **GitHub公開サイト**
-      - [https://vinylhousegarage.github.io/device_expansion](https://vinylhousegarage.github.io/device_expansion)
     - **Render.comデプロイ**
       - [https://device-expansion.onrender.com](https://device-expansion.onrender.com)
 
