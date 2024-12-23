@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>README.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h2 id="%E3%81%BF%E3%82%93%E3%81%AA%E3%81%A7%E9%A6%99%E5%85%B8%E9%9B%86%E8%A8%88">みんなで香典集計</h2>
+<h3 id="1-%E6%A6%82%E8%A6%81">1. 概要</h3>
+<ul>
+<li><strong>目的</strong>
+<ul>
+<li>通夜・葬儀でいただいた香典の情報を複数の投稿者で分担して入力し、入力された情報を一元管理のもとで集計することを目指します。
+<ul>
+<li>複数の投稿者が、自身が所有するスマートフォンで、通夜・葬儀でいただいた香典の情報を投稿</li>
+<li>管理者が、自身が所有するスマートフォンで、全体の集計を確認</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>範囲</strong>
+<ul>
+<li><strong>投稿者</strong>
+<ul>
+<li>香典の情報を投稿する権限と、自身の投稿の編集と削除の権限を持つユーザー</li>
+<li>あらかじめ設定された「ゲスト１」～「ゲスト５」</li>
+</ul>
+</li>
+<li><strong>管理者</strong>
+<ul>
+<li>投稿者を招待する権限と、投稿の集計を管理する権限を持つユーザー</li>
+<li>あらかじめ設定された「集計担当」</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>URL</strong>
+<ul>
+<li><strong>GitHubリポジトリ</strong>
+<ul>
+<li><a href="https://github.com/vinylhousegarage/device_expansion">https://github.com/vinylhousegarage/device_expansion</a></li>
+</ul>
+</li>
+<li><strong>Render.comデプロイ</strong>
+<ul>
+<li><a href="https://device-expansion.onrender.com">https://device-expansion.onrender.com</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-%E6%A9%9F%E8%83%BD%E8%A6%81%E4%BB%B6">2. 機能要件</h3>
+<ul>
+<li><strong>投稿者機能</strong>
+<ul>
+<li>香典の「氏名・金額・住所・電話・備考」の投稿</li>
+<li>投稿の編集と削除</li>
+<li>投稿件数と合計金額の表示</li>
+</ul>
+</li>
+<li><strong>管理者機能</strong>
+<ul>
+<li>QRコードによる投稿者の招待</li>
+<li>投稿総数と合計金額の確認</li>
+<li>投稿者別の投稿件数と合計金額の表示</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-%E3%83%87%E3%83%BC%E3%82%BF%E8%A6%81%E4%BB%B6">3. データ要件</h3>
+<ul>
+<li>
+<p><strong>usersテーブル</strong></p>
+<table>
+<thead>
+<tr>
+<th>カラム名</th>
+<th>データ型</th>
+<th>制約</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>bigint</td>
+<td>PRIMARY KEY</td>
+<td>投稿者・管理者の一意な識別子</td>
+</tr>
+<tr>
+<td>name</td>
+<td>string</td>
+<td></td>
+<td>投稿者・管理者の名前</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>timestamp(6) without time zone</td>
+<td>not null</td>
+<td>設定日時</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>timestamp(6) without time zone</td>
+<td>not null</td>
+<td>編集日時</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>postsテーブル</strong></p>
+<table>
+<thead>
+<tr>
+<th>カラム名</th>
+<th>データ型</th>
+<th>制約</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>bigint</td>
+<td>PRIMARY KEY</td>
+<td>投稿の一意な識別子</td>
+</tr>
+<tr>
+<td>name</td>
+<td>string</td>
+<td></td>
+<td>氏名</td>
+</tr>
+<tr>
+<td>amount</td>
+<td>integer</td>
+<td></td>
+<td>金額</td>
+</tr>
+<tr>
+<td>address</td>
+<td>string</td>
+<td></td>
+<td>住所</td>
+</tr>
+<tr>
+<td>tel</td>
+<td>string</td>
+<td></td>
+<td>電話</td>
+</tr>
+<tr>
+<td>others</td>
+<td>string</td>
+<td></td>
+<td>備考</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>bigint</td>
+<td>FOREIGN KEY (users.id)</td>
+<td>投稿者・管理者を参照する外部キー</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>timestamp(6) without time zone</td>
+<td>not null</td>
+<td>投稿日時</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>timestamp(6) without time zone</td>
+<td>not null</td>
+<td>編集日時</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>初期データ</strong></p>
+<ul>
+<li>初回起動時に以下のデータを自動生成</li>
+</ul>
+<pre class="hljs"><code><div>USERS = <span class="hljs-string">%w[ゲスト１ ゲスト２ ゲスト３ ゲスト４ ゲスト５ 集計担当]</span>.freeze
+USERS.each <span class="hljs-keyword">do</span> <span class="hljs-params">|user_name|</span>
+  User.find_or_create_by(<span class="hljs-symbol">name:</span> user_name)
+<span class="hljs-keyword">end</span>
+</div></code></pre>
+</li>
+</ul>
+<h3 id="4-%E3%82%B7%E3%82%B9%E3%83%86%E3%83%A0%E8%A6%81%E4%BB%B6">4. システム要件</h3>
+<ul>
+<li>
+<p><strong>技術スタック</strong></p>
+<ul>
+<li>プログラミング言語：Ruby 3.1.0</li>
+<li>フレームワーク：Ruby on Rails 7.0.8.4</li>
+<li>データベース：PostgreSQL 14.13</li>
+<li>バージョン管理：
+<ul>
+<li>Git（ソースコードのローカルバージョン管理）</li>
+<li>GitHub（リモートリポジトリのホスティング）</li>
+<li>GitHub Container Registry（Dockerイメージの保存とバージョン管理）</li>
+</ul>
+</li>
+<li>コンテナ化：Docker Compose（開発環境と本番環境を統一）</li>
+<li>ホスティング：Render（アプリケーションの稼働サーバー）</li>
+<li>CI/CD：
+<ul>
+<li>GitHub Actions（テスト・ビルド）
+<ul>
+<li>テスト：Minitestを用いた単体・機能・統合テスト</li>
+<li>ビルド：DockerイメージのビルドとGitHub Container Registryへのプッシュ</li>
+</ul>
+</li>
+<li>Render（デプロイ）
+<ul>
+<li>デプロイ：ビルド済みDockerイメージをRender APIを利用して自動トリガー</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>インフラ要件</strong></p>
+<ul>
+<li>サーバー構成：Puma, PostgreSQLサーバー</li>
+<li>ネットワーク要件：RenderによるホスティングとDNS管理</li>
+<li>ドメイン：<a href="https://device-expansion.onrender.com">https://device-expansion.onrender.com</a></li>
+</ul>
+</li>
+<li>
+<p><strong>開発環境</strong></p>
+<ul>
+<li>OS：Windows 10</li>
+<li>エディタ/IDE：Visual Studio Code</li>
+<li>コンテナ開発環境：Docker Compose</li>
+<li>バージョン管理の方法：
+<ul>
+<li>ブランチ戦略
+<ul>
+<li>mainブランチと作業ブランチ（featureブランチやtestブランチなど）に分けて管理</li>
+<li>Pull Requestを通してmainブランチにマージ</li>
+<li>現在は個人開発であるため、コードレビューは任意で行うことが可能</li>
+</ul>
+</li>
+<li>コミットメッセージ規約
+<ul>
+<li>Conventional Commits (feature, fix, testなどを使用)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="5-%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85">5. 注意事項</h3>
+<ul>
+<li>本プロジェクトはデモ目的で提供されています。</li>
+<li>実在する個人情報の入力はお控えください。</li>
+<li>実際の使用において発生するいかなる損害や問題についても責任を負いかねます。</li>
+</ul>
+<h3 id="6-%E3%83%A9%E3%82%A4%E3%82%BB%E3%83%B3%E3%82%B9">6. ライセンス</h3>
+<ul>
+<li>このプロジェクトは <a href="public/LICENSE">MIT License</a> のもとで公開されています。</li>
+</ul>
+
+</body>
+</html>
