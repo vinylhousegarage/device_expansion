@@ -429,45 +429,6 @@ code {
 <h3 id="3-%E3%83%87%E3%83%BC%E3%82%BF%E8%A6%81%E4%BB%B6">3. データ要件</h3>
 <ul>
 <li>
-<p><strong>usersテーブル</strong></p>
-<table>
-<thead>
-<tr>
-<th>カラム名</th>
-<th>データ型</th>
-<th>制約</th>
-<th>説明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>id</td>
-<td>bigint</td>
-<td>PRIMARY KEY</td>
-<td>投稿者・管理者の一意な識別子</td>
-</tr>
-<tr>
-<td>name</td>
-<td>string</td>
-<td></td>
-<td>投稿者・管理者の名前</td>
-</tr>
-<tr>
-<td>created_at</td>
-<td>timestamp(6) without time zone</td>
-<td>not null</td>
-<td>設定日時</td>
-</tr>
-<tr>
-<td>updated_at</td>
-<td>timestamp(6) without time zone</td>
-<td>not null</td>
-<td>編集日時</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
 <p><strong>postsテーブル</strong></p>
 <table>
 <thead>
@@ -526,6 +487,45 @@ code {
 <td>timestamp(6) without time zone</td>
 <td>not null</td>
 <td>投稿日時</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>timestamp(6) without time zone</td>
+<td>not null</td>
+<td>編集日時</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p><strong>usersテーブル</strong></p>
+<table>
+<thead>
+<tr>
+<th>カラム名</th>
+<th>データ型</th>
+<th>制約</th>
+<th>説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>bigint</td>
+<td>PRIMARY KEY</td>
+<td>投稿者・管理者の一意な識別子</td>
+</tr>
+<tr>
+<td>name</td>
+<td>string</td>
+<td></td>
+<td>投稿者・管理者の名前</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>timestamp(6) without time zone</td>
+<td>not null</td>
+<td>設定日時</td>
 </tr>
 <tr>
 <td>updated_at</td>
