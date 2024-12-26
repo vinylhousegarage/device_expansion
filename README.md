@@ -15,7 +15,7 @@
   - **URL**
     - **GitHubリポジトリ**
       - [https://github.com/vinylhousegarage/device_expansion](https://github.com/vinylhousegarage/device_expansion)
-    - **Render.comデプロイ**
+    - **Renderデプロイ**
       - [https://device-expansion.onrender.com](https://device-expansion.onrender.com)
 
 ### 2. 機能要件
