@@ -29,6 +29,15 @@
     - 投稿者別の投稿件数と合計金額の表示
 
 ### 3. データ要件
+  - **usersテーブル**
+
+    | カラム名 | データ型 | 制約 | 説明 |
+    |---|---|---|---|
+    | id | bigint | PRIMARY KEY | 投稿者・管理者の一意な識別子 |
+    | name | string || 投稿者・管理者の名前|
+    | created_at | timestamp(6) without time zone | not null | 設定日時 |
+    | updated_at | timestamp(6) without time zone | not null | 編集日時 |
+
   - **postsテーブル**
 
     | カラム名 | データ型 | 制約 | 説明 |
@@ -41,15 +50,6 @@
     | others | string || 備考 |
     | user_id | bigint | FOREIGN KEY (users.id) | 投稿者・管理者を参照する外部キー |
     | created_at | timestamp(6) without time zone | not null | 投稿日時 |
-    | updated_at | timestamp(6) without time zone | not null | 編集日時 |
-
-  - **usersテーブル**
-
-    | カラム名 | データ型 | 制約 | 説明 |
-    |---|---|---|---|
-    | id | bigint | PRIMARY KEY | 投稿者・管理者の一意な識別子 |
-    | name | string || 投稿者・管理者の名前|
-    | created_at | timestamp(6) without time zone | not null | 設定日時 |
     | updated_at | timestamp(6) without time zone | not null | 編集日時 |
 
   - **初期データ**
