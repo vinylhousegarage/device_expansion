@@ -8,5 +8,5 @@
 
 # ユーザーを定義
 User::USERS.each do |user_name|
-  User.find_or_create_by!(name: user_name)
+  User.find_or_create_by(name: user_name)
 end
