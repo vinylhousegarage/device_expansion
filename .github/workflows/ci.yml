@@ -170,7 +170,7 @@ jobs:
 
       # Dockerイメージをビルド
       - name: Build Docker Image with Compose
-        run: docker compose build
+        run: docker compose -f docker-compose.production.yml build
 
       # Dockerイメージ一覧を表示
       - name: List Docker Images
@@ -189,7 +189,7 @@ jobs:
       # 差分があれ ばDockerイメージを GHCR にプッシュ
       - name: Compare and Push Docker Image if Different
         run: |
-          temp_hash=$(docker inspect --format='{{.Id}}' device_expansion-development)
+          temp_hash=$(docker inspect --format='{{.Id}}' device_expansion-production)
           ghcr_hash=$(docker inspect --format='{{.Id}}' ghcr.io/vinylhousegarage/device_expansion:latest || echo "")
 
           echo "Temp Image Hash: $temp_hash"
@@ -197,7 +197,7 @@ jobs:
 
           if [ "$temp_hash" != "$ghcr_hash" ]; then
             echo "Images differ. Proceeding to tag and push."
-            docker tag device_expansion-development ghcr.io/vinylhousegarage/device_expansion:latest
+            docker tag device_expansion-production ghcr.io/vinylhousegarage/device_expansion:latest
             docker push ghcr.io/vinylhousegarage/device_expansion:latest
           else
             echo "Images are identical. No push needed."
