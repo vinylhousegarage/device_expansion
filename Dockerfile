@@ -37,8 +37,5 @@ RUN chmod +x /usr/bin/entrypoint.sh
 ENV PATH="./vendor/bundle/ruby/3.1.0/bin:$PATH"
 ENV RAILS_ENV=development
 EXPOSE 3000
-RUN apt-get remove --purge -y build-essential && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
