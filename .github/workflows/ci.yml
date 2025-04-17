@@ -197,7 +197,7 @@ jobs:
 
           if [ "$temp_hash" != "$ghcr_hash" ]; then
             echo "Images differ. Proceeding to tag and push."
-            docker tag device_expansion-development ghcr.io/vinylhousegarage/device_expansion:latest
+            docker tag device_expansion-production ghcr.io/vinylhousegarage/device_expansion:latest
             docker push ghcr.io/vinylhousegarage/device_expansion:latest
           else
             echo "Images are identical. No push needed."
