@@ -170,7 +170,7 @@ jobs:
 
       # Dockerイメージをビルド
       - name: Build Docker Image with Compose
-        run: docker compose build
+        run: docker compose -f docker-compose.production.yml build
 
       # Dockerイメージ一覧を表示
       - name: List Docker Images
