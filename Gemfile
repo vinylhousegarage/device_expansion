@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.1.0'
+ruby '3.1.4'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem 'rails', '~> 7.0.8.5'
@@ -53,10 +53,14 @@ gem 'bootsnap', require: false
 # gem "image_processing", "~> 1.2"
 
 gem 'rqrcode'
-
 gem 'chunky_png', '~> 1.4'
 
 gem 'dotenv-rails'
+
+
+gem 'rexml', '>= 3.3.9'
+gem 'net-imap', '>= 0.5.6'
+gem 'rack', '>= 2.2.11'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

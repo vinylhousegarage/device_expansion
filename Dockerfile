@@ -1,11 +1,15 @@
-FROM ruby:3.1.0
+FROM ruby:3.1.4
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
         build-essential \
         libpq-dev \
         curl \
         postgresql-client \
-        gnupg && \
+        gnupg \
+        libxml2-dev \
+        libxslt1-dev \
+        zlib1g-dev \
+        pkg-config && \
     curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
     npm cache clean --force && \
@@ -33,8 +37,5 @@ RUN chmod +x /usr/bin/entrypoint.sh
 ENV PATH="./vendor/bundle/ruby/3.1.0/bin:$PATH"
 ENV RAILS_ENV=development
 EXPOSE 3000
-RUN apt-get remove --purge -y build-essential && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
