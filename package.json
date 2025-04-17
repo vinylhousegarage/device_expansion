@@ -9,7 +9,7 @@
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.10",
-    "esbuild": "0.19.3",
+    "esbuild": "0.25.2",
     "esbuild-rails": "^1.0.7"
   },
   "scripts": {
