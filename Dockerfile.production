@@ -5,7 +5,11 @@ RUN apt-get update -qq && \
         libpq-dev \
         curl \
         postgresql-client \
-        gnupg && \
+        gnupg \
+        libxml2-dev \
+        libxslt1-dev \
+        zlib1g-dev \
+        pkg-config && \
     curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
     npm cache clean --force && \
