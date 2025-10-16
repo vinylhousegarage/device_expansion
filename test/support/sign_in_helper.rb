@@ -1,15 +1,12 @@
-# test/support/sign_in_helper.rb
 module SignInHelper
   def sign_in_as(user_or_id, path: nil, method: :post, controller: (defined?(@controller) ? @controller : nil))
     user_id = extract_user_id(user_or_id)
 
-    # Viewテスト(ActionView::TestCase)は request/response がないのでセッション直書き
     if view_test_context? || (!respond_to?(:post) && controller)
       (controller || @controller).session[:user_id] = user_id
       return
     end
 
-    # Integration/Controllerテストは実リクエストで
     path   ||= (defined?(sessions_path) ? sessions_path : '/sessions')
     params = { id: user_id }
 
@@ -20,7 +17,6 @@ module SignInHelper
   def admin_sign_in_as(user_or_id, path: nil, method: :post, controller: (defined?(@controller) ? @controller : nil))
     user_id = extract_user_id(user_or_id)
 
-    # Viewテストはセッション直書き
     if view_test_context? || (!respond_to?(:post) && controller)
       (controller || @controller).session[:admin_user_id] = user_id
       return
@@ -35,7 +31,6 @@ module SignInHelper
 
   private
 
-  # ビュー系テストかどうかを判定
   def view_test_context?
     defined?(ActionView::TestCase) && is_a?(ActionView::TestCase)
   end
