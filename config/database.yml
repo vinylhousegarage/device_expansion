@@ -58,10 +58,10 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: <%= ENV.fetch('TEST_DB', 'test_db') %>
-  username: <%= ENV.fetch('TEST_USER', ENV['POSTGRES_USER']) %>
-  password: <%= ENV.fetch('TEST_PASSWORD', ENV['POSTGRES_PASSWORD']) %>
-  host: <%= ENV.fetch('TEST_HOST', ENV.fetch('DB_HOST', 'localhost')) %>
+  database: postgres_db
+  username: <%= ENV['TEST_USER'] %>
+  password: <%= ENV['TEST_PASSWORD'] %>
+  host: localhost
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
 # ever seen by anyone, they now have access to your database.
