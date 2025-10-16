@@ -2,6 +2,7 @@ FROM ruby:3.1.4
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
         build-essential \
+        libssl-dev \
         libpq-dev \
         curl \
         postgresql-client \
