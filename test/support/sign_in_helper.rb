@@ -1,39 +1,44 @@
 # test/support/sign_in_helper.rb
 module SignInHelper
-  def sign_in_as(user_or_id, path: nil, as: :html, method: :post, controller: (defined?(@controller) ? @controller : nil))
+  def sign_in_as(user_or_id, path: nil, method: :post, controller: (defined?(@controller) ? @controller : nil))
     user_id = extract_user_id(user_or_id)
 
-    # Viewテスト(ActionView::TestCase)など request/response を持たない場合はセッション直書き
-    if !respond_to?(:post) && controller
-      controller.session[:user_id] = user_id
+    # Viewテスト(ActionView::TestCase)は request/response がないのでセッション直書き
+    if view_test_context? || (!respond_to?(:post) && controller)
+      (controller || @controller).session[:user_id] = user_id
       return
     end
 
     # Integration/Controllerテストは実リクエストで
-    path ||= (defined?(sessions_path) ? sessions_path : '/sessions')
+    path   ||= (defined?(sessions_path) ? sessions_path : '/sessions')
     params = { id: user_id }
 
-    send(method, path, params:, as:)
+    send(method, path, params: params)
     assert_response :success
   end
 
-  def admin_sign_in_as(user_or_id, path: nil, as: :html, method: :post, controller: (defined?(@controller) ? @controller : nil))
+  def admin_sign_in_as(user_or_id, path: nil, method: :post, controller: (defined?(@controller) ? @controller : nil))
     user_id = extract_user_id(user_or_id)
 
-    # Viewテストならセッション直書き
-    if !respond_to?(:post) && controller
-      controller.session[:admin_user_id] = user_id
+    # Viewテストはセッション直書き
+    if view_test_context? || (!respond_to?(:post) && controller)
+      (controller || @controller).session[:admin_user_id] = user_id
       return
     end
 
-    path ||= (defined?(admin_session_path) ? admin_session_path(user_id) : "/admin/sessions/#{user_id}")
+    path   ||= (defined?(admin_session_path) ? admin_session_path(user_id) : "/admin/sessions/#{user_id}")
     params = { id: user_id }
 
-    send(method, path, params:, as:)
+    send(method, path, params: params)
     assert_response :redirect
   end
 
   private
+
+  # ビュー系テストかどうかを判定
+  def view_test_context?
+    defined?(ActionView::TestCase) && is_a?(ActionView::TestCase)
+  end
 
   def extract_user_id(user_or_id)
     case user_or_id
