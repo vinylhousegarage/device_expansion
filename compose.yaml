@@ -20,6 +20,7 @@ services:
     command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
     volumes:
       - ".:/app"
+      - bundler:/app/vendor/bundle
     ports:
       - "3000:3000"
     depends_on:
@@ -28,3 +29,6 @@ services:
     env_file:
       - .env
     restart: always
+
+volumes:
+  bundler:
