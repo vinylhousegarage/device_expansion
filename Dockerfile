@@ -1,4 +1,4 @@
-FROM ruby:3.1.4
+FROM ruby:3.3.0
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
         build-essential \
@@ -30,12 +30,12 @@ COPY Gemfile Gemfile.lock ./
 RUN bundle config set path 'vendor/bundle' && \
     bundle install --jobs 4 --retry 3
 COPY package.json yarn.lock ./
+RUN yarn config set registry https://registry.npmjs.org
 RUN yarn install --check-files
 COPY . .
 RUN yarn build
 COPY bin/entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh
-ENV PATH="./vendor/bundle/ruby/3.1.0/bin:$PATH"
 ENV RAILS_ENV=development
 EXPOSE 3000
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
