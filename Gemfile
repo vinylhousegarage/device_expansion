@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '3.3.0'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 7.1.5"
+gem "rails", "~> 7.2.3.1"
 gem "nokogiri", ">= 1.19.1"
 
 # The original asset pipeline for Rails [https://github.com/rails/sprockets-rails]
@@ -60,7 +60,6 @@ gem 'dotenv-rails'
 
 gem "rexml", ">= 3.4.2"
 gem "net-imap", ">= 0.5.7"
-gem "rack",  "~> 2.2.14"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
