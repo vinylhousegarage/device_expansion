@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   include Rails.application.routes.url_helpers
+
   has_many :posts, dependent: :destroy
 
   # 投稿者を「ゲスト」として定義

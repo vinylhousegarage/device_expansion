@@ -1,4 +1,4 @@
-require "logger"
+require 'logger'
 
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
