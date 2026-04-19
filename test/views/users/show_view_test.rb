@@ -16,7 +16,7 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
     get user_path(@user)
     assert_response :success
 
-    puts @response.body
+    Rails.logger.debug @response.body
 
     assert_select 'div#_user_info', text: /#{@user.name}さんの登録件数：#{@post_count}件/
     formatted_post_amount = number_to_currency(@post_amount, unit: '円', delimiter: ',', format: '%n%u', precision: 0)
@@ -42,11 +42,11 @@ class UsersShowViewTest < ActionDispatch::IntegrationTest
   test 'show view renders return button for admin user' do
     @admin_user = users(:admin)
     post admin_session_path
-    puts "Session user ID: #{session[:user_id]}"
+    Rails.logger.debug { "Session user ID: #{session[:user_id]}" }
     assert_response :redirect
 
     get user_path(@user)
-    puts @response.body
+    Rails.logger.debug @response.body
     assert_response :success
 
     assert_select 'form[action=?][method=?]', users_path, 'get' do

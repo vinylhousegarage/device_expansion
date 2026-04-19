@@ -11,7 +11,7 @@ class PostsIndexViewTest < ActionDispatch::IntegrationTest
     get posts_path
     assert_response :success
 
-    puts @response.body
+    Rails.logger.debug @response.body
 
     assert_select 'table' do
       assert_select 'tr:nth-child(1) th:nth-child(1)', text: 'No.'

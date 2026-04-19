@@ -34,7 +34,7 @@ class PostsController < ApplicationController
     if @post.save
       redirect_to new_post_path
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -43,7 +43,7 @@ class PostsController < ApplicationController
     if @post.update(post_params)
       redirect_with_notice(post_path, 'post_updated')
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 
@@ -62,7 +62,7 @@ class PostsController < ApplicationController
 
   # 投稿削除成功時を定義
   def handle_successful_destroy
-    if @user.posts.count.zero?
+    if @user.posts.none?
       redirect_with_notice(new_post_path, 'all_deleted')
     else
       redirect_with_notice(user_path(@user), 'post_deleted')

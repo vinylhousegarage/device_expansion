@@ -22,7 +22,7 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
   test 'show view renders correctly for user_post_index' do
     @user_post_index = @post.user_post_index
     assert_select 'div', text: /登録番号：#{@user_post_index}/
-    puts @response.body
+    Rails.logger.debug @response.body
   end
 
   test 'show view renders correctly for table' do
@@ -67,13 +67,13 @@ class PostsShowViewTest < ActionDispatch::IntegrationTest
   test 'show view renders additional button for aggregation user' do
     @admin_user = users(:admin)
     post admin_session_path
-    puts "Session user ID: #{session[:user_id]}"
+    Rails.logger.debug { "Session user ID: #{session[:user_id]}" }
     assert_response :redirect
 
     @user_stats_by_id = mock_user_stats_by_id(@user)
-    puts "User stats by ID user_name: #{@user_stats_by_id.user_name}"
+    Rails.logger.debug { "User stats by ID user_name: #{@user_stats_by_id.user_name}" }
     get post_path(@post)
-    puts @response.body
+    Rails.logger.debug @response.body
     assert_response :success
 
     assert_select 'form[action=?][method=?]', users_path, 'get' do
